@@ -182,7 +182,21 @@ def find_question_markers(doc):
                         "has_marks": marks is not None,
                     })
 
+    # Sort by (page, y) so true reading order is preserved regardless of PDF block order
+    markers.sort(key=lambda m: (m["page"], m["y"]))
     return markers
+
+
+def deduplicate_markers(markers):
+    """Keep only the first occurrence of each (section, num) pair."""
+    seen = set()
+    result = []
+    for m in markers:
+        key = (m["section"], m["num"])
+        if key not in seen:
+            seen.add(key)
+            result.append(m)
+    return result
 
 
 def detect_sections(markers):
@@ -423,6 +437,7 @@ def process_solutions(sol_pdf_path, questions, exam_info):
     doc = fitz.open(sol_pdf_path)
     markers = find_question_markers(doc)
     markers = detect_sections(markers)
+    markers = deduplicate_markers(markers)
 
     if not markers:
         print(f"    WARNING: No question markers found in solutions PDF")
@@ -522,6 +537,7 @@ def main():
             continue
 
         markers = detect_sections(markers)
+        markers = deduplicate_markers(markers)
 
         summary = [f"Q{m['num']}({m['section'][:2]})" for m in markers]
         print(f"  Found {len(markers)} questions: {summary}")
@@ -539,7 +555,29 @@ def main():
 
         all_questions.extend(questions)
 
-    # Remove extracted_text source_pdf from final output (keep for classification)
+    # ---------------------------------------------------------------------------
+    # Duplicate detection — flag any exam where the same (section, question_number)
+    # appears more than once. This indicates a PDF marker parsing error.
+    # ---------------------------------------------------------------------------
+    from collections import defaultdict, Counter
+    flag_count = 0
+    by_exam = defaultdict(list)
+    for q in all_questions:
+        key = (q["publisher"], q["year"], q["exam_type"])
+        by_exam[key].append(q)
+
+    print(f"\n{'='*60}")
+    print("Duplicate check (extended response):")
+    for (pub, yr, exam), qs in sorted(by_exam.items()):
+        er_qs = [q for q in qs if q["section"] == "extended_response"]
+        nums = [q["question_number"] for q in er_qs]
+        dupes = [n for n, c in Counter(nums).items() if c > 1]
+        if dupes:
+            print(f"  ⚠️  {pub} {yr} Exam {exam} — duplicate ER question numbers: {sorted(dupes)}")
+            flag_count += 1
+    if flag_count == 0:
+        print("  ✓ No duplicates found")
+
     print(f"\n{'='*60}")
     print(f"Total questions extracted: {len(all_questions)}")
 

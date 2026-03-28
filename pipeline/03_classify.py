@@ -5,38 +5,64 @@ Reads raw_questions.json, outputs questions.json.
 
 Priority order (first match wins):
   1. Probability and Statistics
-  2. Complex Numbers (anything involving imaginary i, z ∈ C, argand, etc.)
-  3. Sketch/graph → Functions (only if the instruction is to sketch a graph)
-  4. Logic and Proof
-  5. Calculus (takes precedence if ANY calculus is involved, including kinematics)
-  6. Vectors, Lines and Planes
-  7. Functions, Relations and Graphs (fallback)
+  2. Complex Numbers
+  3. Vectors (strong signals checked BEFORE calculus to prevent particle/i/j/k misclassification)
+  4. Sketch/graph → Functions (only if no real calculus operations)
+  5. Logic and Proof
+  6. Calculus
+  7. Functions, Relations and Graphs (positive signal required)
+  8. Unsorted (fallback — never guess)
 
-Special rules:
-  - Complex numbers: anything involving imaginary number i → Complex
-  - Sketch the graph / axes provided → Functions (unless explicit calculus operations)
-  - Finding gradient, implicit differentiation → Calculus (not Functions)
-  - Kinematics, speed, distance/time → Calculus
-  - Volume, arc length, surface area → Calculus
-  - Calculus always takes precedence over Vectors when both present
+Key improvements over v1:
+  - strip_header(): discards copyright header text before "Question N"
+  - has_vector_ijk(): detects j/k unit vectors → prevents false Complex triggers
+  - Particle disambiguation: particle + "straight line" → Calculus; particle alone → Vectors
+  - VECTORS_STRONG_KW checked before Calculus
+  - Unsorted (aos=0) is the fallback instead of Functions
+  - Manually reviewed publisher/year sets are preserved from existing questions.json
 """
 
 import json
 import re
 
-RAW_JSON = "/home/ubuntu/webpage/raw_questions.json"
-OUT_JSON = "/home/ubuntu/webpage/questions.json"
+RAW_JSON = "/Users/arieltenenberg/Desktop/Specialist Question Bank/raw_questions.json"
+OUT_JSON = "/Users/arieltenenberg/Desktop/Specialist Question Bank/questions.json"
+EXISTING_JSON = OUT_JSON  # same file — we load before overwriting
+
+# Publisher/year sets that have been manually reviewed — preserve their classifications
+MANUALLY_REVIEWED = {
+    ("Sequoia", 2025),
+    ("Heffernan", 2025),
+    ("MAV", 2025),
+}
 
 AOS = {
+    0: "Unsorted",
     1: "Logic and Proof",
     2: "Functions, Relations and Graphs",
     3: "Complex Numbers",
     4: "Calculus",
     5: "Vectors, Lines and Planes",
     6: "Probability and Statistics",
+    7: "Pseudocode",
 }
 
-# --- Keyword sets ---
+# ---------------------------------------------------------------------------
+# Keyword sets
+# ---------------------------------------------------------------------------
+
+PSEUDOCODE_KW = [
+    r"pseudocode",
+    r"written in pseudocode",
+    r"the following pseudocode",
+    r"the following algorithm",
+    r"consider the following algorithm",
+    r"consider\s+the\s+algorithm",  # "Consider the algorithm implemented with..."
+    r"declare\s+integer",    # pseudocode variable declarations
+    r"←\s*\w",              # assignment arrow common in pseudocode
+    r"\bfor\s+\w+\s+from\b", # "for n from 1 to 3" pseudocode loop
+    r"\bwhile\s+\w+\s*[<>]", # while loop pseudocode
+]
 
 PROB_STATS_KW = [
     r"hypothesis", r"null\s+hypothesis", r"p[\-\s]?value",
@@ -52,13 +78,15 @@ PROB_STATS_KW = [
     r"sampling\s+distribution",
     r"z[\-\s]?score", r"expected\s+value",
     r"e\s*\(\s*x\s*\)", r"var\s*\(",
-    r"proportion", r"survey",
+    r"\bprobability\b",
+    # removed: proportion, survey (too broad — fire on DE/modelling questions)
 ]
 
 LOGIC_PROOF_KW = [
     r"mathematical\s+induction", r"prove\s+by\s+induction",
-    r"induction", r"inductive\s+step", r"base\s+case",
-    r"contradiction", r"prove.*irrational",
+    r"\binduction\b", r"inductive\s+step", r"base\s+case",
+    r"\bcontradiction\b", r"proof\s+by\s+contradiction",
+    r"prove.*irrational",
     r"contrapositive", r"contra[\-\s]?positive",
     r"prove\s+that", r"\bproof\b", r"divisib",
     r"if\s+and\s+only\s+if", r"\bconverse\b",
@@ -68,54 +96,103 @@ LOGIC_PROOF_KW = [
     r"counter[\-\s]?example",
     r"logical\s+equivalen",
     r"necessary\s+and\s+sufficient",
+    r"direct\s+proof",
+    r"consider\s+the\s+following\s+statement",
+    r"consider\s+the\s+following\s+claim",
+    r"negation\s+of\s+the\s+statement",  # "The negation of the statement '...' is"
+    r"for\s+all\s+n\s*[∈]",        # "for all n ∈ Z" — induction/proof language
+    r"let\s+n\s+be\s+an?\s+integer",
+    r"n\s+is\s+an?\s+integer",
 ]
 
-COMPLEX_KW = [
+# Strong, unambiguous complex number signals
+COMPLEX_STRONG_KW = [
     r"complex\s+number", r"complex\s+plane",
     r"argand", r"de\s+moivre", r"demoivre",
     r"roots\s+of\s+unity", r"nth\s+root.*complex",
     r"complex\s+root", r"complex\s+conjugate",
     r"polar\s+form", r"modulus[\-\s]+argument",
-    r"arg\s*\(", r"\bcis\s*\(",
+    r"\bcis\s*\(",
     r"\|z\|", r"principal\s+argument",
     r"locus", r"loci",
     r"factor.*over\s+c", r"factoris.*over\s+c",
-    r"imaginar", r"real\s+part",
+    r"imaginar",
     r"\bz\s*=\s*x\s*\+\s*y\s*i",
-    r"\bz\b.*\bc\b.*conjugate",
     r"rectangular\s+form",
-    # Detect imaginary unit i in math expressions from PDF extraction
-    r"\d\s*i\b",               # "3i", "2i", "2 i" (number followed by i)
-    r"[+-]\s*\d*i\b",          # "+2i", "-i", "+i"
-    r"a\s*\+\s*b\s*i\b",      # "a + bi", "a + b i"
-    r"a\s*[+-]\s*bi\b",       # "a+bi", "a-bi"
-    r"form\s+.*[+-].*i\b",    # "in the form ... + ... i"
-    r"\bz\s*[∈]\s*c",         # "z ∈ c" (z in C)
-    r",\s*z\s*∈\s*c",         # ", z ∈ C"
-    r"z\s+c\s+[∈]",           # alternative ordering
-    r"\bz\b.*\bc\s*∈",        # "z ... C ∈" (messy extraction)
-    r"where\s+z\s+c\b",       # "where z C" (∈ lost in extraction)
-    r"\bz\s*c\s*[,.]",        # "z C," or "z C." (∈ lost)
-    r"polynomial.*\bz\b",     # polynomial in z
-    r"\bp\s*\(\s*z\s*\)",     # p(z)
-    r"roots.*\bp\s*\(",       # roots of p(
-    r"\bz\b.*\bi\b.*[+-]",    # z with i and arithmetic (complex expression)
-    r"[+-].*\bi\b.*\bz\b",    # i with z and arithmetic
+    r"\bz\s*[∈]\s*c",
+    r",\s*z\s*∈\s*c",
+    r"where\s+z\s+c\b",
+    r"\bz\s*c\s*[,.]",
+    r"polynomial.*\bz\b",
+    r"\bp\s*\(\s*z\s*\)",
+    r"\barg\s*\(",                 # arg(z) — complex argument function
+    r"x\s*\+\s*i\s*y\b",          # "x + iy" form (common alternative to a + bi)
 ]
 
-# Graph-feature keywords: these appear naturally in "sketch the graph" questions
-# and should NOT prevent a sketch-graph question from being classified as Functions.
+# Weaker complex signals — only used when NO vector i/j/k context is present
+COMPLEX_WEAK_KW = [
+    r"\d\s*i\b",               # "3i", "2i"
+    r"[+-]\s*\d*i\b",          # "+2i", "-i"
+    r"a\s*\+\s*b\s*i\b",      # "a + bi"
+    r"a\s*[+-]\s*bi\b",        # "a+bi", "a-bi"
+    r"form\s+.*[+-].*i\b",    # "in the form ... + ... i"
+    r"real\s+part",
+    r"\bz\b",                   # standalone z → likely complex variable
+    r"\bz\b.*\bi\b.*[+-]",
+    r"[+-].*\bi\b.*\bz\b",
+]
+
+# Strong vector signals — checked BEFORE calculus
+VECTORS_STRONG_KW = [
+    r"position\s+vector", r"unit\s+vector",
+    r"dot\s+product", r"scalar\s+product",
+    r"cross\s+product", r"vector\s+product",
+    r"magnitude.*vector", r"vector.*magnitude",
+    r"scalar\s+resolute", r"vector\s+resolute",
+    r"equation\s+of.*plane", r"cartesian\s+equation.*plane",
+    r"normal\s+to.*plane",
+    r"intersection.*plane", r"angle.*between.*plane",
+    r"skew\s+lines", r"direction\s+vector",
+    r"perpendicular.*vector", r"projection.*vector",
+    r"parallel.*vector",
+    r"linear.*independent", r"linear.*dependent",
+    r"parametric.*equation.*line",
+    r"\bi\s*[\+\-].*\bj\b",    # "2i + 3j" — vector component form
+    r"\bj\s*[\+\-].*\bk\b",    # "j + k"
+    r"angle\s+between\s+.*vectors?",    # "angle between the vectors"
+    r"area\s+of\s+(?:the\s+)?triangle", # cross product to find triangle area with 3D vertices
+]
+
+# Plane-specific keywords — checked BEFORE Complex weak to prevent z-variable false trigger.
+# Must be specific enough not to fire on Complex questions that mention "plane".
+PLANES_KW = [
+    r"two\s+planes?",                        # "two planes" — specific to Vectors context
+    r"angle\s+between\s+(?:the\s+)?planes?", # "angle between the planes"
+    r"distance\s+\w.*\bplane\b",             # "distance from point to plane"
+    r"closest\s+\w.*\bplane\b",              # "closest point on the plane"
+    r"perpendicular\s+planes?",              # "perpendicular planes"
+    r"area\s+of\s+(?:the\s+)?triangle",      # cross-product triangle area (no .* wildcard)
+]
+
+# Broader vector signals (used after calculus check)
+VECTORS_KW = VECTORS_STRONG_KW + [
+    r"\bvectors?\b",            # "vector" or "vectors"
+    r"equation\s+of.*line",
+]
+
+# Graph-feature keywords that appear naturally in sketch-graph questions
+# and should NOT alone push a question into Calculus
 GRAPH_FEATURE_KW = [
     r"stationary\s+point", r"turning\s+point",
     r"maximum.*minimum", r"inflection", r"concav",
-    r"asymptote",
 ]
 
 CALCULUS_KW = [
     r"differentiat", r"derivative", r"dy\s*/\s*dx", r"dy\s*dx",
-    r"\bgradient\b",           # "find the gradient" = calculus
+    r"\bgradient\b",
     r"integra", r"∫", r"anti[\-\s]?derivat",
-    r"\bdx\b",                 # integral marker (∫ often lost in extraction)
+    r"\bdx\b",
+    r"\bevaluate\b",                       # "evaluate the integral"
     r"chain\s+rule", r"product\s+rule", r"quotient\s+rule",
     r"implicit.*differentiat", r"related\s+rate",
     r"rate\s+of\s+change",
@@ -126,54 +203,59 @@ CALCULUS_KW = [
     r"euler.*method", r"slope\s+field", r"direction\s+field",
     r"particular\s+solution", r"general\s+solution",
     r"logistic", r"separab",
-    r"velocity", r"acceleration", r"displacement",
-    r"kinematics", r"particle\s+mov", r"particle\s+travel",
+    r"velocity", r"accelerat",  # covers acceleration, accelerates, accelerating
+    r"moving\s+in\s+a\s+straight\s+line",  # unambiguous 1D kinematics
     r"rectilinear\s+motion",
     r"\bspeed\b", r"distance\s+travel", r"travel.*distance",
-    r"\btime\b.*\bposition\b", r"position.*\btime\b",
     r"metres?\s+per\s+second", r"km\s*/\s*h", r"m\s*/\s*s",
     r"area\s+between", r"area\s+under", r"area\s+bound",
-    r"\bvolume\b",
-    r"arc\s+length", r"surface\s+area",
+    r"volume\s+of\s+revolution", r"rotat\w*\s+(about|around)",  # rotating/rotated about/around
+    r"about\s+the\s+[xy][\-\s]?axis",  # "about the y-axis" even when formula splits "rotating"
+    r"surface\s+area\s+of\s+revolution",
+    r"arc\s+length",
     r"newton.*method",
-    r"partial\s+fraction",
     r"limit\b", r"l'h.pital",
+    r"rate\s+at\s+which",       # "rate at which the surface area increases" (related rates)
+    r"with\s+respect\s+to\s+time",  # dV/dt, dh/dt problems
+    r"suitable\s+substitution", # integration by substitution
+    # removed: partial fraction (fires on Logic questions), volume alone (too broad),
+    #          surface area alone (too broad), displacement (fires on Vectors 2D/3D)
 ]
 
-# "Real" calculus operations — excludes graph-feature words that naturally
-# appear when describing a graph to sketch (stationary point, inflection, etc.)
+# "Core" calculus — excludes graph-feature words so sketch-graph → Functions
 CALCULUS_CORE_KW = [kw for kw in CALCULUS_KW if kw not in GRAPH_FEATURE_KW]
-
-VECTORS_KW = [
-    r"\bvector\b", r"dot\s+product", r"scalar\s+product",
-    r"cross\s+product", r"vector\s+product",
-    r"position\s+vector", r"unit\s+vector",
-    r"magnitude.*vector", r"vector.*magnitude",
-    r"linear.*independent", r"linear.*dependent",
-    r"scalar\s+resolute", r"vector\s+resolute",
-    r"equation\s+of.*plane", r"equation\s+of.*line",
-    r"parametric.*equation.*line",
-    r"normal\s+to.*plane", r"cartesian\s+equation.*plane",
-    r"intersection.*plane", r"angle.*between.*plane",
-    r"skew\s+lines", r"direction\s+vector",
-    r"perpendicular.*vector", r"projection.*vector",
-    r"parallel.*vector",
-]
 
 FUNCTIONS_KW = [
     r"asymptote", r"rational\s+function",
     r"inverse\s+function", r"one[\-\s]?to[\-\s]?one",
     r"transformation", r"dilation", r"translation",
-    r"domain\b", r"range\b",
+    r"\bdomain\b", r"\brange\b",
     r"composite\s+function",
-    r"graph\s+of", r"sketch.*graph",
+    r"graphs?\s+of", r"sketch.*graph", r"sketch.*curve",  # "graph of" or "graphs of"
     r"modulus\s+function", r"absolute\s+value",
     r"piecewise", r"hybrid\s+function",
     r"ellipse", r"hyperbola",
-    r"parametric",
     r"trigonometric\s+identit", r"trig.*identit",
     r"double\s+angle", r"compound\s+angle",
+    r"parametric",
+    r"\bsolve\s+the\s+equation\b",  # trig equation solve questions
+    r"\bcosec\b", r"\bcsc\b",       # reciprocal trig — common in Functions questions
 ]
+
+
+# ---------------------------------------------------------------------------
+# Helper functions
+# ---------------------------------------------------------------------------
+
+def strip_header(text):
+    """
+    Remove publisher copyright header that precedes "Question N".
+    Returns the trimmed text, or the original if no question marker found.
+    """
+    m = re.search(r"\bquestion\s+\d+\b", text, re.IGNORECASE)
+    if m:
+        return text[m.start():]
+    return text
 
 
 def has_match(text, keywords):
@@ -183,89 +265,177 @@ def has_match(text, keywords):
     return False
 
 
-def classify_question(text):
-    if not text:
-        return 2, AOS[2]
+def has_vector_ijk(text):
+    """
+    Returns True if the text contains vector unit vector notation (j or k),
+    which indicates this is a Vectors question, not a Complex Numbers question.
+    The imaginary unit i is also used in vectors as a unit vector.
+    """
+    # \bj\b or \bk\b appearing as a variable (not in words like "just", "keep")
+    if re.search(r"\bj\b", text):
+        return True
+    if re.search(r"\bk\b", text):
+        return True
+    # explicit vector notation: "i + j", "2i - 3j + k", etc.
+    if re.search(r"\bi\b.*\bj\b|\bj\b.*\bi\b", text):
+        return True
+    return False
 
+
+def classify_question(text):
+    if not text or not text.strip():
+        return 0, AOS[0]
+
+    # Strip publisher copyright header before classifying
+    text = strip_header(text)
     t = text.lower()
 
-    # 1. Probability and Statistics (very distinct domain — always highest priority)
+    # 0. Pseudocode — detected first, very distinct question type
+    if has_match(t, PSEUDOCODE_KW):
+        return 7, AOS[7]
+
+    # 1. Probability and Statistics
     if has_match(t, PROB_STATS_KW):
         return 6, AOS[6]
 
-    # 2. Complex Numbers — anything involving imaginary i, z ∈ C, argand, etc.
-    #    Complex takes priority because these questions are distinctly about complex numbers.
-    if has_match(t, COMPLEX_KW):
+    # 2. Complex Numbers
+    #    Strong signals always win; weak signals (numeric i, standalone z) only win
+    #    if there is no vector i/j/k context.
+    if has_match(t, COMPLEX_STRONG_KW):
+        return 3, AOS[3]
+    # Plane keywords checked BEFORE complex weak — a z variable in a plane equation
+    # (e.g. "2x + 3y + z = 8") must not trigger the \bz\b complex weak keyword.
+    # Exclude questions that are primarily Logic/Proof (multi-part questions may mention
+    # triangle area in a sub-part but the question is fundamentally about proof).
+    if has_match(t, PLANES_KW) and not has_match(t, LOGIC_PROOF_KW):
+        return 5, AOS[5]
+    is_vector_ijk = has_vector_ijk(t)
+    if not is_vector_ijk and has_match(t, COMPLEX_WEAK_KW):
         return 3, AOS[3]
 
-    # 3. Sketch/graph → Functions, unless real calculus operations are involved
-    #    "Sketch the graph and label stationary points" → Functions
-    #    "Sketch the graph and find the derivative" → Calculus
+    # 3. Strong vector signals — checked BEFORE calculus so that questions about
+    #    particles in 2D/3D, position vectors, etc. are not stolen by Calculus.
+    if has_match(t, VECTORS_STRONG_KW):
+        return 5, AOS[5]
+
+    # 4. Particle disambiguation
+    #    "particle moving in a straight line" → Calculus (1D kinematics)
+    #    "particle" alone (2D/3D context) → Vectors
+    if re.search(r"\bparticle\b", t):
+        if re.search(r"straight\s+line|rectilinear", t):
+            return 4, AOS[4]
+        else:
+            return 5, AOS[5]
+
+    # 5. Displacement / position — check for 2D/3D context → Vectors
+    #    Only send to Calculus if clearly 1D (straight-line motion)
+    if re.search(r"\bdisplacement\b", t):
+        if re.search(r"straight\s+line|rectilinear|1d\b|one.dimension", t):
+            return 4, AOS[4]
+        if is_vector_ijk:
+            return 5, AOS[5]
+        # ambiguous displacement — fall through to keyword matching below
+
+    # 6. Sketch/graph → Functions (unless real calculus operations are involved)
     is_graph = bool(re.search(r"sketch.*graph|graph.*sketch|sketch.*curve", t))
     if is_graph and not has_match(t, CALCULUS_CORE_KW):
         return 2, AOS[2]
 
-    # 4. Logic and Proof
+    # 7. Logic and Proof
     if has_match(t, LOGIC_PROOF_KW):
-        if has_match(t, CALCULUS_KW):
+        # If calculus/vectors also present, those win
+        if has_match(t, CALCULUS_CORE_KW):
             return 4, AOS[4]
         if has_match(t, VECTORS_KW):
             return 5, AOS[5]
         return 1, AOS[1]
 
-    # 5. Calculus (takes precedence over vectors and functions)
+    # 8. Calculus
     if has_match(t, CALCULUS_KW):
         return 4, AOS[4]
 
-    # 6. Vectors
+    # 9. Vectors (broader signals)
     if has_match(t, VECTORS_KW):
         return 5, AOS[5]
 
-    # 7. Functions, Relations and Graphs (fallback)
+    # 9b. i/j/k unit vector notation present but no keyword matched — likely a
+    #     Vectors question with garbled PDF text (e.g. formulae split across lines).
+    #     Only trigger when BOTH j and k are present (single k could be a constant).
+    if re.search(r"\bj\b", t) and re.search(r"\bk\b", t):
+        return 5, AOS[5]
+
+    # 10. Functions (positive signal required — no longer a fallback)
     if has_match(t, FUNCTIONS_KW):
         return 2, AOS[2]
 
-    return 2, AOS[2]
+    # 11. Unsorted — genuinely unclear, needs manual review
+    return 0, AOS[0]
 
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
 
 def main():
     with open(RAW_JSON) as f:
         raw = json.load(f)
 
+    # Load existing manual classifications to preserve them
+    try:
+        with open(EXISTING_JSON) as f:
+            existing = json.load(f)
+        manual = {q["id"]: q for q in existing}
+    except (FileNotFoundError, json.JSONDecodeError):
+        manual = {}
+
     print(f"Classifying {len(raw)} questions...")
+    print(f"Preserving manual classifications for: {sorted(MANUALLY_REVIEWED)}")
 
     from collections import Counter
     aos_counts = Counter()
+    preserved = 0
+    reclassified = 0
 
+    output = []
     for q in raw:
         # Merge Insight and Insight Publications
         if "Insight" in q.get("publisher", ""):
             q["publisher"] = "Insight"
             q["id"] = q["id"].replace("insight_publications_", "insight_")
 
-        aos_num, aos_name = classify_question(q.get("extracted_text", ""))
-        q["aos"] = aos_num
-        q["aos_name"] = aos_name
-        q.pop("topic", None)
-        aos_counts[f"{aos_num}. {aos_name}"] += 1
+        pub = q.get("publisher", "")
+        year = q.get("year", 0)
+        qid = q["id"]
+
+        out = {k: v for k, v in q.items() if k not in ("extracted_text", "source_pdf")}
+
+        if (pub, year) in MANUALLY_REVIEWED and qid in manual:
+            # Preserve the manually reviewed classification
+            out["aos"] = manual[qid]["aos"]
+            out["aos_name"] = manual[qid]["aos_name"]
+            preserved += 1
+        else:
+            aos_num, aos_name = classify_question(q.get("extracted_text", ""))
+            out["aos"] = aos_num
+            out["aos_name"] = aos_name
+            reclassified += 1
 
         # Exam 1 is always short answer
         if q.get("exam_type") == 1:
-            q["section"] = "short_answer"
+            out["section"] = "short_answer"
 
-    # Remove extracted_text and source_pdf from output
-    output = []
-    for q in raw:
-        out = {k: v for k, v in q.items() if k not in ("extracted_text", "source_pdf")}
+        out.pop("topic", None)
+        aos_counts[f"{out['aos']}. {out['aos_name']}"] += 1
         output.append(out)
 
     with open(OUT_JSON, "w") as f:
         json.dump(output, f, indent=2)
 
+    print(f"\nPreserved (manual): {preserved}")
+    print(f"Reclassified (auto): {reclassified}")
     print(f"\nBy Area of Study:")
     for k, v in sorted(aos_counts.items()):
         print(f"  {k}: {v}")
-
     print(f"\nTotal: {len(output)} questions")
     print(f"Saved to {OUT_JSON}")
 

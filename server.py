@@ -1,6 +1,6 @@
 import os
 import json
-from flask import Flask, request, jsonify, send_from_directory, render_template_string
+from flask import Flask, request, jsonify, send_from_directory, render_template_string, session, redirect, url_for
 
 BASE = os.path.dirname(__file__)
 UPLOAD_DIR = os.path.join(BASE, "uploads")
@@ -11,7 +11,10 @@ QUESTIONS_JSON = os.path.join(BASE, "questions.json")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(ADMIN_UPLOAD_DIR, exist_ok=True)
 
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "specialist2025")
+
 app = Flask(__name__)
+app.secret_key = os.environ.get("FLASK_SECRET", "change-me-in-production-32chars!")
 app.config["MAX_CONTENT_LENGTH"] = 500 * 1024 * 1024
 
 # Load questions once at startup
@@ -96,6 +99,24 @@ a { color:var(--primary); text-decoration:none; }
   margin-left:auto;
   font-weight:500;
 }
+.admin-mode-btn {
+  font-family:inherit;
+  font-size:.8rem;
+  font-weight:600;
+  padding:6px 14px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.1);
+  color:#fff;
+  cursor:pointer;
+  text-decoration:none;
+  transition:background .15s;
+  flex-shrink:0;
+  white-space:nowrap;
+}
+.admin-mode-btn:hover { background:rgba(255,255,255,.22); color:#fff; }
+.admin-mode-btn.exit { border-color:rgba(252,129,129,.5); background:rgba(197,48,48,.25); }
+.admin-mode-btn.exit:hover { background:rgba(197,48,48,.45); }
 
 /* ----- Layout ----- */
 .layout { display:flex; min-height:calc(100vh - 60px); }
@@ -300,6 +321,55 @@ a { color:var(--primary); text-decoration:none; }
 
 .no-results { text-align:center; padding:60px 20px; color:var(--muted); }
 .no-results p { font-size:1.05rem; margin-bottom:10px; }
+
+.sort-unsorted-btn {
+  display:block;
+  width:100%;
+  text-align:center;
+  padding:10px 14px;
+  margin-bottom:20px;
+  border-radius:8px;
+  background:#c53030;
+  color:#fff;
+  font-size:.85rem;
+  font-weight:600;
+  text-decoration:none;
+  transition:background .15s;
+}
+.sort-unsorted-btn:hover { background:#9b2c2c; color:#fff; }
+
+.admin-bar {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px dashed #c53030;
+}
+.admin-reclassify {
+  font-family:inherit;
+  font-size:.8rem;
+  padding:5px 8px;
+  border-radius:6px;
+  border:1px solid #c53030;
+  background:var(--surface);
+  color:var(--text);
+  cursor:pointer;
+  flex:1;
+  max-width:280px;
+}
+.admin-delete-btn {
+  font-size:1.1rem;
+  background:none;
+  border:1px solid #c53030;
+  border-radius:6px;
+  padding:4px 8px;
+  cursor:pointer;
+  color:#c53030;
+  line-height:1;
+  transition:background .15s;
+}
+.admin-delete-btn:hover { background:#fff0f0; }
 </style>
 </head>
 <body>
@@ -308,13 +378,20 @@ a { color:var(--primary); text-decoration:none; }
   <h1>Specialist Maths Question Bank</h1>
   <div class="tabs">
     <a class="tab active" href="/">Questions</a>
-    <a class="tab" href="/admin">Admin</a>
+    {% if is_admin %}<a class="tab" href="/admin">Admin</a>{% endif %}
   </div>
-  <span class="count" id="count"></span>
+  {% if is_admin %}
+  <a class="admin-mode-btn exit" href="/admin/logout">Exit Admin Mode</a>
+  {% else %}
+  <a class="admin-mode-btn" href="/admin/login?next=/">Admin</a>
+  {% endif %}
 </div>
 
 <div class="layout">
   <div class="sidebar" id="sidebar">
+    {% if is_admin %}
+    <a class="sort-unsorted-btn" id="sort-unsorted-btn" href="/classify?unsorted=1">Sort Unsorted (<span id="unsorted-count">…</span>)</a>
+    {% endif %}
     <h3>Area of Study</h3>
     <div class="filter-group" id="fg-aos"></div>
     <h3>Year</h3>
@@ -339,6 +416,7 @@ a { color:var(--primary); text-decoration:none; }
 </div>
 
 <script>
+const IS_ADMIN = {{ is_admin|tojson }};
 const PER_PAGE = 20;
 let allQ = [];
 let filtered = [];
@@ -348,7 +426,11 @@ let filters = { aos: null, year: null, publisher: null, exam_type: null, section
 const sectionLabels = { short_answer: 'Short Answer', multiple_choice: 'Multiple Choice', extended_response: 'Extended Response' };
 
 fetch('/api/questions').then(r => r.json()).then(data => {
-  allQ = data;
+  allQ = IS_ADMIN ? data : data.filter(q => q.aos !== 0);
+  if (IS_ADMIN) {
+    const el = document.getElementById('unsorted-count');
+    if (el) el.textContent = data.filter(q => q.aos === 0).length;
+  }
   buildFilters();
   applyFilters();
 });
@@ -419,7 +501,6 @@ function applyFilters() {
     return true;
   });
 
-  document.getElementById('count').textContent = `${filtered.length} question${filtered.length!==1?'s':''}`;
   renderActiveFilters();
   renderCards();
   renderPagination();
@@ -467,7 +548,22 @@ function renderCards() {
       ? `<button class="show-sol-btn" onclick="toggleSol(this)">Show Solution</button>`
       : '';
 
-    return `<div class="qcard" onclick="this.classList.toggle('open')">
+    const adminControls = IS_ADMIN ? `
+      <div class="admin-bar" onclick="event.stopPropagation()">
+        <select class="admin-reclassify" onchange="adminReclassify('${q.id}', this)">
+          <option value="">Reclassify…</option>
+          <option value="1|Logic and Proof">1 — Logic and Proof</option>
+          <option value="2|Functions, Relations and Graphs">2 — Functions, Relations and Graphs</option>
+          <option value="3|Complex Numbers">3 — Complex Numbers</option>
+          <option value="4|Calculus">4 — Calculus</option>
+          <option value="5|Vectors, Lines and Planes">5 — Vectors, Lines and Planes</option>
+          <option value="6|Probability and Statistics">6 — Probability and Statistics</option>
+          <option value="0|Unsorted">Unsorted</option>
+        </select>
+        <button class="admin-delete-btn" onclick="adminDelete('${q.id}', this)" title="Delete question">&#128465;</button>
+      </div>` : '';
+
+    return `<div class="qcard" id="qcard-${q.id}" onclick="this.classList.toggle('open')">
       <div class="qcard-header">
         <span class="qnum">Q${q.question_number}</span>
         <div class="qtags">${tags}</div>
@@ -478,6 +574,7 @@ function renderCards() {
         <div class="qimg-wrap"><h4>Question</h4><img src="${q.question_image}" loading="lazy"/></div>
         ${solBtn}
         <div class="sol-hidden">${solInner}</div>
+        ${adminControls}
       </div>
     </div>`;
   }).join('');
@@ -510,11 +607,311 @@ function toggleSol(btn) {
   }
 }
 
+function adminReclassify(id, sel) {
+  const [aos, aosName] = sel.value.split('|');
+  if (!aos && aos !== '0') return;
+  fetch('/api/classify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id, aos: Number(aos), aos_name: aosName })
+  }).then(r => r.json()).then(data => {
+    if (data.ok) {
+      const q = allQ.find(q => q.id === id);
+      if (q) { q.aos = Number(aos); q.aos_name = aosName; }
+      sel.value = '';
+      document.getElementById('qcard-' + id)?.querySelector('.qtag.aos')?.replaceWith(
+        Object.assign(document.createElement('span'), { className: 'qtag aos', textContent: aosName })
+      );
+    }
+  });
+}
+
+function adminDelete(id, btn) {
+  if (!confirm('Delete this question?')) return;
+  fetch('/api/questions/' + id, { method: 'DELETE' })
+    .then(r => r.json()).then(data => {
+      if (data.ok) {
+        allQ = allQ.filter(q => q.id !== id);
+        filtered = filtered.filter(q => q.id !== id);
+        document.getElementById('qcard-' + id)?.remove();
+      }
+    });
+}
+
 function goPage(p) {
   page = p;
   renderCards();
   renderPagination();
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+</script>
+</body>
+</html>"""
+
+
+# ---------------------------------------------------------------------------
+# Classification tool HTML
+# ---------------------------------------------------------------------------
+
+CLASSIFY_HTML = r"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>{% if unsorted_mode %}Classify — Unsorted{% else %}Classify — {{ publisher }} {{ year }}{% endif %}</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Poppins',system-ui,sans-serif; background:#0f1117; color:#e2e8f0; min-height:100vh; }
+
+.topbar {
+  background:#042f3a;
+  padding:0 32px;
+  display:flex;
+  align-items:center;
+  gap:20px;
+  height:56px;
+  position:sticky;
+  top:0;
+  z-index:100;
+  box-shadow:0 2px 8px rgba(0,0,0,.3);
+}
+.topbar h1 { font-size:1rem; font-weight:700; color:#fff; }
+.topbar .back { color:rgba(255,255,255,.6); font-size:.85rem; text-decoration:none; }
+.topbar .back:hover { color:#fff; }
+.progress-bar-wrap {
+  flex:1;
+  max-width:300px;
+  height:6px;
+  background:rgba(255,255,255,.1);
+  border-radius:99px;
+  overflow:hidden;
+}
+.progress-bar { height:6px; background:#4ade80; border-radius:99px; transition:width .3s; }
+.progress-label { color:rgba(255,255,255,.6); font-size:.8rem; white-space:nowrap; }
+
+.container { max-width:900px; margin:0 auto; padding:32px 24px; display:flex; flex-direction:column; gap:32px; }
+
+.qblock {
+  background:#1a1d27;
+  border:2px solid #2d3148;
+  border-radius:16px;
+  overflow:hidden;
+  transition:border-color .2s;
+  scroll-margin-top:80px;
+}
+.qblock.classified { border-color:#196061; }
+.qblock-header {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px 20px;
+  background:#12151f;
+  border-bottom:1px solid #2d3148;
+}
+.qblock-header .qnum { font-weight:700; font-size:.95rem; color:#60a5fa; }
+.qblock-header .qmeta { font-size:.78rem; color:#718096; }
+.qblock-header .status {
+  margin-left:auto;
+  font-size:.75rem;
+  font-weight:600;
+  padding:3px 10px;
+  border-radius:99px;
+}
+.status.unsaved { background:#2d2d1a; color:#f6e05e; }
+.status.saved { background:#1a2e20; color:#4ade80; }
+
+.qblock-img { padding:20px; }
+.qblock-img img { width:100%; border-radius:8px; border:1px solid #2d3148; background:#fff; }
+
+.aos-buttons {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  padding:0 20px 20px;
+}
+.aos-btn {
+  font-family:inherit;
+  font-size:.82rem;
+  font-weight:500;
+  padding:8px 18px;
+  border-radius:99px;
+  border:2px solid #2d3148;
+  background:#12151f;
+  color:#a0aec0;
+  cursor:pointer;
+  transition:all .15s;
+}
+.aos-btn:hover { border-color:#196061; color:#e2e8f0; }
+.aos-btn.active {
+  background:#196061;
+  border-color:#196061;
+  color:#fff;
+}
+.aos-btn.active-new {
+  background:#1a4a2a;
+  border-color:#4ade80;
+  color:#4ade80;
+}
+.aos-btn.unsorted {
+  border-color:#4a1a1a;
+  color:#fc8181;
+}
+.aos-btn.unsorted:hover { border-color:#fc8181; background:#2a1a1a; }
+.aos-btn.unsorted.active, .aos-btn.unsorted.active-new {
+  background:#2a1a1a;
+  border-color:#fc8181;
+  color:#fc8181;
+}
+.status.unsorted-status { background:#2a1a1a; color:#fc8181; }
+.aos-btn.pseudocode { border-color:#2d1a4a; color:#c084fc; }
+.aos-btn.pseudocode:hover { border-color:#c084fc; background:#1e1030; }
+.aos-btn.pseudocode.active, .aos-btn.pseudocode.active-new { background:#1e1030; border-color:#c084fc; color:#c084fc; }
+.status.pseudocode-status { background:#1e1030; color:#c084fc; }
+
+.exam-nav {
+  background:#0a0d14;
+  border-bottom:1px solid #1e2235;
+  padding:8px 32px;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+.exam-nav-label { font-size:.75rem; color:#4a5568; font-weight:600; text-transform:uppercase; letter-spacing:.05em; margin-right:4px; }
+.exam-nav-btn {
+  font-family:inherit;
+  font-size:.78rem;
+  font-weight:500;
+  padding:5px 14px;
+  border-radius:99px;
+  border:1px solid #2d3148;
+  background:none;
+  color:#a0aec0;
+  cursor:pointer;
+  text-decoration:none;
+  transition:all .15s;
+}
+.exam-nav-btn:hover { border-color:#196061; color:#e2e8f0; }
+.exam-nav-btn.current { background:#196061; border-color:#196061; color:#fff; }
+.exam-nav-btn.unsorted-tab { border-color:#4a1a1a; color:#fc8181; }
+.exam-nav-btn.unsorted-tab:hover { border-color:#fc8181; background:#2a1a1a; color:#fc8181; }
+.exam-nav-btn.unsorted-tab.current { background:#2a1a1a; border-color:#fc8181; color:#fc8181; }
+
+.done-banner {
+  display:none;
+  text-align:center;
+  padding:40px 24px;
+  background:#1a2e20;
+  border:2px solid #4ade80;
+  border-radius:16px;
+  color:#4ade80;
+  font-size:1.1rem;
+  font-weight:600;
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="back" href="/">← Back</a>
+  <h1>{% if unsorted_mode %}Unsorted Questions ({{ questions|length }}){% else %}Classifying: {{ publisher }} {{ year }}{% endif %}</h1>
+  <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  <span class="progress-label" id="progress-label">0 / {{ questions|length }}</span>
+</div>
+<div class="exam-nav">
+  <a class="exam-nav-btn unsorted-tab {% if unsorted_mode %}current{% endif %}"
+     href="/classify?unsorted=1">Unsorted ({{ unsorted_count }})</a>
+  <span class="exam-nav-label" style="margin-left:8px;">Exam set:</span>
+  {% for pub, yr in exam_sets %}
+  <a class="exam-nav-btn {% if not unsorted_mode and pub == publisher and yr == year %}current{% endif %}"
+     href="/classify?publisher={{ pub }}&year={{ yr }}">{{ pub }} {{ yr }}</a>
+  {% endfor %}
+</div>
+
+<div class="container" id="container">
+{% for q in questions %}
+<div class="qblock {% if q.aos %}classified{% endif %}" id="block-{{ q.id }}" data-id="{{ q.id }}">
+  <div class="qblock-header">
+    <span class="qnum">{{ q.publisher }} {{ q.year }} — Exam {{ q.exam_type }} Q{{ q.question_number }}</span>
+    <span class="qmeta">{{ q.section.replace('_',' ').title() }}{% if q.marks %} · {{ q.marks }} marks{% endif %}</span>
+    <span class="status {% if q.aos == 0 %}unsorted-status{% elif q.aos == 7 %}pseudocode-status{% elif q.aos %}saved{% else %}unsaved{% endif %}" id="status-{{ q.id }}">
+      {% if q.aos == 0 %}Unsorted{% elif q.aos %}{{ q.aos_name }}{% else %}Unclassified{% endif %}
+    </span>
+  </div>
+  <div class="qblock-img">
+    <img src="{{ q.question_image }}" loading="lazy"/>
+  </div>
+  <div class="aos-buttons">
+    {% set options = [
+      (1, 'Logic and Proof'),
+      (2, 'Functions, Relations and Graphs'),
+      (3, 'Complex Numbers'),
+      (4, 'Calculus'),
+      (5, 'Vectors, Lines and Planes'),
+      (6, 'Probability and Statistics'),
+      (7, 'Pseudocode')
+    ] %}
+    {% for num, name in options %}
+    <button class="aos-btn {% if q.aos == num %}active{% endif %} {% if num == 7 %}pseudocode{% endif %}"
+            onclick="classify('{{ q.id }}', {{ num }}, '{{ name }}', this)">
+      {{ name }}
+    </button>
+    {% endfor %}
+    <button class="aos-btn unsorted {% if q.aos == 0 %}active{% endif %}"
+            onclick="classify('{{ q.id }}', 0, 'Unsorted', this)">
+      Unsorted
+    </button>
+  </div>
+</div>
+{% endfor %}
+<div class="done-banner" id="done-banner">All {{ questions|length }} questions classified!</div>
+</div>
+
+<script>
+const total = {{ questions|length }};
+let classified = document.querySelectorAll('.qblock.classified').length;
+updateProgress();
+
+function classify(id, aos, aosName, btn) {
+  const block = document.getElementById('block-' + id);
+  const status = document.getElementById('status-' + id);
+
+  // Update button states
+  block.querySelectorAll('.aos-btn').forEach(b => {
+    b.classList.remove('active', 'active-new');
+  });
+  btn.classList.add('active-new');
+
+  // Update status badge
+  const wasClassified = block.classList.contains('classified');
+  if (!wasClassified) {
+    classified++;
+    block.classList.add('classified');
+    updateProgress();
+  }
+  status.textContent = aosName;
+  status.className = aos === 0 ? 'status unsorted-status' : aos === 7 ? 'status pseudocode-status' : 'status saved';
+
+  fetch('/api/classify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id, aos, aos_name: aosName })
+  }).then(r => r.json()).then(data => {
+    if (data.ok) {
+      btn.classList.remove('active-new');
+      btn.classList.add('active');
+    }
+  });
+}
+
+function updateProgress() {
+  const pct = total === 0 ? 0 : Math.round(classified / total * 100);
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = classified + ' / ' + total;
+  if (classified === total) {
+    document.getElementById('done-banner').style.display = 'block';
+  }
 }
 </script>
 </body>
@@ -527,11 +924,59 @@ function goPage(p) {
 
 @app.route("/")
 def index():
-    return render_template_string(BROWSE_HTML)
+    return render_template_string(BROWSE_HTML, is_admin=admin_required())
 
 @app.route("/api/questions")
 def api_questions():
     return jsonify(questions_data)
+
+@app.route("/api/classify", methods=["POST"])
+def api_classify():
+    if not admin_required():
+        return jsonify(error="forbidden"), 403
+    data = request.get_json()
+    qid = data.get("id")
+    aos = data.get("aos")
+    aos_name = data.get("aos_name")
+    if not qid or aos is None:
+        return jsonify(error="missing fields"), 400
+    for q in questions_data:
+        if q["id"] == qid:
+            q["aos"] = aos
+            q["aos_name"] = aos_name
+            break
+    else:
+        return jsonify(error="question not found"), 404
+    with open(QUESTIONS_JSON, "w") as f:
+        json.dump(questions_data, f, indent=2)
+    return jsonify(ok=True)
+
+@app.route("/classify")
+def classify_page():
+    if not admin_required():
+        return redirect(url_for("admin_login") + "?next=/classify")
+    unsorted_mode = request.args.get("unsorted") == "1"
+    publisher = request.args.get("publisher", "Heffernan")
+    year = int(request.args.get("year", 2025))
+
+    if unsorted_mode:
+        questions = [q for q in questions_data if q["aos"] == 0]
+    else:
+        questions = [q for q in questions_data if q["publisher"] == publisher and q["year"] == year]
+
+    seen = set()
+    exam_sets = []
+    for q in questions_data:
+        key = (q["publisher"], q["year"])
+        if key not in seen:
+            seen.add(key)
+            exam_sets.append(key)
+    exam_sets.sort(key=lambda x: (x[0], x[1]))
+
+    unsorted_count = sum(1 for q in questions_data if q["aos"] == 0)
+
+    return render_template_string(CLASSIFY_HTML, questions=questions, publisher=publisher, year=year,
+                                  exam_sets=exam_sets, unsorted_mode=unsorted_mode, unsorted_count=unsorted_count)
 
 @app.route("/qimg/<path:filename>")
 def serve_qimg(filename):
@@ -582,6 +1027,46 @@ def list_files():
 # ---------------------------------------------------------------------------
 # Admin page — Light theme
 # ---------------------------------------------------------------------------
+
+LOGIN_HTML = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Poppins',system-ui,sans-serif; background:#0f1117; min-height:100vh; display:flex; align-items:center; justify-content:center; }
+.card { background:#1a1d27; border:1px solid #2d3148; border-radius:16px; padding:40px 36px; width:100%; max-width:380px; }
+h1 { color:#e2e8f0; font-size:1.2rem; font-weight:600; margin-bottom:6px; }
+p { color:#718096; font-size:.85rem; margin-bottom:28px; }
+label { display:block; color:#a0aec0; font-size:.8rem; font-weight:500; margin-bottom:6px; }
+input[type=password] {
+  width:100%; padding:11px 14px; border-radius:8px; border:1px solid #2d3148;
+  background:#12151f; color:#e2e8f0; font-family:inherit; font-size:.9rem;
+  margin-bottom:16px; outline:none; transition:border-color .15s;
+}
+input[type=password]:focus { border-color:#196061; }
+button { width:100%; padding:12px; border-radius:8px; border:none; background:#196061; color:#fff; font-family:inherit; font-size:.9rem; font-weight:600; cursor:pointer; transition:background .15s; }
+button:hover { background:#1a7a7b; }
+.error { color:#fc8181; font-size:.82rem; margin-bottom:14px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Admin Login</h1>
+  <p>Enter your password to access the admin area.</p>
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+  <form method="POST">
+    <input type="hidden" name="next" value="{{ next_url }}"/>
+    <label>Password</label>
+    <input type="password" name="password" autofocus/>
+    <button type="submit">Sign in</button>
+  </form>
+</div>
+</body>
+</html>"""
 
 ADMIN_HTML = r"""<!DOCTYPE html>
 <html lang="en">
@@ -826,8 +1311,29 @@ loadRefFiles();
 </body>
 </html>"""
 
+def admin_required():
+    return session.get("admin_logged_in") is True
+
+@app.route("/admin/login", methods=["GET", "POST"])
+def admin_login():
+    next_url = request.args.get("next") or request.form.get("next") or url_for("admin_page")
+    error = None
+    if request.method == "POST":
+        if request.form.get("password") == ADMIN_PASSWORD:
+            session["admin_logged_in"] = True
+            return redirect(next_url)
+        error = "Incorrect password."
+    return render_template_string(LOGIN_HTML, error=error, next_url=next_url)
+
+@app.route("/admin/logout")
+def admin_logout():
+    session.clear()
+    return redirect(url_for("index"))
+
 @app.route("/admin")
 def admin_page():
+    if not admin_required():
+        return redirect(url_for("admin_login"))
     return render_template_string(ADMIN_HTML)
 
 @app.route("/admin/upload", methods=["POST"])
@@ -855,6 +1361,19 @@ def admin_delete_file(filename):
     path = os.path.join(ADMIN_UPLOAD_DIR, os.path.basename(filename))
     if os.path.exists(path):
         os.remove(path)
+    return jsonify(ok=True)
+
+@app.route("/api/questions/<qid>", methods=["DELETE"])
+def api_delete_question(qid):
+    if not admin_required():
+        return jsonify(error="forbidden"), 403
+    global questions_data
+    q = next((q for q in questions_data if q["id"] == qid), None)
+    if not q:
+        return jsonify(error="not found"), 404
+    questions_data = [x for x in questions_data if x["id"] != qid]
+    with open(QUESTIONS_JSON, "w") as f:
+        json.dump(questions_data, f, indent=2)
     return jsonify(ok=True)
 
 
