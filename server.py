@@ -13,6 +13,7 @@ ADMIN_UPLOAD_DIR = os.path.join(BASE, "admin_uploads")
 QIMG_DIR = os.path.join(BASE, "question_images")
 QUESTIONS_JSON = os.path.join(BASE, "questions.json")
 FLAGS_JSON = os.path.join(BASE, "flags.json")
+SETTINGS_JSON = os.path.join(BASE, "settings.json")
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(ADMIN_UPLOAD_DIR, exist_ok=True)
@@ -98,6 +99,19 @@ def check_approved():
         session.clear()
         return redirect(url_for("login") + "?rejected=1")
     return None
+
+def load_settings():
+    if os.path.exists(SETTINGS_JSON):
+        with open(SETTINGS_JSON) as f:
+            return json.load(f)
+    return {"hidden_publishers": []}
+
+def save_settings(settings):
+    with open(SETTINGS_JSON, "w") as f:
+        json.dump(settings, f, indent=2)
+
+def get_hidden_publishers():
+    return set(load_settings().get("hidden_publishers", []))
 
 # Load questions once at startup
 questions_data = []
@@ -1072,7 +1086,12 @@ def index():
 def api_questions():
     if check_approved():
         return jsonify(error="unauthorized"), 401
-    return jsonify(questions_data)
+    if admin_required():
+        return jsonify(questions_data)
+    hidden = get_hidden_publishers()
+    if not hidden:
+        return jsonify(questions_data)
+    return jsonify([q for q in questions_data if q["publisher"] not in hidden])
 
 @app.route("/api/classify", methods=["POST"])
 def api_classify():
@@ -1563,6 +1582,15 @@ a { color:var(--primary); text-decoration:none; }
   transition:all .15s;
 }
 .flag-dismiss-btn:hover { border-color:var(--red); color:var(--red); }
+.toggle-row { display:flex; align-items:center; justify-content:space-between; padding:12px 18px; background:var(--surface); border:1px solid var(--border); border-radius:10px; margin-bottom:8px; box-shadow:var(--shadow-sm); }
+.toggle-label { font-size:.9rem; font-weight:500; display:flex; align-items:center; gap:8px; }
+.hidden-tag { font-size:.72rem; color:var(--red); font-weight:600; background:rgba(229,62,62,.08); padding:2px 7px; border-radius:99px; }
+.toggle { position:relative; display:inline-block; width:44px; height:24px; flex-shrink:0; }
+.toggle input { opacity:0; width:0; height:0; }
+.slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background:#cbd5e0; border-radius:24px; transition:.2s; }
+.slider:before { position:absolute; content:""; height:18px; width:18px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:.2s; }
+input:checked + .slider { background:var(--primary); }
+input:checked + .slider:before { transform:translateX(20px); }
 </style>
 </head>
 <body>
@@ -1577,6 +1605,23 @@ a { color:var(--primary); text-decoration:none; }
 </div>
 
 <div class="container">
+  <div class="section">
+    <h2>Publisher Visibility</h2>
+    <p class="desc">Hidden publishers are invisible to students but remain accessible in the classify tool.</p>
+    {% for pub in publishers %}
+    <div class="toggle-row">
+      <span class="toggle-label">
+        {{ pub }}
+        {% if pub in hidden_publishers %}<span class="hidden-tag">hidden</span>{% endif %}
+      </span>
+      <label class="toggle">
+        <input type="checkbox" {% if pub not in hidden_publishers %}checked{% endif %} onchange="togglePublisher('{{ pub }}', this)">
+        <span class="slider"></span>
+      </label>
+    </div>
+    {% endfor %}
+  </div>
+
   <div class="section">
     <h2>Flagged Questions <span class="flags-count-badge zero" id="flags-badge">0</span></h2>
     <p class="desc">Questions students have flagged as potentially misclassified. Review the image, then reclassify or dismiss the flag.</p>
@@ -1748,6 +1793,24 @@ function dismissFlag(id) {
 }
 
 loadFlags();
+
+function togglePublisher(publisher, checkbox) {
+  fetch('/api/admin/publishers/toggle', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({publisher: publisher})
+  }).then(r => r.json()).then(d => {
+    if (!d.ok) checkbox.checked = !checkbox.checked;
+    const row = checkbox.closest('.toggle-row');
+    const label = row.querySelector('.toggle-label');
+    const existing = label.querySelector('.hidden-tag');
+    if (d.hidden) {
+      if (!existing) { const tag = document.createElement('span'); tag.className = 'hidden-tag'; tag.textContent = 'hidden'; label.appendChild(tag); }
+    } else {
+      if (existing) existing.remove();
+    }
+  });
+}
 </script>
 </body>
 </html>"""
@@ -1829,7 +1892,9 @@ def admin_logout():
 def admin_page():
     if not admin_required():
         return redirect(url_for("login"))
-    return render_template_string(ADMIN_HTML)
+    publishers = sorted(set(q["publisher"] for q in questions_data))
+    hidden = get_hidden_publishers()
+    return render_template_string(ADMIN_HTML, publishers=publishers, hidden_publishers=hidden)
 
 @app.route("/admin/upload", methods=["POST"])
 def admin_upload():
@@ -1883,6 +1948,23 @@ def api_flag():
     with open(FLAGS_JSON, "w") as f:
         json.dump(flags_data, f, indent=2)
     return jsonify(ok=True)
+
+@app.route("/api/admin/publishers/toggle", methods=["POST"])
+def toggle_publisher():
+    if not admin_required():
+        return jsonify(error="forbidden"), 403
+    publisher = request.get_json().get("publisher")
+    settings = load_settings()
+    hidden = set(settings.get("hidden_publishers", []))
+    if publisher in hidden:
+        hidden.discard(publisher)
+        is_hidden = False
+    else:
+        hidden.add(publisher)
+        is_hidden = True
+    settings["hidden_publishers"] = list(hidden)
+    save_settings(settings)
+    return jsonify(ok=True, hidden=is_hidden)
 
 @app.route("/api/admin/flags")
 def api_admin_flags():
