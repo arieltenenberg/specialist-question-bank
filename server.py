@@ -1339,7 +1339,7 @@ LOGIN_HTML = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Sign In — VCE Maths Question Bank</title>
+<title>Sign In — VCE Mathematics Question Bank</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -1363,7 +1363,7 @@ p { color:#718096; font-size:.85rem; margin-bottom:32px; line-height:1.6; }
 </head>
 <body>
 <div class="card">
-  <h1>Specialist Maths Question Bank</h1>
+  <h1>VCE Mathematics Question Bank</h1>
   <p>Sign in with your Google account.</p>
   {% if rejected %}<div class="msg error">Your access request was not approved. Contact Ariel.</div>{% endif %}
   {% if pending %}<div class="msg info">Your account is awaiting approval. Sign in again to check your status.</div>{% endif %}
@@ -1385,7 +1385,7 @@ PENDING_HTML = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Awaiting Approval — Specialist Maths Question Bank</title>
+<title>Awaiting Approval — VCE Mathematics Question Bank</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -1415,7 +1415,7 @@ USERS_HTML = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Users — Specialist Maths Question Bank</title>
+<title>Users — VCE Mathematics Question Bank</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
