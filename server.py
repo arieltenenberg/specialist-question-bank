@@ -104,15 +104,21 @@ def check_approved():
 def load_settings():
     if os.path.exists(SETTINGS_JSON):
         with open(SETTINGS_JSON) as f:
-            return json.load(f)
-    return {"hidden_publishers": []}
+            data = json.load(f)
+        # Migrate old flat format to per-subject format
+        if "hidden_publishers" in data and not isinstance(data.get("specialist"), dict):
+            data = {"specialist": {"hidden_publishers": data["hidden_publishers"]}, "methods": {"hidden_publishers": []}}
+            with open(SETTINGS_JSON, "w") as f:
+                json.dump(data, f, indent=2)
+        return data
+    return {"specialist": {"hidden_publishers": []}, "methods": {"hidden_publishers": []}}
 
 def save_settings(settings):
     with open(SETTINGS_JSON, "w") as f:
         json.dump(settings, f, indent=2)
 
-def get_hidden_publishers():
-    return set(load_settings().get("hidden_publishers", []))
+def get_hidden_publishers(subject="specialist"):
+    return set(load_settings().get(subject, {}).get("hidden_publishers", []))
 
 # Load questions once at startup
 questions_data = []
@@ -524,7 +530,7 @@ a { color:var(--primary); text-decoration:none; }
   <div class="tabs">
     <a class="tab" href="/">← Subjects</a>
     <a class="tab active" href="/{{ subject }}">Questions</a>
-    {% if is_admin %}<a class="tab" href="/admin">Admin</a>{% endif %}
+    {% if is_admin %}<a class="tab" href="/admin?subject={{ subject }}">Admin</a>{% endif %}
     {% if is_admin %}<a class="tab" href="/admin/users">Users</a>{% endif %}
   </div>
   <span class="count">{{ user_name }}</span>
@@ -1097,7 +1103,7 @@ def index():
     r = check_approved()
     if r: return r
     user = current_user()
-    return render_template_string(HOME_HTML, user_name=user["name"] if user else "")
+    return render_template_string(HOME_HTML, user_name=user["name"] if user else "", is_admin=admin_required())
 
 @app.route("/specialist")
 def browse_specialist():
@@ -1132,7 +1138,7 @@ def api_questions():
     data = cfg["data"]()
     if admin_required():
         return jsonify(data)
-    hidden = get_hidden_publishers()
+    hidden = get_hidden_publishers(subject)
     if not hidden:
         return jsonify(data)
     return jsonify([q for q in data if q["publisher"] not in hidden])
@@ -1309,6 +1315,7 @@ body { font-family:'Poppins',system-ui,sans-serif; background:#f0f0f0; color:#1a
   <h1>VCE Maths Question Bank</h1>
   <div class="spacer"></div>
   <span class="user-name">{{ user_name }}</span>
+  {% if is_admin %}<a class="signout-btn" href="/admin/users">Users</a>{% endif %}
   <a class="signout-btn" href="/logout">Sign out</a>
 </div>
 <div class="main">
@@ -1453,10 +1460,9 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
 </head>
 <body>
 <div class="topbar">
-  <h1>Specialist Maths Question Bank</h1>
+  <h1>VCE Maths Question Bank</h1>
   <div class="tabs">
-    <a class="tab" href="/">Questions</a>
-    <a class="tab" href="/admin">Admin</a>
+    <a class="tab" href="/">← Subjects</a>
     <a class="tab active" href="/admin/users">Users</a>
   </div>
   <div class="spacer"></div>
@@ -1537,7 +1543,7 @@ ADMIN_HTML = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Admin - Specialist Maths Question Bank</title>
+<title>Admin — {{ subject_name }} Question Bank</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -1548,9 +1554,9 @@ ADMIN_HTML = r"""<!DOCTYPE html>
   --text: #1a202c;
   --text-secondary: #4a5568;
   --muted: #718096;
-  --primary: #196061;
-  --primary-dark: #042f3a;
-  --primary-light: #e6f2f2;
+  --primary: {{ css_primary }};
+  --primary-dark: {{ css_primary_dark }};
+  --primary-light: {{ css_primary_light }};
   --accent-green: #38a169;
   --accent-green-light: #f0fff4;
   --red: #e53e3e;
@@ -1720,10 +1726,11 @@ input:checked + .slider:before { transform:translateX(20px); }
 <body>
 
 <div class="topbar">
-  <h1>Specialist Maths Question Bank</h1>
+  <h1>{{ subject_name }} Question Bank</h1>
   <div class="tabs">
-    <a class="tab" href="/">Questions</a>
-    <a class="tab active" href="/admin">Admin</a>
+    <a class="tab" href="/">← Subjects</a>
+    <a class="tab" href="/{{ subject }}">Questions</a>
+    <a class="tab active" href="/admin?subject={{ subject }}">Admin</a>
     <a class="tab" href="/admin/users">Users</a>
   </div>
 </div>
@@ -1901,7 +1908,7 @@ function loadFlags() {
         </div>
         ${imgHtml}
         <div class="flag-actions">
-          <a class="flag-classify-link" href="/classify?publisher=${encodeURIComponent(f.publisher)}&year=${f.year}">Go to Classify</a>
+          <a class="flag-classify-link" href="/classify?subject={{ subject }}&publisher=${encodeURIComponent(f.publisher)}&year=${f.year}">Go to Classify</a>
           <button class="flag-dismiss-btn" onclick="dismissFlag('${f.id}')">Dismiss</button>
         </div>
       </div>`;
@@ -1922,7 +1929,7 @@ function togglePublisher(publisher, checkbox) {
   fetch('/api/admin/publishers/toggle', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({publisher: publisher})
+    body: JSON.stringify({publisher: publisher, subject: '{{ subject }}'})
   }).then(r => r.json()).then(d => {
     if (!d.ok) checkbox.checked = !checkbox.checked;
     const row = checkbox.closest('.toggle-row');
@@ -2016,9 +2023,17 @@ def admin_logout():
 def admin_page():
     if not admin_required():
         return redirect(url_for("login"))
-    publishers = sorted(set(q["publisher"] for q in questions_data))
-    hidden = get_hidden_publishers()
-    return render_template_string(ADMIN_HTML, publishers=publishers, hidden_publishers=hidden)
+    subject = request.args.get("subject", "specialist")
+    cfg = get_subject_config(subject)
+    publishers = sorted(set(q["publisher"] for q in cfg["data"]()))
+    hidden = get_hidden_publishers(subject)
+    colors = {"specialist": ("#196061", "#042f3a", "#e6f2f2", "#1a7a7b"),
+              "methods":    ("#2563eb", "#1e3a5f", "#eff6ff", "#1d4ed8")}
+    cp, cpd, cpl, cph = colors.get(subject, colors["specialist"])
+    return render_template_string(ADMIN_HTML, publishers=publishers, hidden_publishers=hidden,
+                                  subject=subject, subject_name=cfg["name"],
+                                  css_primary=cp, css_primary_dark=cpd,
+                                  css_primary_light=cpl, css_primary_hover=cph)
 
 @app.route("/admin/upload", methods=["POST"])
 def admin_upload():
@@ -2079,16 +2094,20 @@ def api_flag():
 def toggle_publisher():
     if not admin_required():
         return jsonify(error="forbidden"), 403
-    publisher = request.get_json().get("publisher")
+    body = request.get_json()
+    publisher = body.get("publisher")
+    subject = body.get("subject", "specialist")
     settings = load_settings()
-    hidden = set(settings.get("hidden_publishers", []))
+    if subject not in settings:
+        settings[subject] = {"hidden_publishers": []}
+    hidden = set(settings[subject].get("hidden_publishers", []))
     if publisher in hidden:
         hidden.discard(publisher)
         is_hidden = False
     else:
         hidden.add(publisher)
         is_hidden = True
-    settings["hidden_publishers"] = list(hidden)
+    settings[subject]["hidden_publishers"] = list(hidden)
     save_settings(settings)
     return jsonify(ok=True, hidden=is_hidden)
 
