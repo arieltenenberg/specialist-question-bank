@@ -172,10 +172,10 @@ BROWSE_HTML = r"""<!DOCTYPE html>
   --text: #1a202c;
   --text-secondary: #4a5568;
   --muted: #718096;
-  --primary: #196061;
-  --primary-dark: #042f3a;
-  --primary-light: #e6f2f2;
-  --primary-hover: #1a7a7b;
+  --primary: {{ css_primary }};
+  --primary-dark: {{ css_primary_dark }};
+  --primary-light: {{ css_primary_light }};
+  --primary-hover: {{ css_primary_hover }};
   --accent-green: #38a169;
   --accent-green-light: #f0fff4;
   --shadow-sm: 0 1px 3px rgba(0,0,0,.06);
@@ -1107,7 +1107,9 @@ def browse_specialist():
     cfg = get_subject_config("specialist")
     return render_template_string(BROWSE_HTML, is_admin=admin_required(), user_name=user["name"] if user else "",
                                   subject="specialist", subject_name="Specialist Mathematics",
-                                  aos_map=cfg["aos_map"])
+                                  aos_map=cfg["aos_map"],
+                                  css_primary="#196061", css_primary_dark="#042f3a",
+                                  css_primary_light="#e6f2f2", css_primary_hover="#1a7a7b")
 
 @app.route("/methods")
 def browse_methods():
@@ -1117,7 +1119,9 @@ def browse_methods():
     cfg = get_subject_config("methods")
     return render_template_string(BROWSE_HTML, is_admin=admin_required(), user_name=user["name"] if user else "",
                                   subject="methods", subject_name="Mathematical Methods",
-                                  aos_map=cfg["aos_map"])
+                                  aos_map=cfg["aos_map"],
+                                  css_primary="#2563eb", css_primary_dark="#1e3a5f",
+                                  css_primary_light="#eff6ff", css_primary_hover="#1d4ed8")
 
 @app.route("/api/questions")
 def api_questions():
@@ -1261,54 +1265,42 @@ HOME_HTML = r"""<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #f5f7fa; --surface: #ffffff; --border: #e2e8f0; --text: #1a202c;
-  --text-secondary: #4a5568; --muted: #718096;
-  --primary: #196061; --primary-dark: #042f3a; --primary-light: #e6f2f2;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.06); --shadow-md: 0 4px 12px rgba(0,0,0,.08);
-  --radius: 12px;
-}
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+body { font-family:'Poppins',system-ui,sans-serif; background:#f0f0f0; color:#1a202c; min-height:100vh; }
 .topbar {
-  background:var(--primary-dark); padding:0 32px; display:flex; align-items:center;
+  background:#2d2d2d; padding:0 32px; display:flex; align-items:center;
   gap:20px; position:sticky; top:0; z-index:100; height:60px;
-  box-shadow:0 2px 8px rgba(0,0,0,.15);
 }
-.topbar h1 { font-size:1.15rem; font-weight:700; color:#fff; white-space:nowrap; letter-spacing:-.01em; }
+.topbar h1 { font-size:1.05rem; font-weight:600; color:#fff; letter-spacing:-.01em; }
 .spacer { flex:1; }
-.topbar .user-name { color:rgba(255,255,255,.7); font-size:.85rem; font-weight:500; }
+.topbar .user-name { color:rgba(255,255,255,.55); font-size:.82rem; }
 .signout-btn {
-  font-family:inherit; font-size:.8rem; font-weight:600; padding:6px 14px;
-  border-radius:8px; border:1px solid rgba(255,255,255,.25);
-  background:rgba(255,255,255,.1); color:#fff; cursor:pointer;
-  text-decoration:none; transition:background .15s; white-space:nowrap;
+  font-family:inherit; font-size:.78rem; font-weight:500; padding:5px 12px;
+  border-radius:6px; border:1px solid rgba(255,255,255,.2);
+  background:transparent; color:rgba(255,255,255,.7); cursor:pointer;
+  text-decoration:none; transition:all .15s; white-space:nowrap;
 }
-.signout-btn:hover { background:rgba(255,255,255,.22); }
+.signout-btn:hover { background:rgba(255,255,255,.1); color:#fff; }
 .main {
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   min-height:calc(100vh - 60px); padding:40px 24px;
 }
-.greeting { font-size:1.55rem; font-weight:700; margin-bottom:8px; text-align:center; color:var(--text); }
-.subtitle { font-size:.95rem; color:var(--muted); margin-bottom:48px; text-align:center; }
-.subject-grid { display:flex; gap:24px; flex-wrap:wrap; justify-content:center; }
+.label { font-size:.75rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:#999; margin-bottom:32px; }
+.subject-grid { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; }
 .subject-card {
-  background:var(--surface); border:1px solid var(--border); border-radius:16px;
-  padding:36px 40px; width:300px; text-align:center; cursor:pointer;
-  text-decoration:none; color:var(--text);
-  box-shadow:var(--shadow-sm); transition:box-shadow .2s, transform .2s, border-color .2s;
+  background:#fff; border:1px solid #e4e4e4; border-radius:14px;
+  padding:40px 44px; width:260px; text-align:center; cursor:pointer;
+  text-decoration:none; color:#1a202c;
+  box-shadow:0 1px 4px rgba(0,0,0,.06);
+  transition:box-shadow .2s, transform .2s, border-color .2s;
   display:block;
 }
-.subject-card:hover {
-  box-shadow:var(--shadow-md); transform:translateY(-3px);
-  border-color:var(--primary);
-}
-.subject-card .icon { font-size:2.4rem; margin-bottom:16px; }
-.subject-card h2 { font-size:1.1rem; font-weight:700; margin-bottom:8px; color:var(--primary-dark); }
-.subject-card p { font-size:.82rem; color:var(--muted); line-height:1.6; }
-@media (max-width:680px) {
-  .subject-card { width:100%; max-width:340px; }
-  .greeting { font-size:1.25rem; }
+.subject-card.specialist:hover { border-color:#196061; box-shadow:0 4px 20px rgba(25,96,97,.15); transform:translateY(-2px); }
+.subject-card.methods:hover { border-color:#2563eb; box-shadow:0 4px 20px rgba(37,99,235,.15); transform:translateY(-2px); }
+.subject-card .icon { font-size:2rem; margin-bottom:20px; color:#555; }
+.subject-card h2 { font-size:.95rem; font-weight:600; color:#1a202c; }
+@media (max-width:600px) {
+  .subject-card { width:100%; max-width:300px; }
 }
 </style>
 </head>
@@ -1320,18 +1312,15 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
   <a class="signout-btn" href="/logout">Sign out</a>
 </div>
 <div class="main">
-  <div class="greeting">Choose a subject</div>
-  <div class="subtitle">Select the subject you want to practise</div>
+  <div class="label">Select a subject to practice</div>
   <div class="subject-grid">
-    <a class="subject-card" href="/specialist">
+    <a class="subject-card specialist" href="/specialist">
       <div class="icon">&#x221E;</div>
       <h2>Specialist Mathematics</h2>
-      <p>Units 3 &amp; 4 — Logic, Complex Numbers, Calculus, Vectors, Statistics and more</p>
     </a>
-    <a class="subject-card" href="/methods">
+    <a class="subject-card methods" href="/methods">
       <div class="icon">&#x222B;</div>
       <h2>Mathematical Methods</h2>
-      <p>Units 3 &amp; 4 — Functions, Algebra, Calculus and Probability &amp; Statistics</p>
     </a>
   </div>
 </div>
