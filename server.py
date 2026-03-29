@@ -1374,6 +1374,7 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
       </div>
       <div class="actions">
         <button class="btn btn-approve" onclick="act('{{ u['google_id'] }}','approve')">Re-approve</button>
+        <button class="btn btn-reject" onclick="act('{{ u['google_id'] }}','delete')">Remove</button>
       </div>
     </div>
     {% endfor %}
@@ -1940,6 +1941,15 @@ def admin_reject_user(google_id):
         return jsonify(error="forbidden"), 403
     with get_db() as conn:
         conn.execute("UPDATE users SET status='rejected' WHERE google_id=?", (google_id,))
+        conn.commit()
+    return jsonify(ok=True)
+
+@app.route("/admin/users/<google_id>/delete", methods=["POST"])
+def admin_delete_user(google_id):
+    if not admin_required():
+        return jsonify(error="forbidden"), 403
+    with get_db() as conn:
+        conn.execute("DELETE FROM users WHERE google_id=?", (google_id,))
         conn.commit()
     return jsonify(ok=True)
 
