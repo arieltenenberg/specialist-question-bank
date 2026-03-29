@@ -1,18 +1,49 @@
-# Specialist Question Bank — Project Standards
+# VCE Mathematics Question Bank — Project Standards
 
 ## Project Overview
-A web-based question bank for VCE Specialist Mathematics (Units 3 & 4).
+A web-based question bank for VCE Mathematics (Units 3 & 4), currently covering two subjects:
+- **Specialist Mathematics** — at `/specialist`
+- **Mathematical Methods** — at `/methods` (questions to be added)
+
 Students browse, filter, and practise questions sourced from multiple trial exam publishers.
-Questions are classified into the 6 VCE Areas of Study (AOS).
+Questions are classified into Areas of Study (AOS) per subject.
 
 ## Tech Stack
 - **Backend:** Python / Flask (`server.py`), port 8080
-- **Data:** `questions.json` (classified), `raw_questions.json` (with extracted text)
+- **Data:** `questions.json` (Specialist), `methods_questions.json` (Methods, starts empty)
 - **Images:** `question_images/` — PNG crops of each question and solution
 - **Pipeline:** `pipeline/` — docx → PDF → image crops → classification
 - Start server: `python3 server.py` from project root
 
-## Areas of Study (AOS)
+## Multi-Subject Architecture
+
+### Routes
+| Route | Purpose |
+|-------|---------|
+| `/` | Subject selector landing page (requires login) |
+| `/specialist` | Specialist Mathematics browse page |
+| `/methods` | Mathematical Methods browse page |
+| `/admin?subject=specialist\|methods` | Subject-specific admin (publishers, flags, uploads) |
+| `/admin/users` | User approval — shared, linked from landing page only |
+| `/classify?subject=specialist\|methods` | Admin classification tool |
+| `/api/questions?subject=specialist\|methods` | Questions API |
+| `/api/classify` | Classify a question (subject in POST body) |
+| `/api/flag` | Flag a question (subject in POST body) |
+
+### Data & Config
+- `questions.json` — Specialist questions (do not add a `subject` field; separate files per subject)
+- `methods_questions.json` — Methods questions
+- `settings.json` — Per-subject publisher visibility: `{"specialist": {"hidden_publishers": []}, "methods": {"hidden_publishers": []}}`
+- `get_subject_config(subject)` helper returns data, file path, AOS map, and subject name
+- Colour themes: Specialist = teal (`#196061`, `#042f3a`), Methods = blue (`#2563eb`, `#1e3a5f`)
+
+### Workflow for Adding a New Subject's Exams
+1. Create an empty `<subject>_questions.json`
+2. Add subject config to `SUBJECT_CONFIG` dict in `server.py`
+3. Run pipeline to extract and classify questions into that file
+4. Add subject card to `HOME_HTML`
+
+## Specialist Mathematics — Areas of Study (AOS)
 | # | Name |
 |---|------|
 | 1 | Logic and Proof |
@@ -21,11 +52,24 @@ Questions are classified into the 6 VCE Areas of Study (AOS).
 | 4 | Calculus |
 | 5 | Vectors, Lines and Planes |
 | 6 | Probability and Statistics |
+| 7 | Pseudocode |
 | 0 | Unsorted (flagged for manual review) |
 
-## Publishers in the Dataset
+## Mathematical Methods — Areas of Study (AOS)
+| # | Name |
+|---|------|
+| 1 | Functions and Graphs |
+| 2 | Algebra |
+| 3 | Calculus |
+| 4 | Probability and Statistics |
+| 0 | Unsorted (flagged for manual review) |
+
+## Specialist Publishers in the Dataset
 Heffernan, Insight, Kilbaha, MAV, NEAP, QATs-Janison, Sequoia, TSSM
 Years: 2023, 2024, 2025
+
+## Methods Publishers in the Dataset
+To be added — awaiting first exam import.
 
 ## Classification Approach
 - Text is extracted from PDFs using PyMuPDF (text layer, not OCR)
@@ -58,14 +102,18 @@ Years: 2023, 2024, 2025
 ### Classification Workflow
 - Do one publisher/year set at a time
 - Analyse corrections after each batch before moving to the next
-- Never re-run the classifier on all 747 questions until enough manual data has been collected
+- Never re-run the classifier on all questions until enough manual data has been collected
 - Mark genuinely ambiguous questions as Unsorted (red) — don't force a category
+- Methods classifier rules to be defined before first exam import — user will provide sorting instructions
 
 ### UI/UX Standards
-- Dark/light theme toggle in top-right of navbar (preference saved to localStorage)
 - Educator perspective: solutions hidden by default, student must reveal
 - Keep the interface clean and low cognitive load
 - Unsorted questions displayed in red throughout the UI
+- Landing page: neutral grey (`#f0f0f0`), dark charcoal topbar (`#2d2d2d`)
+- Subject pages use their own colour theme (teal/blue) — passed as Jinja2 CSS variables
+- Users page matches the landing page colour scheme (not subject-specific)
+- Users tab only accessible from the landing page (not in subject or admin navbars)
 
 ### Server
 - Restart required after changes to `server.py`
