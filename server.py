@@ -1915,15 +1915,18 @@ function loadFlags() {
 
 function dismissFlag(id) {
   const el = document.getElementById('flag-item-' + id);
-  if (el) el.remove();
+  if (el) { el.style.opacity = '0.3'; el.style.pointerEvents = 'none'; }
   fetch('/api/admin/flags/' + id, { method: 'DELETE' })
     .then(r => r.json()).then(data => {
       if (data.ok) {
+        if (el) el.remove();
+        const remaining = document.querySelectorAll('#flags-list .flag-item').length;
         const badge = document.getElementById('flags-badge');
-        const remaining = document.querySelectorAll('.flag-item').length;
         badge.textContent = remaining;
         badge.className = 'flags-count-badge' + (remaining ? '' : ' zero');
         if (!remaining) document.getElementById('flags-list').innerHTML = '<div class="empty">No flagged questions</div>';
+      } else {
+        if (el) { el.style.opacity = ''; el.style.pointerEvents = ''; }
       }
     });
 }
