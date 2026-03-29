@@ -12,6 +12,7 @@ UPLOAD_DIR = os.path.join(BASE, "uploads")
 ADMIN_UPLOAD_DIR = os.path.join(BASE, "admin_uploads")
 QIMG_DIR = os.path.join(BASE, "question_images")
 QUESTIONS_JSON = os.path.join(BASE, "questions.json")
+METHODS_QUESTIONS_JSON = os.path.join(BASE, "methods_questions.json")
 FLAGS_JSON = os.path.join(BASE, "flags.json")
 SETTINGS_JSON = os.path.join(BASE, "settings.json")
 
@@ -119,10 +120,37 @@ if os.path.exists(QUESTIONS_JSON):
     with open(QUESTIONS_JSON) as f:
         questions_data = json.load(f)
 
+methods_data = []
+if os.path.exists(METHODS_QUESTIONS_JSON):
+    with open(METHODS_QUESTIONS_JSON) as f:
+        methods_data = json.load(f)
+
 flags_data = []
 if os.path.exists(FLAGS_JSON):
     with open(FLAGS_JSON) as f:
         flags_data = json.load(f)
+
+# AOS maps per subject
+SPECIALIST_AOS = {0: "Unsorted", 1: "Logic and Proof", 2: "Functions, Relations and Graphs", 3: "Complex Numbers", 4: "Calculus", 5: "Vectors, Lines and Planes", 6: "Probability and Statistics", 7: "Pseudocode"}
+METHODS_AOS = {0: "Unsorted", 1: "Functions and Graphs", 2: "Algebra", 3: "Calculus", 4: "Probability and Statistics"}
+
+SUBJECT_CONFIG = {
+    "specialist": {
+        "name": "Specialist Mathematics",
+        "data": lambda: questions_data,
+        "file": QUESTIONS_JSON,
+        "aos_map": SPECIALIST_AOS,
+    },
+    "methods": {
+        "name": "Mathematical Methods",
+        "data": lambda: methods_data,
+        "file": METHODS_QUESTIONS_JSON,
+        "aos_map": METHODS_AOS,
+    },
+}
+
+def get_subject_config(subject):
+    return SUBJECT_CONFIG.get(subject, SUBJECT_CONFIG["specialist"])
 
 # ---------------------------------------------------------------------------
 # Browse page HTML — Light theme inspired by maica.com.au
@@ -133,7 +161,7 @@ BROWSE_HTML = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Specialist Maths Question Bank</title>
+<title>{{ subject_name }} Question Bank</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -492,9 +520,10 @@ a { color:var(--primary); text-decoration:none; }
 <body>
 
 <div class="topbar">
-  <h1>Specialist Maths Question Bank</h1>
+  <h1>{{ subject_name }} Question Bank</h1>
   <div class="tabs">
-    <a class="tab active" href="/">Questions</a>
+    <a class="tab" href="/">← Subjects</a>
+    <a class="tab active" href="/{{ subject }}">Questions</a>
     {% if is_admin %}<a class="tab" href="/admin">Admin</a>{% endif %}
     {% if is_admin %}<a class="tab" href="/admin/users">Users</a>{% endif %}
   </div>
@@ -505,7 +534,7 @@ a { color:var(--primary); text-decoration:none; }
 <div class="layout">
   <div class="sidebar" id="sidebar">
     {% if is_admin %}
-    <a class="sort-unsorted-btn" id="sort-unsorted-btn" href="/classify?unsorted=1">Sort Unsorted (<span id="unsorted-count">…</span>)</a>
+    <a class="sort-unsorted-btn" id="sort-unsorted-btn" href="/classify?subject={{ subject }}&unsorted=1">Sort Unsorted (<span id="unsorted-count">…</span>)</a>
     {% endif %}
     <h3>Area of Study</h3>
     <div class="filter-group" id="fg-aos"></div>
@@ -540,7 +569,7 @@ let filters = { aos: null, year: null, publisher: null, exam_type: null, section
 
 const sectionLabels = { short_answer: 'Short Answer', multiple_choice: 'Multiple Choice', extended_response: 'Extended Response' };
 
-fetch('/api/questions').then(r => r.json()).then(data => {
+fetch('/api/questions?subject={{ subject }}').then(r => r.json()).then(data => {
   allQ = IS_ADMIN ? data : data.filter(q => q.aos !== 0);
   if (IS_ADMIN) {
     const el = document.getElementById('unsorted-count');
@@ -667,12 +696,7 @@ function renderCards() {
       <div class="admin-bar" onclick="event.stopPropagation()">
         <select class="admin-reclassify" onchange="adminReclassify('${q.id}', this)">
           <option value="">Reclassify…</option>
-          <option value="1|Logic and Proof">1 — Logic and Proof</option>
-          <option value="2|Functions, Relations and Graphs">2 — Functions, Relations and Graphs</option>
-          <option value="3|Complex Numbers">3 — Complex Numbers</option>
-          <option value="4|Calculus">4 — Calculus</option>
-          <option value="5|Vectors, Lines and Planes">5 — Vectors, Lines and Planes</option>
-          <option value="6|Probability and Statistics">6 — Probability and Statistics</option>
+          {% for num, name in aos_map.items() %}{% if num != 0 %}<option value="{{ num }}|{{ name }}">{{ num }} — {{ name }}</option>{% endif %}{% endfor %}
           <option value="0|Unsorted">Unsorted</option>
         </select>
         <button class="admin-delete-btn" onclick="adminDelete('${q.id}', this)" title="Delete question">&#128465;</button>
@@ -732,7 +756,7 @@ function adminReclassify(id, sel) {
   fetch('/api/classify', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id, aos: Number(aos), aos_name: aosName })
+    body: JSON.stringify({ id, aos: Number(aos), aos_name: aosName, subject: '{{ subject }}' })
   }).then(r => r.json()).then(data => {
     if (data.ok) {
       const q = allQ.find(q => q.id === id);
@@ -768,7 +792,7 @@ function submitFlag(id, btn) {
   fetch('/api/flag', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ question_id: id })
+    body: JSON.stringify({ question_id: id, subject: '{{ subject }}' })
   }).then(r => r.json()).then(data => {
     if (data.ok) {
       btn.textContent = '⚑ Flagged';
@@ -960,20 +984,20 @@ body { font-family:'Poppins',system-ui,sans-serif; background:#0f1117; color:#e2
 </head>
 <body>
 <div class="topbar">
-  <a class="back" href="/">← Back</a>
+  <a class="back" href="/{{ subject }}">← Back</a>
   <h1>{% if flagged_mode %}Flagged Questions ({{ questions|length }}){% elif unsorted_mode %}Unsorted Questions ({{ questions|length }}){% else %}Classifying: {{ publisher }} {{ year }}{% endif %}</h1>
   <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
   <span class="progress-label" id="progress-label">0 / {{ questions|length }}</span>
 </div>
 <div class="exam-nav">
   <a class="exam-nav-btn flagged-tab {% if flagged_mode %}current{% endif %}"
-     href="/classify?flagged=1">⚑ Flagged ({{ flagged_count }})</a>
+     href="/classify?subject={{ subject }}&flagged=1">⚑ Flagged ({{ flagged_count }})</a>
   <a class="exam-nav-btn unsorted-tab {% if unsorted_mode %}current{% endif %}"
-     href="/classify?unsorted=1">Unsorted ({{ unsorted_count }})</a>
+     href="/classify?subject={{ subject }}&unsorted=1">Unsorted ({{ unsorted_count }})</a>
   <span class="exam-nav-label" style="margin-left:8px;">Exam set:</span>
   {% for pub, yr in exam_sets %}
   <a class="exam-nav-btn {% if not unsorted_mode and pub == publisher and yr == year %}current{% endif %}"
-     href="/classify?publisher={{ pub }}&year={{ yr }}">{{ pub }} {{ yr }}</a>
+     href="/classify?subject={{ subject }}&publisher={{ pub }}&year={{ yr }}">{{ pub }} {{ yr }}</a>
   {% endfor %}
 </div>
 
@@ -996,20 +1020,13 @@ body { font-family:'Poppins',system-ui,sans-serif; background:#0f1117; color:#e2
   </div>
   {% endif %}
   <div class="aos-buttons">
-    {% set options = [
-      (1, 'Logic and Proof'),
-      (2, 'Functions, Relations and Graphs'),
-      (3, 'Complex Numbers'),
-      (4, 'Calculus'),
-      (5, 'Vectors, Lines and Planes'),
-      (6, 'Probability and Statistics'),
-      (7, 'Pseudocode')
-    ] %}
-    {% for num, name in options %}
-    <button class="aos-btn {% if q.aos == num %}active{% endif %} {% if num == 7 %}pseudocode{% endif %}"
+    {% for num, name in aos_map.items() %}
+    {% if num != 0 %}
+    <button class="aos-btn {% if q.aos == num %}active{% endif %}"
             onclick="classify('{{ q.id }}', {{ num }}, '{{ name }}', this)">
       {{ name }}
     </button>
+    {% endif %}
     {% endfor %}
     <button class="aos-btn unsorted {% if q.aos == 0 %}active{% endif %}"
             onclick="classify('{{ q.id }}', 0, 'Unsorted', this)">
@@ -1049,7 +1066,7 @@ function classify(id, aos, aosName, btn) {
   fetch('/api/classify', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id, aos, aos_name: aosName })
+    body: JSON.stringify({ id, aos, aos_name: aosName, subject: '{{ subject }}' })
   }).then(r => r.json()).then(data => {
     if (data.ok) {
       btn.classList.remove('active-new');
@@ -1080,18 +1097,41 @@ def index():
     r = check_approved()
     if r: return r
     user = current_user()
-    return render_template_string(BROWSE_HTML, is_admin=admin_required(), user_name=user["name"] if user else "")
+    return render_template_string(HOME_HTML, user_name=user["name"] if user else "")
+
+@app.route("/specialist")
+def browse_specialist():
+    r = check_approved()
+    if r: return r
+    user = current_user()
+    cfg = get_subject_config("specialist")
+    return render_template_string(BROWSE_HTML, is_admin=admin_required(), user_name=user["name"] if user else "",
+                                  subject="specialist", subject_name="Specialist Mathematics",
+                                  aos_map=cfg["aos_map"])
+
+@app.route("/methods")
+def browse_methods():
+    r = check_approved()
+    if r: return r
+    user = current_user()
+    cfg = get_subject_config("methods")
+    return render_template_string(BROWSE_HTML, is_admin=admin_required(), user_name=user["name"] if user else "",
+                                  subject="methods", subject_name="Mathematical Methods",
+                                  aos_map=cfg["aos_map"])
 
 @app.route("/api/questions")
 def api_questions():
     if check_approved():
         return jsonify(error="unauthorized"), 401
+    subject = request.args.get("subject", "specialist")
+    cfg = get_subject_config(subject)
+    data = cfg["data"]()
     if admin_required():
-        return jsonify(questions_data)
+        return jsonify(data)
     hidden = get_hidden_publishers()
     if not hidden:
-        return jsonify(questions_data)
-    return jsonify([q for q in questions_data if q["publisher"] not in hidden])
+        return jsonify(data)
+    return jsonify([q for q in data if q["publisher"] not in hidden])
 
 @app.route("/api/classify", methods=["POST"])
 def api_classify():
@@ -1101,46 +1141,54 @@ def api_classify():
     qid = data.get("id")
     aos = data.get("aos")
     aos_name = data.get("aos_name")
+    subject = data.get("subject", "specialist")
     if not qid or aos is None:
         return jsonify(error="missing fields"), 400
-    for q in questions_data:
+    cfg = get_subject_config(subject)
+    subject_data = cfg["data"]()
+    for q in subject_data:
         if q["id"] == qid:
             q["aos"] = aos
             q["aos_name"] = aos_name
             break
     else:
         return jsonify(error="question not found"), 404
-    with open(QUESTIONS_JSON, "w") as f:
-        json.dump(questions_data, f, indent=2)
+    with open(cfg["file"], "w") as f:
+        json.dump(subject_data, f, indent=2)
     return jsonify(ok=True)
 
 @app.route("/classify")
 def classify_page():
     if not admin_required():
         return redirect(url_for("admin_login") + "?next=/classify")
+    subject = request.args.get("subject", "specialist")
+    cfg = get_subject_config(subject)
+    subject_data = cfg["data"]()
+    aos_map = cfg["aos_map"]
+
     unsorted_mode = request.args.get("unsorted") == "1"
     flagged_mode = request.args.get("flagged") == "1"
-    publisher = request.args.get("publisher", "Heffernan")
-    year = int(request.args.get("year", 2025))
+    publisher = request.args.get("publisher", subject_data[0]["publisher"] if subject_data else "")
+    year = int(request.args.get("year", subject_data[0]["year"] if subject_data else 2025))
 
     if flagged_mode:
         flagged_ids = {f["question_id"] for f in flags_data}
-        questions = [q for q in questions_data if q["id"] in flagged_ids]
+        questions = [q for q in subject_data if q["id"] in flagged_ids]
     elif unsorted_mode:
-        questions = [q for q in questions_data if q["aos"] == 0]
+        questions = [q for q in subject_data if q["aos"] == 0]
     else:
-        questions = [q for q in questions_data if q["publisher"] == publisher and q["year"] == year]
+        questions = [q for q in subject_data if q["publisher"] == publisher and q["year"] == year]
 
     seen = set()
     exam_sets = []
-    for q in questions_data:
+    for q in subject_data:
         key = (q["publisher"], q["year"])
         if key not in seen:
             seen.add(key)
             exam_sets.append(key)
     exam_sets.sort(key=lambda x: (x[0], x[1]))
 
-    unsorted_count = sum(1 for q in questions_data if q["aos"] == 0)
+    unsorted_count = sum(1 for q in subject_data if q["aos"] == 0)
     flagged_count = len({f["question_id"] for f in flags_data})
 
     flags_by_qid = {}
@@ -1149,7 +1197,8 @@ def classify_page():
 
     return render_template_string(CLASSIFY_HTML, questions=questions, publisher=publisher, year=year,
                                   exam_sets=exam_sets, unsorted_mode=unsorted_mode, unsorted_count=unsorted_count,
-                                  flagged_mode=flagged_mode, flagged_count=flagged_count, flags_by_qid=flags_by_qid)
+                                  flagged_mode=flagged_mode, flagged_count=flagged_count, flags_by_qid=flags_by_qid,
+                                  subject=subject, aos_map=aos_map)
 
 @app.route("/qimg/<path:filename>")
 def serve_qimg(filename):
@@ -1203,12 +1252,98 @@ def list_files():
 # Admin page — Light theme
 # ---------------------------------------------------------------------------
 
+HOME_HTML = r"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VCE Maths Question Bank</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f7fa; --surface: #ffffff; --border: #e2e8f0; --text: #1a202c;
+  --text-secondary: #4a5568; --muted: #718096;
+  --primary: #196061; --primary-dark: #042f3a; --primary-light: #e6f2f2;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.06); --shadow-md: 0 4px 12px rgba(0,0,0,.08);
+  --radius: 12px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+.topbar {
+  background:var(--primary-dark); padding:0 32px; display:flex; align-items:center;
+  gap:20px; position:sticky; top:0; z-index:100; height:60px;
+  box-shadow:0 2px 8px rgba(0,0,0,.15);
+}
+.topbar h1 { font-size:1.15rem; font-weight:700; color:#fff; white-space:nowrap; letter-spacing:-.01em; }
+.spacer { flex:1; }
+.topbar .user-name { color:rgba(255,255,255,.7); font-size:.85rem; font-weight:500; }
+.signout-btn {
+  font-family:inherit; font-size:.8rem; font-weight:600; padding:6px 14px;
+  border-radius:8px; border:1px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.1); color:#fff; cursor:pointer;
+  text-decoration:none; transition:background .15s; white-space:nowrap;
+}
+.signout-btn:hover { background:rgba(255,255,255,.22); }
+.main {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  min-height:calc(100vh - 60px); padding:40px 24px;
+}
+.greeting { font-size:1.55rem; font-weight:700; margin-bottom:8px; text-align:center; color:var(--text); }
+.subtitle { font-size:.95rem; color:var(--muted); margin-bottom:48px; text-align:center; }
+.subject-grid { display:flex; gap:24px; flex-wrap:wrap; justify-content:center; }
+.subject-card {
+  background:var(--surface); border:1px solid var(--border); border-radius:16px;
+  padding:36px 40px; width:300px; text-align:center; cursor:pointer;
+  text-decoration:none; color:var(--text);
+  box-shadow:var(--shadow-sm); transition:box-shadow .2s, transform .2s, border-color .2s;
+  display:block;
+}
+.subject-card:hover {
+  box-shadow:var(--shadow-md); transform:translateY(-3px);
+  border-color:var(--primary);
+}
+.subject-card .icon { font-size:2.4rem; margin-bottom:16px; }
+.subject-card h2 { font-size:1.1rem; font-weight:700; margin-bottom:8px; color:var(--primary-dark); }
+.subject-card p { font-size:.82rem; color:var(--muted); line-height:1.6; }
+@media (max-width:680px) {
+  .subject-card { width:100%; max-width:340px; }
+  .greeting { font-size:1.25rem; }
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <h1>VCE Maths Question Bank</h1>
+  <div class="spacer"></div>
+  <span class="user-name">{{ user_name }}</span>
+  <a class="signout-btn" href="/logout">Sign out</a>
+</div>
+<div class="main">
+  <div class="greeting">Choose a subject</div>
+  <div class="subtitle">Select the subject you want to practise</div>
+  <div class="subject-grid">
+    <a class="subject-card" href="/specialist">
+      <div class="icon">&#x221E;</div>
+      <h2>Specialist Mathematics</h2>
+      <p>Units 3 &amp; 4 — Logic, Complex Numbers, Calculus, Vectors, Statistics and more</p>
+    </a>
+    <a class="subject-card" href="/methods">
+      <div class="icon">&#x222B;</div>
+      <h2>Mathematical Methods</h2>
+      <p>Units 3 &amp; 4 — Functions, Algebra, Calculus and Probability &amp; Statistics</p>
+    </a>
+  </div>
+</div>
+</body>
+</html>"""
+
 LOGIN_HTML = """<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Sign In — Specialist Maths Question Bank</title>
+<title>Sign In — VCE Maths Question Bank</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -1927,7 +2062,9 @@ def admin_delete_file(filename):
 def api_flag():
     data = request.get_json()
     qid = data.get("question_id")
-    q = next((q for q in questions_data if q["id"] == qid), None)
+    subject = data.get("subject", "specialist")
+    cfg = get_subject_config(subject)
+    q = next((q for q in cfg["data"]() if q["id"] == qid), None)
     if not q:
         return jsonify(error="question not found"), 404
     flag = {
