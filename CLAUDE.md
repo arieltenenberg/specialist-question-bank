@@ -93,6 +93,7 @@ To be added — awaiting first exam import.
 - Don't build features the user hasn't asked for
 - Don't add comments, docstrings, or error handling beyond what's needed
 - Keep responses concise and direct
+- **At the end of every session, update this file** with any relevant changes to architecture, routes, data files, AOS maps, publishers, UI standards, or workflow. Commit the updated CLAUDE.md to the repo.
 
 ### Decision Making
 - When unsure about scope or approach, ask before acting
