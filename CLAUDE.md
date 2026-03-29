@@ -133,15 +133,16 @@ To be added — awaiting first exam import.
 | **Instance** | Specialist Question Bank (i-027bc033117bae0c5) |
 | **Instance type** | t3.small |
 | **Public IP** | 3.27.217.188 |
-| **Live URL** | http://3.27.217.188 |
+| **Live URL** | https://ariel.tenenberg.com |
 | **OS** | Ubuntu 22.04 |
 | **Key pair** | specialistquestionbankkey |
 
 ## Stack
 
 - **Backend:** Python / Flask (`server.py`)
-- **Server:** Gunicorn (2 workers)
+- **Server:** Gunicorn (2 workers) behind Nginx reverse proxy
 - **Process manager:** systemd (`webapp.service`)
+- **HTTPS:** Let's Encrypt / Certbot
 - **Repo on server:** `~/newapp`
 
 ## Deployment Workflow
@@ -175,7 +176,7 @@ sudo systemctl status webapp
 You should see `Active: active (running)` in green.
 
 ### 6. Check the live site
-Open http://3.27.217.188 in any browser.
+Open https://ariel.tenenberg.com in any browser.
 
 ---
 
@@ -187,11 +188,14 @@ Open http://3.27.217.188 in any browser.
 | Stop app | `sudo systemctl stop webapp` |
 | Start app | `sudo systemctl start webapp` |
 | View logs | `sudo journalctl -u webapp -f` |
+| View Nginx logs | `sudo tail -f /var/log/nginx/access.log` |
+| Reload Nginx | `sudo systemctl reload nginx` |
 | Pull latest code | `cd ~/newapp && git pull origin master` |
+
+### Nginx config note
+Nginx proxies HTTPS traffic to Gunicorn. `client_max_body_size 500m` is set in the `http {}` block of `/etc/nginx/nginx.conf` to allow large exam file uploads.
 
 ---
 
 ## Future Improvements
-- [ ] Add a custom domain
-- [ ] Set up HTTPS with Let's Encrypt (Certbot)
-- [ ] Set up Nginx as a reverse proxy (to serve on port 80)
+- [ ] Set up automated SSL renewal check (Certbot should handle this automatically)
