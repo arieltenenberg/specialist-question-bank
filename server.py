@@ -1260,7 +1260,10 @@ def upload():
     dest_dir = os.path.join(UPLOAD_DIR, subject)
     os.makedirs(dest_dir, exist_ok=True)
     filename = os.path.basename(f.filename)
-    f.save(os.path.join(dest_dir, filename))
+    try:
+        f.save(os.path.join(dest_dir, filename))
+    except Exception as e:
+        return jsonify(error=str(e)), 500
     return jsonify(ok=True, filename=filename)
 
 @app.route("/files")
@@ -1866,8 +1869,14 @@ function uploadFile(file, url, container) {
       if (url === '/admin/upload') loadRefFiles();
     } else {
       row.classList.add('error');
-      st.textContent = 'Failed';
+      let msg = 'Failed (' + xhr.status + ')';
+      try { msg += ': ' + (JSON.parse(xhr.responseText).error || xhr.responseText); } catch(e) {}
+      st.textContent = msg;
     }
+  };
+  xhr.onerror = () => {
+    row.classList.add('error');
+    st.textContent = 'Network error (connection refused or reset)';
   };
   xhr.send(fd);
 }
@@ -2066,7 +2075,10 @@ def admin_upload():
     if not f.filename:
         return jsonify(error="empty filename"), 400
     filename = os.path.basename(f.filename)
-    f.save(os.path.join(ADMIN_UPLOAD_DIR, filename))
+    try:
+        f.save(os.path.join(ADMIN_UPLOAD_DIR, filename))
+    except Exception as e:
+        return jsonify(error=str(e)), 500
     return jsonify(ok=True, filename=filename)
 
 @app.route("/admin/files")
