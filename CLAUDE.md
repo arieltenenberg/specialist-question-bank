@@ -71,3 +71,78 @@ Years: 2023, 2024, 2025
 - Restart required after changes to `server.py`
 - Kill existing process: `kill $(lsof -ti:8080)`
 - Verify after restart: `curl -s -o /dev/null -w "%{http_code}" http://localhost:8080`
+
+---
+
+# Specialist Question Bank — Project Notes
+
+## Server Details
+
+| Detail | Value |
+|--------|-------|
+| **Provider** | AWS EC2 (ap-southeast-2 / Sydney) |
+| **Instance** | Specialist Question Bank (i-027bc033117bae0c5) |
+| **Instance type** | t3.small |
+| **Public IP** | 3.27.217.188 |
+| **Live URL** | http://3.27.217.188 |
+| **OS** | Ubuntu 22.04 |
+| **Key pair** | specialistquestionbankkey |
+
+## Stack
+
+- **Backend:** Python / Flask (`server.py`)
+- **Server:** Gunicorn (2 workers)
+- **Process manager:** systemd (`webapp.service`)
+- **Repo on server:** `~/newapp`
+
+## Deployment Workflow
+
+Every time you make changes to the app:
+
+### 1. Work locally in VS Code as normal
+
+### 2. Push changes to GitHub
+```bash
+git add .
+git commit -m "describe your changes"
+git push
+```
+
+### 3. Connect to the server
+- Go to: https://ap-southeast-2.console.aws.amazon.com/ec2/home?region=ap-southeast-2#Instances:
+- Click on **Specialist Question Bank**
+- Click **Connect** → **EC2 Instance Connect** → **Connect**
+
+### 4. Pull changes and restart the app
+```bash
+cd ~/newapp && git pull origin master
+sudo systemctl restart webapp
+```
+
+### 5. Verify it's running
+```bash
+sudo systemctl status webapp
+```
+You should see `Active: active (running)` in green.
+
+### 6. Check the live site
+Open http://3.27.217.188 in any browser.
+
+---
+
+## Useful Commands
+
+| Task | Command |
+|------|---------|
+| Restart app | `sudo systemctl restart webapp` |
+| Stop app | `sudo systemctl stop webapp` |
+| Start app | `sudo systemctl start webapp` |
+| View logs | `sudo journalctl -u webapp -f` |
+| Pull latest code | `cd ~/newapp && git pull origin master` |
+
+---
+
+## Future Improvements
+- [ ] Add a custom domain
+- [ ] Set up HTTPS with Let's Encrypt (Certbot)
+- [ ] Set up Nginx as a reverse proxy (to serve on port 80)

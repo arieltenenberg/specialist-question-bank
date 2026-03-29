@@ -1,5 +1,7 @@
 import os
 import json
+import uuid
+import datetime
 from flask import Flask, request, jsonify, send_from_directory, render_template_string, session, redirect, url_for
 
 BASE = os.path.dirname(__file__)
@@ -7,6 +9,7 @@ UPLOAD_DIR = os.path.join(BASE, "uploads")
 ADMIN_UPLOAD_DIR = os.path.join(BASE, "admin_uploads")
 QIMG_DIR = os.path.join(BASE, "question_images")
 QUESTIONS_JSON = os.path.join(BASE, "questions.json")
+FLAGS_JSON = os.path.join(BASE, "flags.json")
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(ADMIN_UPLOAD_DIR, exist_ok=True)
@@ -22,6 +25,11 @@ questions_data = []
 if os.path.exists(QUESTIONS_JSON):
     with open(QUESTIONS_JSON) as f:
         questions_data = json.load(f)
+
+flags_data = []
+if os.path.exists(FLAGS_JSON):
+    with open(FLAGS_JSON) as f:
+        flags_data = json.load(f)
 
 # ---------------------------------------------------------------------------
 # Browse page HTML — Light theme inspired by maica.com.au
@@ -164,7 +172,7 @@ a { color:var(--primary); text-decoration:none; }
 .filter-btn .badge { font-size:.75rem; color:var(--muted); min-width:24px; text-align:right; }
 
 /* ----- Main ----- */
-.main { flex:1; padding:28px 32px; max-width:1100px; }
+.main { flex:1; padding:28px 32px; }
 .main .toolbar { display:flex; gap:12px; align-items:center; margin-bottom:20px; flex-wrap:wrap; }
 .main .toolbar .active-filters { display:flex; gap:6px; flex-wrap:wrap; }
 .chip {
@@ -370,6 +378,22 @@ a { color:var(--primary); text-decoration:none; }
   transition:background .15s;
 }
 .admin-delete-btn:hover { background:#fff0f0; }
+
+/* ----- Flag controls ----- */
+.flag-btn {
+  font-family:inherit;
+  font-size:.78rem;
+  color:var(--muted);
+  background:none;
+  border:1px solid var(--border);
+  padding:5px 12px;
+  border-radius:6px;
+  cursor:pointer;
+  transition:all .15s;
+  align-self:flex-start;
+}
+.flag-btn:hover { border-color:#dd6b20; color:#dd6b20; }
+.flag-btn.flagged { border-color:#dd6b20; color:#dd6b20; background:#fff8f0; cursor:default; }
 </style>
 </head>
 <body>
@@ -563,6 +587,9 @@ function renderCards() {
         <button class="admin-delete-btn" onclick="adminDelete('${q.id}', this)" title="Delete question">&#128465;</button>
       </div>` : '';
 
+    const flagControls = !IS_ADMIN ? `
+      <button class="flag-btn" id="flag-btn-${q.id}" onclick="submitFlag('${q.id}', this)">⚑ Flag as misclassified</button>` : '';
+
     return `<div class="qcard" id="qcard-${q.id}" onclick="this.classList.toggle('open')">
       <div class="qcard-header">
         <span class="qnum">Q${q.question_number}</span>
@@ -575,6 +602,7 @@ function renderCards() {
         ${solBtn}
         <div class="sol-hidden">${solInner}</div>
         ${adminControls}
+        ${flagControls}
       </div>
     </div>`;
   }).join('');
@@ -645,6 +673,20 @@ function goPage(p) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function submitFlag(id, btn) {
+  fetch('/api/flag', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question_id: id })
+  }).then(r => r.json()).then(data => {
+    if (data.ok) {
+      btn.textContent = '⚑ Flagged';
+      btn.classList.add('flagged');
+      btn.onclick = null;
+    }
+  });
+}
+
 </script>
 </body>
 </html>"""
@@ -659,7 +701,7 @@ CLASSIFY_HTML = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>{% if unsorted_mode %}Classify — Unsorted{% else %}Classify — {{ publisher }} {{ year }}{% endif %}</title>
+<title>{% if flagged_mode %}Classify — Flagged{% elif unsorted_mode %}Classify — Unsorted{% else %}Classify — {{ publisher }} {{ year }}{% endif %}</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -798,6 +840,19 @@ body { font-family:'Poppins',system-ui,sans-serif; background:#0f1117; color:#e2
 .exam-nav-btn.unsorted-tab { border-color:#4a1a1a; color:#fc8181; }
 .exam-nav-btn.unsorted-tab:hover { border-color:#fc8181; background:#2a1a1a; color:#fc8181; }
 .exam-nav-btn.unsorted-tab.current { background:#2a1a1a; border-color:#fc8181; color:#fc8181; }
+.exam-nav-btn.flagged-tab { border-color:#744210; color:#dd6b20; }
+.exam-nav-btn.flagged-tab:hover { border-color:#dd6b20; background:#1a0e00; color:#dd6b20; }
+.exam-nav-btn.flagged-tab.current { background:#1a0e00; border-color:#dd6b20; color:#dd6b20; }
+
+.flag-hints { display:flex; flex-direction:column; gap:4px; padding:0 20px 14px; }
+.flag-hint {
+  font-size:.78rem;
+  color:#dd6b20;
+  background:#120900;
+  border:1px solid #744210;
+  border-radius:6px;
+  padding:5px 10px;
+}
 
 .done-banner {
   display:none;
@@ -815,11 +870,13 @@ body { font-family:'Poppins',system-ui,sans-serif; background:#0f1117; color:#e2
 <body>
 <div class="topbar">
   <a class="back" href="/">← Back</a>
-  <h1>{% if unsorted_mode %}Unsorted Questions ({{ questions|length }}){% else %}Classifying: {{ publisher }} {{ year }}{% endif %}</h1>
+  <h1>{% if flagged_mode %}Flagged Questions ({{ questions|length }}){% elif unsorted_mode %}Unsorted Questions ({{ questions|length }}){% else %}Classifying: {{ publisher }} {{ year }}{% endif %}</h1>
   <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
   <span class="progress-label" id="progress-label">0 / {{ questions|length }}</span>
 </div>
 <div class="exam-nav">
+  <a class="exam-nav-btn flagged-tab {% if flagged_mode %}current{% endif %}"
+     href="/classify?flagged=1">⚑ Flagged ({{ flagged_count }})</a>
   <a class="exam-nav-btn unsorted-tab {% if unsorted_mode %}current{% endif %}"
      href="/classify?unsorted=1">Unsorted ({{ unsorted_count }})</a>
   <span class="exam-nav-label" style="margin-left:8px;">Exam set:</span>
@@ -842,6 +899,11 @@ body { font-family:'Poppins',system-ui,sans-serif; background:#0f1117; color:#e2
   <div class="qblock-img">
     <img src="{{ q.question_image }}" loading="lazy"/>
   </div>
+  {% if flags_by_qid.get(q.id) %}
+  <div class="flag-hints">
+    <span class="flag-hint">⚑ Flagged as misclassified ({{ flags_by_qid[q.id]|length }}×)</span>
+  </div>
+  {% endif %}
   <div class="aos-buttons">
     {% set options = [
       (1, 'Logic and Proof'),
@@ -956,10 +1018,14 @@ def classify_page():
     if not admin_required():
         return redirect(url_for("admin_login") + "?next=/classify")
     unsorted_mode = request.args.get("unsorted") == "1"
+    flagged_mode = request.args.get("flagged") == "1"
     publisher = request.args.get("publisher", "Heffernan")
     year = int(request.args.get("year", 2025))
 
-    if unsorted_mode:
+    if flagged_mode:
+        flagged_ids = {f["question_id"] for f in flags_data}
+        questions = [q for q in questions_data if q["id"] in flagged_ids]
+    elif unsorted_mode:
         questions = [q for q in questions_data if q["aos"] == 0]
     else:
         questions = [q for q in questions_data if q["publisher"] == publisher and q["year"] == year]
@@ -974,9 +1040,15 @@ def classify_page():
     exam_sets.sort(key=lambda x: (x[0], x[1]))
 
     unsorted_count = sum(1 for q in questions_data if q["aos"] == 0)
+    flagged_count = len({f["question_id"] for f in flags_data})
+
+    flags_by_qid = {}
+    for f in flags_data:
+        flags_by_qid.setdefault(f["question_id"], []).append(f)
 
     return render_template_string(CLASSIFY_HTML, questions=questions, publisher=publisher, year=year,
-                                  exam_sets=exam_sets, unsorted_mode=unsorted_mode, unsorted_count=unsorted_count)
+                                  exam_sets=exam_sets, unsorted_mode=unsorted_mode, unsorted_count=unsorted_count,
+                                  flagged_mode=flagged_mode, flagged_count=flagged_count, flags_by_qid=flags_by_qid)
 
 @app.route("/qimg/<path:filename>")
 def serve_qimg(filename):
@@ -1169,6 +1241,79 @@ a { color:var(--primary); text-decoration:none; }
 .fitem .fdel { background:none; border:none; color:var(--red); cursor:pointer; font-size:.8rem; opacity:.4; transition:opacity .15s; padding:4px; }
 .fitem .fdel:hover { opacity:1; }
 .empty { color:var(--muted); font-size:.85rem; text-align:center; padding:20px; }
+
+/* ----- Flagged questions ----- */
+.flags-count-badge {
+  display:inline-block;
+  background:#dd6b20;
+  color:#fff;
+  font-size:.72rem;
+  font-weight:700;
+  padding:2px 9px;
+  border-radius:99px;
+  margin-left:8px;
+  vertical-align:middle;
+}
+.flags-count-badge.zero { background:var(--border); color:var(--muted); }
+.flag-item {
+  background:var(--surface);
+  border:1px solid #fbd38d;
+  border-radius:var(--radius);
+  padding:16px 18px;
+  margin-bottom:12px;
+  box-shadow:var(--shadow-sm);
+}
+.flag-item-meta {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px;
+  margin-bottom:8px;
+}
+.flag-qid { font-weight:600; font-size:.9rem; color:var(--primary-dark); }
+.flag-tag {
+  font-size:.72rem;
+  font-weight:500;
+  padding:3px 10px;
+  border-radius:99px;
+  background:#e6f2f2;
+  color:var(--primary);
+}
+.flag-time { font-size:.75rem; color:var(--muted); margin-left:auto; }
+.flag-img {
+  width:100%;
+  max-width:600px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  display:block;
+  margin-bottom:12px;
+}
+.flag-actions { display:flex; gap:8px; }
+.flag-classify-link {
+  font-family:inherit;
+  font-size:.82rem;
+  font-weight:600;
+  padding:7px 16px;
+  border-radius:8px;
+  background:var(--primary-light);
+  color:var(--primary);
+  border:1px solid rgba(25,96,97,.2);
+  text-decoration:none;
+  transition:all .15s;
+}
+.flag-classify-link:hover { background:var(--primary); color:#fff; }
+.flag-dismiss-btn {
+  font-family:inherit;
+  font-size:.82rem;
+  padding:7px 16px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:none;
+  color:var(--muted);
+  cursor:pointer;
+  transition:all .15s;
+}
+.flag-dismiss-btn:hover { border-color:var(--red); color:var(--red); }
 </style>
 </head>
 <body>
@@ -1182,6 +1327,12 @@ a { color:var(--primary); text-decoration:none; }
 </div>
 
 <div class="container">
+  <div class="section">
+    <h2>Flagged Questions <span class="flags-count-badge zero" id="flags-badge">0</span></h2>
+    <p class="desc">Questions students have flagged as potentially misclassified. Review the image, then reclassify or dismiss the flag.</p>
+    <div id="flags-list"><div class="empty">Loading…</div></div>
+  </div>
+
   <div class="section">
     <h2>Upload Reference Documents</h2>
     <p class="desc">Upload study designs, curriculum documents, or other reference files here. These will be used to improve question classification.</p>
@@ -1307,6 +1458,46 @@ function delRef(name) {
 }
 
 loadRefFiles();
+
+// --- Flagged questions ---
+function loadFlags() {
+  fetch('/api/admin/flags').then(r => r.json()).then(flags => {
+    const el = document.getElementById('flags-list');
+    const badge = document.getElementById('flags-badge');
+    badge.textContent = flags.length;
+    badge.className = 'flags-count-badge' + (flags.length ? '' : ' zero');
+    if (!flags.length) {
+      el.innerHTML = '<div class="empty">No flagged questions</div>';
+      return;
+    }
+    el.innerHTML = flags.map(f => {
+      const imgHtml = f.question_image
+        ? `<img class="flag-img" src="${f.question_image}" loading="lazy"/>` : '';
+      const date = new Date(f.timestamp + 'Z').toLocaleDateString('en-AU', { day:'numeric', month:'short', year:'numeric' });
+      return `<div class="flag-item" id="flag-item-${f.id}">
+        <div class="flag-item-meta">
+          <span class="flag-qid">${f.publisher} ${f.year} — Q${f.question_number}</span>
+          <span class="flag-tag">${f.current_aos_name}</span>
+          <span class="flag-time">${date}</span>
+        </div>
+        ${imgHtml}
+        <div class="flag-actions">
+          <a class="flag-classify-link" href="/classify?publisher=${encodeURIComponent(f.publisher)}&year=${f.year}">Go to Classify</a>
+          <button class="flag-dismiss-btn" onclick="dismissFlag('${f.id}')">Dismiss</button>
+        </div>
+      </div>`;
+    }).join('');
+  });
+}
+
+function dismissFlag(id) {
+  fetch('/api/admin/flags/' + id, { method: 'DELETE' })
+    .then(r => r.json()).then(data => {
+      if (data.ok) loadFlags();
+    });
+}
+
+loadFlags();
 </script>
 </body>
 </html>"""
@@ -1363,6 +1554,48 @@ def admin_delete_file(filename):
         os.remove(path)
     return jsonify(ok=True)
 
+@app.route("/api/flag", methods=["POST"])
+def api_flag():
+    data = request.get_json()
+    qid = data.get("question_id")
+    q = next((q for q in questions_data if q["id"] == qid), None)
+    if not q:
+        return jsonify(error="question not found"), 404
+    flag = {
+        "id": str(uuid.uuid4()),
+        "question_id": qid,
+        "publisher": q["publisher"],
+        "year": q["year"],
+        "question_number": q["question_number"],
+        "current_aos": q["aos"],
+        "current_aos_name": q["aos_name"],
+        "question_image": q.get("question_image"),
+        "suggested_aos": data.get("suggested_aos"),
+        "suggested_aos_name": data.get("suggested_aos_name"),
+        "note": data.get("note", "").strip(),
+        "timestamp": datetime.datetime.utcnow().isoformat()
+    }
+    flags_data.append(flag)
+    with open(FLAGS_JSON, "w") as f:
+        json.dump(flags_data, f, indent=2)
+    return jsonify(ok=True)
+
+@app.route("/api/admin/flags")
+def api_admin_flags():
+    if not admin_required():
+        return jsonify(error="forbidden"), 403
+    return jsonify(flags_data)
+
+@app.route("/api/admin/flags/<flag_id>", methods=["DELETE"])
+def api_admin_delete_flag(flag_id):
+    if not admin_required():
+        return jsonify(error="forbidden"), 403
+    global flags_data
+    flags_data = [f for f in flags_data if f["id"] != flag_id]
+    with open(FLAGS_JSON, "w") as f:
+        json.dump(flags_data, f, indent=2)
+    return jsonify(ok=True)
+
 @app.route("/api/questions/<qid>", methods=["DELETE"])
 def api_delete_question(qid):
     if not admin_required():
@@ -1378,4 +1611,6 @@ def api_delete_question(qid):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+    import sys
+    debug = "--debug" in sys.argv
+    app.run(host="0.0.0.0", port=8080, debug=debug)
