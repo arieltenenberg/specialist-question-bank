@@ -16,6 +16,16 @@ METHODS_QUESTIONS_JSON = os.path.join(BASE, "methods_questions.json")
 FLAGS_JSON = os.path.join(BASE, "flags.json")
 SETTINGS_JSON = os.path.join(BASE, "settings.json")
 
+def _read_flags():
+    if not os.path.exists(FLAGS_JSON):
+        return []
+    with open(FLAGS_JSON) as f:
+        return json.load(f)
+
+def _write_flags(flags):
+    with open(FLAGS_JSON, "w") as f:
+        json.dump(flags, f, indent=2)
+
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(ADMIN_UPLOAD_DIR, exist_ok=True)
 
@@ -131,10 +141,6 @@ if os.path.exists(METHODS_QUESTIONS_JSON):
     with open(METHODS_QUESTIONS_JSON) as f:
         methods_data = json.load(f)
 
-flags_data = []
-if os.path.exists(FLAGS_JSON):
-    with open(FLAGS_JSON) as f:
-        flags_data = json.load(f)
 
 # AOS maps per subject
 SPECIALIST_AOS = {0: "Unsorted", 1: "Logic and Proof", 2: "Functions, Relations and Graphs", 3: "Complex Numbers", 4: "Calculus", 5: "Vectors, Lines and Planes", 6: "Probability and Statistics", 7: "Pseudocode"}
@@ -1180,8 +1186,10 @@ def classify_page():
     publisher = request.args.get("publisher", subject_data[0]["publisher"] if subject_data else "")
     year = int(request.args.get("year", subject_data[0]["year"] if subject_data else 2025))
 
+    subject_flags = [f for f in _read_flags() if f.get("subject") == subject]
+
     if flagged_mode:
-        flagged_ids = {f["question_id"] for f in flags_data}
+        flagged_ids = {f["question_id"] for f in subject_flags}
         questions = [q for q in subject_data if q["id"] in flagged_ids]
     elif unsorted_mode:
         questions = [q for q in subject_data if q["aos"] == 0]
@@ -1198,10 +1206,10 @@ def classify_page():
     exam_sets.sort(key=lambda x: (x[0], x[1]))
 
     unsorted_count = sum(1 for q in subject_data if q["aos"] == 0)
-    flagged_count = len({f["question_id"] for f in flags_data})
+    flagged_count = len({f["question_id"] for f in subject_flags})
 
     flags_by_qid = {}
-    for f in flags_data:
+    for f in subject_flags:
         flags_by_qid.setdefault(f["question_id"], []).append(f)
 
     return render_template_string(CLASSIFY_HTML, questions=questions, publisher=publisher, year=year,
@@ -1884,7 +1892,7 @@ loadRefFiles();
 
 // --- Flagged questions ---
 function loadFlags() {
-  fetch('/api/admin/flags').then(r => r.json()).then(flags => {
+  fetch('/api/admin/flags?subject={{ subject }}').then(r => r.json()).then(flags => {
     const el = document.getElementById('flags-list');
     const badge = document.getElementById('flags-badge');
     badge.textContent = flags.length;
@@ -1905,7 +1913,7 @@ function loadFlags() {
         </div>
         ${imgHtml}
         <div class="flag-actions">
-          <a class="flag-classify-link" href="/classify?subject={{ subject }}&publisher=${encodeURIComponent(f.publisher)}&year=${f.year}">Go to Classify</a>
+          <a class="flag-classify-link" href="/classify?subject=${f.subject}&publisher=${encodeURIComponent(f.publisher)}&year=${f.year}">Go to Classify</a>
           <button class="flag-dismiss-btn" onclick="dismissFlag('${f.id}')">Dismiss</button>
         </div>
       </div>`;
@@ -2082,6 +2090,7 @@ def api_flag():
     flag = {
         "id": str(uuid.uuid4()),
         "question_id": qid,
+        "subject": subject,
         "publisher": q["publisher"],
         "year": q["year"],
         "question_number": q["question_number"],
@@ -2093,9 +2102,9 @@ def api_flag():
         "note": data.get("note", "").strip(),
         "timestamp": datetime.datetime.utcnow().isoformat()
     }
-    flags_data.append(flag)
-    with open(FLAGS_JSON, "w") as f:
-        json.dump(flags_data, f, indent=2)
+    flags = _read_flags()
+    flags.append(flag)
+    _write_flags(flags)
     return jsonify(ok=True)
 
 @app.route("/api/admin/publishers/toggle", methods=["POST"])
@@ -2123,16 +2132,17 @@ def toggle_publisher():
 def api_admin_flags():
     if not admin_required():
         return jsonify(error="forbidden"), 403
-    return jsonify(flags_data)
+    subject = request.args.get("subject", "specialist")
+    flags = _read_flags()
+    return jsonify([f for f in flags if f.get("subject") == subject])
 
 @app.route("/api/admin/flags/<flag_id>", methods=["DELETE"])
 def api_admin_delete_flag(flag_id):
     if not admin_required():
         return jsonify(error="forbidden"), 403
-    global flags_data
-    flags_data = [f for f in flags_data if f["id"] != flag_id]
-    with open(FLAGS_JSON, "w") as f:
-        json.dump(flags_data, f, indent=2)
+    flags = _read_flags()
+    flags = [f for f in flags if f["id"] != flag_id]
+    _write_flags(flags)
     return jsonify(ok=True)
 
 @app.route("/api/questions/<qid>", methods=["DELETE"])
