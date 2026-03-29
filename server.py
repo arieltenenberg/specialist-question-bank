@@ -3,6 +3,9 @@ import json
 import uuid
 import sqlite3
 import datetime
+import threading
+import subprocess
+import zipfile
 from authlib.integrations.flask_client import OAuth
 from flask import Flask, request, jsonify, send_from_directory, render_template_string, session, redirect, url_for
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -1247,6 +1250,28 @@ function upload(file){const row=document.createElement('div');row.className='fil
 def upload_page():
     return render_template_string(UPLOAD_HTML)
 
+def _run_pipeline(subject, base_dir):
+    log_path = os.path.join(base_dir, f"pipeline_log_{subject}.txt")
+    pipeline_dir = os.path.join(base_dir, "pipeline")
+    steps = [
+        ["python3", os.path.join(pipeline_dir, "01_convert_docx.py"), "--subject", subject],
+        ["python3", os.path.join(pipeline_dir, "02_extract_and_crop.py"), "--subject", subject],
+        ["python3", os.path.join(pipeline_dir, "03_classify.py"), "--subject", subject],
+    ]
+    with open(log_path, "w") as log:
+        for step in steps:
+            log.write(f"\n--- {os.path.basename(step[1])} ---\n")
+            log.flush()
+            result = subprocess.run(step, capture_output=True, text=True, cwd=base_dir)
+            log.write(result.stdout)
+            if result.stderr:
+                log.write(result.stderr)
+            log.flush()
+            if result.returncode != 0:
+                log.write(f"ERROR: step exited with code {result.returncode}\n")
+                break
+
+
 @app.route("/upload", methods=["POST"])
 def upload():
     if "file" not in request.files:
@@ -1260,11 +1285,22 @@ def upload():
     dest_dir = os.path.join(UPLOAD_DIR, subject)
     os.makedirs(dest_dir, exist_ok=True)
     filename = os.path.basename(f.filename)
+    save_path = os.path.join(dest_dir, filename)
     try:
-        f.save(os.path.join(dest_dir, filename))
+        f.save(save_path)
     except Exception as e:
         return jsonify(error=str(e)), 500
-    return jsonify(ok=True, filename=filename)
+
+    if filename.lower().endswith(".zip"):
+        try:
+            with zipfile.ZipFile(save_path, "r") as zf:
+                zf.extractall(dest_dir)
+            os.remove(save_path)
+        except Exception as e:
+            return jsonify(error=f"zip extract failed: {e}"), 500
+
+    threading.Thread(target=_run_pipeline, args=(subject, BASE), daemon=True).start()
+    return jsonify(ok=True, filename=filename, pipeline="started")
 
 @app.route("/files")
 def list_files():
