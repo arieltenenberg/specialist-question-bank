@@ -1,7 +1,9 @@
 import os
 import json
 import uuid
+import sqlite3
 import datetime
+from authlib.integrations.flask_client import OAuth
 from flask import Flask, request, jsonify, send_from_directory, render_template_string, session, redirect, url_for
 
 BASE = os.path.dirname(__file__)
@@ -15,10 +17,76 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(ADMIN_UPLOAD_DIR, exist_ok=True)
 
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "specialist2025")
+ADMIN_EMAIL = "ariel.tenenbergg@gmail.com"
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
+GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "")
+DB_PATH = os.path.join(BASE, "users.db")
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET", "change-me-in-production-32chars!")
 app.config["MAX_CONTENT_LENGTH"] = 500 * 1024 * 1024
+
+# ---------------------------------------------------------------------------
+# Database & OAuth
+# ---------------------------------------------------------------------------
+
+def init_db():
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                google_id TEXT PRIMARY KEY,
+                email TEXT UNIQUE NOT NULL,
+                name TEXT,
+                picture TEXT,
+                status TEXT NOT NULL DEFAULT 'pending',
+                created_at TEXT NOT NULL,
+                approved_at TEXT
+            )
+        """)
+        conn.commit()
+
+init_db()
+
+oauth = OAuth(app)
+google_oauth = oauth.register(
+    name="google",
+    client_id=GOOGLE_CLIENT_ID,
+    client_secret=GOOGLE_CLIENT_SECRET,
+    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+    client_kwargs={"scope": "openid email profile"},
+)
+
+def get_db():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def load_user_to_session(user_row):
+    session["user_id"] = user_row["google_id"]
+    session["user_email"] = user_row["email"]
+    session["user_name"] = user_row["name"]
+    session["user_status"] = user_row["status"]
+    session["is_admin"] = (user_row["email"] == ADMIN_EMAIL)
+
+def current_user():
+    if "user_id" not in session:
+        return None
+    return {
+        "id": session["user_id"],
+        "email": session["user_email"],
+        "name": session["user_name"],
+        "status": session["user_status"],
+        "is_admin": session.get("is_admin", False),
+    }
+
+def check_approved():
+    """Return a redirect if user is not logged in or not yet approved, else None."""
+    user = current_user()
+    if not user:
+        return redirect(url_for("login"))
+    if user["status"] == "pending":
+        return redirect(url_for("pending_page"))
+    return None
 
 # Load questions once at startup
 questions_data = []
@@ -403,12 +471,10 @@ a { color:var(--primary); text-decoration:none; }
   <div class="tabs">
     <a class="tab active" href="/">Questions</a>
     {% if is_admin %}<a class="tab" href="/admin">Admin</a>{% endif %}
+    {% if is_admin %}<a class="tab" href="/admin/users">Users</a>{% endif %}
   </div>
-  {% if is_admin %}
-  <a class="admin-mode-btn exit" href="/admin/logout">Exit Admin Mode</a>
-  {% else %}
-  <a class="admin-mode-btn" href="/admin/login?next=/">Admin</a>
-  {% endif %}
+  <span class="count">{{ user_name }}</span>
+  <a class="admin-mode-btn {% if is_admin %}exit{% endif %}" href="/logout">Sign out</a>
 </div>
 
 <div class="layout">
@@ -986,10 +1052,15 @@ function updateProgress() {
 
 @app.route("/")
 def index():
-    return render_template_string(BROWSE_HTML, is_admin=admin_required())
+    r = check_approved()
+    if r: return r
+    user = current_user()
+    return render_template_string(BROWSE_HTML, is_admin=admin_required(), user_name=user["name"] if user else "")
 
 @app.route("/api/questions")
 def api_questions():
+    if check_approved():
+        return jsonify(error="unauthorized"), 401
     return jsonify(questions_data)
 
 @app.route("/api/classify", methods=["POST"])
@@ -1052,6 +1123,8 @@ def classify_page():
 
 @app.route("/qimg/<path:filename>")
 def serve_qimg(filename):
+    r = check_approved()
+    if r: return r
     return send_from_directory(QIMG_DIR, filename)
 
 # Keep upload functionality at /upload-page
@@ -1105,38 +1178,203 @@ LOGIN_HTML = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Admin Login</title>
+<title>Sign In — Specialist Maths Question Bank</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:'Poppins',system-ui,sans-serif; background:#0f1117; min-height:100vh; display:flex; align-items:center; justify-content:center; }
-.card { background:#1a1d27; border:1px solid #2d3148; border-radius:16px; padding:40px 36px; width:100%; max-width:380px; }
-h1 { color:#e2e8f0; font-size:1.2rem; font-weight:600; margin-bottom:6px; }
-p { color:#718096; font-size:.85rem; margin-bottom:28px; }
-label { display:block; color:#a0aec0; font-size:.8rem; font-weight:500; margin-bottom:6px; }
-input[type=password] {
-  width:100%; padding:11px 14px; border-radius:8px; border:1px solid #2d3148;
-  background:#12151f; color:#e2e8f0; font-family:inherit; font-size:.9rem;
-  margin-bottom:16px; outline:none; transition:border-color .15s;
+.card { background:#1a1d27; border:1px solid #2d3148; border-radius:16px; padding:40px 36px; width:100%; max-width:380px; text-align:center; }
+h1 { color:#e2e8f0; font-size:1.2rem; font-weight:600; margin-bottom:8px; }
+p { color:#718096; font-size:.85rem; margin-bottom:32px; line-height:1.6; }
+.google-btn {
+  display:flex; align-items:center; justify-content:center; gap:12px;
+  background:#fff; color:#3c4043; border:none; border-radius:8px;
+  padding:12px 24px; width:100%; font-family:inherit; font-size:.9rem; font-weight:500;
+  cursor:pointer; text-decoration:none; transition:box-shadow .15s;
+  box-shadow:0 1px 3px rgba(0,0,0,.3);
 }
-input[type=password]:focus { border-color:#196061; }
-button { width:100%; padding:12px; border-radius:8px; border:none; background:#196061; color:#fff; font-family:inherit; font-size:.9rem; font-weight:600; cursor:pointer; transition:background .15s; }
-button:hover { background:#1a7a7b; }
-.error { color:#fc8181; font-size:.82rem; margin-bottom:14px; }
+.google-btn:hover { box-shadow:0 2px 10px rgba(0,0,0,.45); }
+.google-btn svg { width:20px; height:20px; flex-shrink:0; }
+.msg { font-size:.82rem; margin-bottom:20px; padding:10px 14px; border-radius:8px; }
+.msg.error { color:#fc8181; background:rgba(252,129,129,.1); border:1px solid rgba(252,129,129,.2); }
+.msg.info { color:#90cdf4; background:rgba(144,205,244,.1); border:1px solid rgba(144,205,244,.2); }
 </style>
 </head>
 <body>
 <div class="card">
-  <h1>Admin Login</h1>
-  <p>Enter your password to access the admin area.</p>
-  {% if error %}<div class="error">{{ error }}</div>{% endif %}
-  <form method="POST">
-    <input type="hidden" name="next" value="{{ next_url }}"/>
-    <label>Password</label>
-    <input type="password" name="password" autofocus/>
-    <button type="submit">Sign in</button>
-  </form>
+  <h1>Specialist Maths Question Bank</h1>
+  <p>Sign in with your Google account to access the question bank.</p>
+  {% if rejected %}<div class="msg error">Your access request was not approved. Contact your teacher.</div>{% endif %}
+  {% if pending %}<div class="msg info">Your account is awaiting approval. Sign in again to check your status.</div>{% endif %}
+  <a class="google-btn" href="/oauth/google">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+    </svg>
+    Sign in with Google
+  </a>
 </div>
+</body>
+</html>"""
+
+PENDING_HTML = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Awaiting Approval — Specialist Maths Question Bank</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Poppins',system-ui,sans-serif; background:#0f1117; min-height:100vh; display:flex; align-items:center; justify-content:center; }
+.card { background:#1a1d27; border:1px solid #2d3148; border-radius:16px; padding:48px 36px; width:100%; max-width:420px; text-align:center; }
+.icon { font-size:2.8rem; margin-bottom:20px; }
+h1 { color:#e2e8f0; font-size:1.15rem; font-weight:600; margin-bottom:10px; }
+p { color:#718096; font-size:.875rem; line-height:1.7; margin-bottom:28px; }
+.email { color:#a0aec0; font-weight:500; }
+a { color:#718096; font-size:.82rem; text-decoration:underline; }
+a:hover { color:#a0aec0; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="icon">&#x23F3;</div>
+  <h1>Awaiting Approval</h1>
+  <p>You're signed in as <span class="email">{{ user.email }}</span>.<br>
+  Your account is pending approval from the administrator.<br>
+  You'll receive access once your teacher approves your request.</p>
+  <a href="/logout">Sign out</a>
+</div>
+</body>
+</html>"""
+
+USERS_HTML = r"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Users — Specialist Maths Question Bank</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f5f7fa; --surface:#fff; --border:#e2e8f0; --text:#1a202c;
+  --muted:#718096; --primary:#196061; --primary-dark:#042f3a;
+  --accent-green:#38a169; --red:#e53e3e;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06); --radius:12px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+.topbar { background:var(--primary-dark); padding:0 32px; display:flex; align-items:center; gap:16px; position:sticky; top:0; z-index:100; height:60px; box-shadow:0 2px 8px rgba(0,0,0,.15); }
+.topbar h1 { font-size:1.1rem; font-weight:700; color:#fff; white-space:nowrap; }
+.tabs { display:flex; gap:4px; margin-left:24px; }
+.tab { background:none; border:none; color:rgba(255,255,255,.6); font-family:inherit; font-size:.875rem; font-weight:500; padding:8px 18px; border-radius:8px; cursor:pointer; text-decoration:none; transition:all .15s; }
+.tab:hover { color:#fff; background:rgba(255,255,255,.1); }
+.tab.active { color:#fff; background:rgba(255,255,255,.15); }
+.spacer { flex:1; }
+.signout { color:rgba(255,255,255,.6); font-size:.8rem; text-decoration:none; padding:6px 14px; border:1px solid rgba(255,255,255,.2); border-radius:8px; white-space:nowrap; }
+.signout:hover { color:#fff; background:rgba(255,255,255,.1); }
+.container { max-width:820px; margin:0 auto; padding:40px 24px; }
+.section { margin-bottom:44px; }
+.section h2 { font-size:1.05rem; font-weight:600; margin-bottom:14px; color:var(--primary-dark); display:flex; align-items:center; gap:8px; }
+.badge { font-size:.7rem; font-weight:600; padding:2px 9px; border-radius:99px; color:#fff; background:var(--primary); }
+.badge.green { background:var(--accent-green); }
+.badge.red { background:var(--red); }
+.user-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px 18px; display:flex; align-items:center; gap:14px; box-shadow:var(--shadow-sm); margin-bottom:8px; }
+.user-card img { width:38px; height:38px; border-radius:50%; object-fit:cover; background:var(--border); flex-shrink:0; }
+.info { flex:1; min-width:0; }
+.uname { font-size:.9rem; font-weight:500; }
+.uemail { font-size:.78rem; color:var(--muted); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.udate { font-size:.75rem; color:var(--muted); white-space:nowrap; flex-shrink:0; }
+.actions { display:flex; gap:8px; flex-shrink:0; }
+.btn { padding:7px 16px; border-radius:8px; font-size:.8rem; font-weight:500; cursor:pointer; border:none; font-family:inherit; transition:all .15s; }
+.btn-approve { background:var(--primary); color:#fff; }
+.btn-approve:hover { background:#1a7a7b; }
+.btn-reject { background:none; border:1px solid var(--border); color:var(--muted); }
+.btn-reject:hover { border-color:var(--red); color:var(--red); }
+.btn-revoke { background:none; border:1px solid var(--border); color:var(--muted); font-size:.75rem; padding:5px 12px; }
+.btn-revoke:hover { border-color:var(--red); color:var(--red); }
+.empty { color:var(--muted); font-size:.85rem; padding:20px; text-align:center; background:var(--surface); border:1px solid var(--border); border-radius:10px; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <h1>Specialist Maths Question Bank</h1>
+  <div class="tabs">
+    <a class="tab" href="/">Questions</a>
+    <a class="tab" href="/admin">Admin</a>
+    <a class="tab active" href="/admin/users">Users</a>
+  </div>
+  <div class="spacer"></div>
+  <a class="signout" href="/logout">Sign out</a>
+</div>
+<div class="container">
+  <div class="section">
+    <h2>Pending Approval <span class="badge">{{ pending|length }}</span></h2>
+    {% if pending %}
+      {% for u in pending %}
+      <div class="user-card" id="card-{{ u['google_id'] }}">
+        <img src="{{ u['picture'] or '' }}" alt="" onerror="this.style.visibility='hidden'">
+        <div class="info">
+          <div class="uname">{{ u['name'] }}</div>
+          <div class="uemail">{{ u['email'] }}</div>
+        </div>
+        <div class="udate">{{ u['created_at'][:10] }}</div>
+        <div class="actions">
+          <button class="btn btn-approve" onclick="act('{{ u['google_id'] }}','approve')">Approve</button>
+          <button class="btn btn-reject" onclick="act('{{ u['google_id'] }}','reject')">Reject</button>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty">No pending requests</div>
+    {% endif %}
+  </div>
+  <div class="section">
+    <h2>Approved Students <span class="badge green">{{ approved|length }}</span></h2>
+    {% if approved %}
+      {% for u in approved %}
+      <div class="user-card" id="card-{{ u['google_id'] }}">
+        <img src="{{ u['picture'] or '' }}" alt="" onerror="this.style.visibility='hidden'">
+        <div class="info">
+          <div class="uname">{{ u['name'] }}</div>
+          <div class="uemail">{{ u['email'] }}</div>
+        </div>
+        <div class="udate">{{ u['approved_at'][:10] if u['approved_at'] else '' }}</div>
+        <div class="actions">
+          <button class="btn btn-revoke" onclick="act('{{ u['google_id'] }}','reject')">Revoke</button>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty">No approved students yet</div>
+    {% endif %}
+  </div>
+  {% if rejected %}
+  <div class="section">
+    <h2>Rejected <span class="badge red">{{ rejected|length }}</span></h2>
+    {% for u in rejected %}
+    <div class="user-card" id="card-{{ u['google_id'] }}">
+      <img src="{{ u['picture'] or '' }}" alt="" onerror="this.style.visibility='hidden'">
+      <div class="info">
+        <div class="uname">{{ u['name'] }}</div>
+        <div class="uemail">{{ u['email'] }}</div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-approve" onclick="act('{{ u['google_id'] }}','approve')">Re-approve</button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+<script>
+function act(id, action) {
+  fetch('/admin/users/' + id + '/' + action, {method:'POST'})
+    .then(r => r.json()).then(d => { if (d.ok) location.reload(); });
+}
+</script>
 </body>
 </html>"""
 
@@ -1323,6 +1561,7 @@ a { color:var(--primary); text-decoration:none; }
   <div class="tabs">
     <a class="tab" href="/">Questions</a>
     <a class="tab active" href="/admin">Admin</a>
+    <a class="tab" href="/admin/users">Users</a>
   </div>
 </div>
 
@@ -1503,28 +1742,82 @@ loadFlags();
 </html>"""
 
 def admin_required():
-    return session.get("admin_logged_in") is True
+    return session.get("is_admin") is True
+
+@app.route("/login")
+def login():
+    user = current_user()
+    if user and user["status"] == "approved":
+        return redirect(url_for("index"))
+    rejected = request.args.get("rejected") == "1"
+    pending = request.args.get("pending") == "1"
+    return render_template_string(LOGIN_HTML, rejected=rejected, pending=pending)
+
+@app.route("/oauth/google")
+def oauth_google():
+    redirect_uri = url_for("oauth_google_callback", _external=True)
+    return google_oauth.authorize_redirect(redirect_uri)
+
+@app.route("/oauth/google/callback")
+def oauth_google_callback():
+    try:
+        token = google_oauth.authorize_access_token()
+    except Exception:
+        return redirect(url_for("login"))
+    user_info = token.get("userinfo")
+    if not user_info:
+        return redirect(url_for("login"))
+    google_id = user_info["sub"]
+    email = user_info["email"]
+    name = user_info.get("name", email)
+    picture = user_info.get("picture", "")
+    now = datetime.datetime.utcnow().isoformat()
+    status = "approved" if email == ADMIN_EMAIL else "pending"
+    with get_db() as conn:
+        existing = conn.execute("SELECT * FROM users WHERE google_id=?", (google_id,)).fetchone()
+        if existing:
+            conn.execute("UPDATE users SET name=?, picture=? WHERE google_id=?", (name, picture, google_id))
+            if email == ADMIN_EMAIL and existing["status"] != "approved":
+                conn.execute("UPDATE users SET status='approved', approved_at=? WHERE google_id=?", (now, google_id))
+        else:
+            approved_at = now if status == "approved" else None
+            conn.execute(
+                "INSERT INTO users (google_id, email, name, picture, status, created_at, approved_at) VALUES (?,?,?,?,?,?,?)",
+                (google_id, email, name, picture, status, now, approved_at)
+            )
+        conn.commit()
+        user_row = conn.execute("SELECT * FROM users WHERE google_id=?", (google_id,)).fetchone()
+    load_user_to_session(user_row)
+    if user_row["status"] == "pending":
+        return redirect(url_for("pending_page"))
+    return redirect(url_for("index"))
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
+
+@app.route("/pending")
+def pending_page():
+    user = current_user()
+    if not user:
+        return redirect(url_for("login"))
+    if user["status"] == "approved":
+        return redirect(url_for("index"))
+    return render_template_string(PENDING_HTML, user=user)
 
 @app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
-    next_url = request.args.get("next") or request.form.get("next") or url_for("admin_page")
-    error = None
-    if request.method == "POST":
-        if request.form.get("password") == ADMIN_PASSWORD:
-            session["admin_logged_in"] = True
-            return redirect(next_url)
-        error = "Incorrect password."
-    return render_template_string(LOGIN_HTML, error=error, next_url=next_url)
+    return redirect(url_for("login"))
 
 @app.route("/admin/logout")
 def admin_logout():
-    session.clear()
-    return redirect(url_for("index"))
+    return redirect(url_for("logout"))
 
 @app.route("/admin")
 def admin_page():
     if not admin_required():
-        return redirect(url_for("admin_login"))
+        return redirect(url_for("login"))
     return render_template_string(ADMIN_HTML)
 
 @app.route("/admin/upload", methods=["POST"])
@@ -1607,6 +1900,36 @@ def api_delete_question(qid):
     questions_data = [x for x in questions_data if x["id"] != qid]
     with open(QUESTIONS_JSON, "w") as f:
         json.dump(questions_data, f, indent=2)
+    return jsonify(ok=True)
+
+
+@app.route("/admin/users")
+def admin_users():
+    if not admin_required():
+        return redirect(url_for("login"))
+    with get_db() as conn:
+        pending = [dict(r) for r in conn.execute("SELECT * FROM users WHERE status='pending' ORDER BY created_at").fetchall()]
+        approved = [dict(r) for r in conn.execute("SELECT * FROM users WHERE status='approved' AND email!=? ORDER BY approved_at DESC", (ADMIN_EMAIL,)).fetchall()]
+        rejected = [dict(r) for r in conn.execute("SELECT * FROM users WHERE status='rejected' ORDER BY created_at DESC").fetchall()]
+    return render_template_string(USERS_HTML, pending=pending, approved=approved, rejected=rejected)
+
+@app.route("/admin/users/<google_id>/approve", methods=["POST"])
+def admin_approve_user(google_id):
+    if not admin_required():
+        return jsonify(error="forbidden"), 403
+    now = datetime.datetime.utcnow().isoformat()
+    with get_db() as conn:
+        conn.execute("UPDATE users SET status='approved', approved_at=? WHERE google_id=?", (now, google_id))
+        conn.commit()
+    return jsonify(ok=True)
+
+@app.route("/admin/users/<google_id>/reject", methods=["POST"])
+def admin_reject_user(google_id):
+    if not admin_required():
+        return jsonify(error="forbidden"), 403
+    with get_db() as conn:
+        conn.execute("UPDATE users SET status='rejected' WHERE google_id=?", (google_id,))
+        conn.commit()
     return jsonify(ok=True)
 
 
