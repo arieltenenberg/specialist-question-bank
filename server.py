@@ -1914,9 +1914,17 @@ function loadFlags() {
 }
 
 function dismissFlag(id) {
+  const el = document.getElementById('flag-item-' + id);
+  if (el) el.remove();
   fetch('/api/admin/flags/' + id, { method: 'DELETE' })
     .then(r => r.json()).then(data => {
-      if (data.ok) loadFlags();
+      if (data.ok) {
+        const badge = document.getElementById('flags-badge');
+        const remaining = document.querySelectorAll('.flag-item').length;
+        badge.textContent = remaining;
+        badge.className = 'flags-count-badge' + (remaining ? '' : ' zero');
+        if (!remaining) document.getElementById('flags-list').innerHTML = '<div class="empty">No flagged questions</div>';
+      }
     });
 }
 
