@@ -86,8 +86,17 @@ def check_approved():
     user = current_user()
     if not user:
         return redirect(url_for("login"))
-    if user["status"] == "pending":
+    with get_db() as conn:
+        row = conn.execute("SELECT status FROM users WHERE google_id=?", (user["id"],)).fetchone()
+    if not row:
+        session.clear()
+        return redirect(url_for("login"))
+    session["user_status"] = row["status"]
+    if row["status"] == "pending":
         return redirect(url_for("pending_page"))
+    if row["status"] == "rejected":
+        session.clear()
+        return redirect(url_for("login") + "?rejected=1")
     return None
 
 # Load questions once at startup
@@ -1205,7 +1214,7 @@ p { color:#718096; font-size:.85rem; margin-bottom:32px; line-height:1.6; }
 <body>
 <div class="card">
   <h1>Specialist Maths Question Bank</h1>
-  <p>Sign in with your Google account to access the question bank.</p>
+  <p>Sign in with your Google account.</p>
   {% if rejected %}<div class="msg error">Your access request was not approved. Contact your teacher.</div>{% endif %}
   {% if pending %}<div class="msg info">Your account is awaiting approval. Sign in again to check your status.</div>{% endif %}
   <a class="google-btn" href="/oauth/google">
