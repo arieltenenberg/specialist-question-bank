@@ -1253,10 +1253,12 @@ def upload_page():
 def _run_pipeline(subject, base_dir):
     log_path = os.path.join(base_dir, f"pipeline_log_{subject}.txt")
     pipeline_dir = os.path.join(base_dir, "pipeline")
+    venv_python = os.path.join(base_dir, "venv", "bin", "python3")
+    python = venv_python if os.path.exists(venv_python) else "python3"
     steps = [
-        ["python3", os.path.join(pipeline_dir, "01_convert_docx.py"), "--subject", subject],
-        ["python3", os.path.join(pipeline_dir, "02_extract_and_crop.py"), "--subject", subject],
-        ["python3", os.path.join(pipeline_dir, "03_classify.py"), "--subject", subject],
+        [python, os.path.join(pipeline_dir, "01_convert_docx.py"), "--subject", subject],
+        [python, os.path.join(pipeline_dir, "02_extract_and_crop.py"), "--subject", subject],
+        [python, os.path.join(pipeline_dir, "03_classify.py"), "--subject", subject],
     ]
     with open(log_path, "w") as log:
         for step in steps:
