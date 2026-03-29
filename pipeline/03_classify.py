@@ -24,19 +24,28 @@ Key improvements over v1:
 
 import json
 import re
+import argparse
+import os
 
-RAW_JSON = "/Users/arieltenenberg/Desktop/Specialist Question Bank/raw_questions.json"
-OUT_JSON = "/Users/arieltenenberg/Desktop/Specialist Question Bank/questions.json"
+parser = argparse.ArgumentParser()
+parser.add_argument("--subject", choices=["specialist", "methods"], required=True,
+                    help="Which subject to classify")
+args = parser.parse_args()
+
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+RAW_JSON = os.path.join(BASE, f"raw_questions_{args.subject}.json")
+OUT_JSON = os.path.join(BASE, "questions.json" if args.subject == "specialist" else "methods_questions.json")
 EXISTING_JSON = OUT_JSON  # same file — we load before overwriting
 
-# Publisher/year sets that have been manually reviewed — preserve their classifications
+# Publisher/year sets that have been manually reviewed — preserve their classifications (specialist only)
 MANUALLY_REVIEWED = {
     ("Sequoia", 2025),
     ("Heffernan", 2025),
     ("MAV", 2025),
 }
 
-AOS = {
+SPECIALIST_AOS = {
     0: "Unsorted",
     1: "Logic and Proof",
     2: "Functions, Relations and Graphs",
@@ -46,6 +55,16 @@ AOS = {
     6: "Probability and Statistics",
     7: "Pseudocode",
 }
+
+METHODS_AOS = {
+    0: "Unsorted",
+    1: "Functions and Graphs",
+    2: "Algebra",
+    3: "Calculus",
+    4: "Probability and Statistics",
+}
+
+AOS = SPECIALIST_AOS if args.subject == "specialist" else METHODS_AOS
 
 # ---------------------------------------------------------------------------
 # Keyword sets
@@ -376,7 +395,17 @@ def classify_question(text):
 # Main
 # ---------------------------------------------------------------------------
 
+def classify_for_subject(text, subject):
+    if subject == "methods":
+        # Methods classifier not yet built — all questions go to Unsorted for manual review
+        return 0, METHODS_AOS[0]
+    return classify_question(text)
+
+
 def main():
+    print(f"Subject: {args.subject}")
+    print(f"Reading: {RAW_JSON}")
+
     with open(RAW_JSON) as f:
         raw = json.load(f)
 
@@ -388,8 +417,10 @@ def main():
     except (FileNotFoundError, json.JSONDecodeError):
         manual = {}
 
+    preserve_enabled = args.subject == "specialist"
     print(f"Classifying {len(raw)} questions...")
-    print(f"Preserving manual classifications for: {sorted(MANUALLY_REVIEWED)}")
+    if preserve_enabled:
+        print(f"Preserving manual classifications for: {sorted(MANUALLY_REVIEWED)}")
 
     from collections import Counter
     aos_counts = Counter()
@@ -409,13 +440,13 @@ def main():
 
         out = {k: v for k, v in q.items() if k not in ("extracted_text", "source_pdf")}
 
-        if (pub, year) in MANUALLY_REVIEWED and qid in manual:
+        if preserve_enabled and (pub, year) in MANUALLY_REVIEWED and qid in manual:
             # Preserve the manually reviewed classification
             out["aos"] = manual[qid]["aos"]
             out["aos_name"] = manual[qid]["aos_name"]
             preserved += 1
         else:
-            aos_num, aos_name = classify_question(q.get("extracted_text", ""))
+            aos_num, aos_name = classify_for_subject(q.get("extracted_text", ""), args.subject)
             out["aos"] = aos_num
             out["aos_name"] = aos_name
             reclassified += 1

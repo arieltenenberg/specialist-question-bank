@@ -28,6 +28,8 @@ def _write_flags(flags):
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(ADMIN_UPLOAD_DIR, exist_ok=True)
+os.makedirs(os.path.join(UPLOAD_DIR, "specialist"), exist_ok=True)
+os.makedirs(os.path.join(UPLOAD_DIR, "methods"), exist_ok=True)
 
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "specialist2025")
 ADMIN_EMAIL = "ariel.tenenbergg@gmail.com"
@@ -1252,8 +1254,13 @@ def upload():
     f = request.files["file"]
     if not f.filename:
         return jsonify(error="empty filename"), 400
+    subject = request.args.get("subject", "specialist")
+    if subject not in ("specialist", "methods"):
+        subject = "specialist"
+    dest_dir = os.path.join(UPLOAD_DIR, subject)
+    os.makedirs(dest_dir, exist_ok=True)
     filename = os.path.basename(f.filename)
-    f.save(os.path.join(UPLOAD_DIR, filename))
+    f.save(os.path.join(dest_dir, filename))
     return jsonify(ok=True, filename=filename)
 
 @app.route("/files")
@@ -1827,7 +1834,7 @@ fi2.addEventListener('change', () => handleExam(fi2.files));
 
 function handleExam(files) {
   pw2.style.display = 'flex';
-  [...files].forEach(f => uploadFile(f, '/upload', pw2));
+  [...files].forEach(f => uploadFile(f, '/upload?subject={{ subject }}', pw2));
 }
 
 // --- Shared upload ---

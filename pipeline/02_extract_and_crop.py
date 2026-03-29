@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """
-Extract and crop questions from all Specialist Maths exam PDFs.
-Outputs: question_images/*.png and raw_questions.json
+Extract and crop questions from exam PDFs for a given subject.
+Outputs: question_images/*.png and raw_questions_<subject>.json
+
+Usage:
+    python3 02_extract_and_crop.py --subject specialist
+    python3 02_extract_and_crop.py --subject methods
 """
 
 import fitz  # pymupdf
@@ -9,12 +13,18 @@ import json
 import os
 import re
 import glob
+import argparse
 from PIL import Image
 from io import BytesIO
 
-UPLOADS = "/home/ubuntu/webpage/uploads"
+parser = argparse.ArgumentParser()
+parser.add_argument("--subject", choices=["specialist", "methods"], required=True,
+                    help="Which subject to process")
+args = parser.parse_args()
+
+UPLOADS = f"/home/ubuntu/webpage/uploads/{args.subject}"
 OUT_DIR = "/home/ubuntu/webpage/question_images"
-RAW_JSON = "/home/ubuntu/webpage/raw_questions.json"
+RAW_JSON = f"/home/ubuntu/webpage/raw_questions_{args.subject}.json"
 
 os.makedirs(OUT_DIR, exist_ok=True)
 
@@ -510,6 +520,8 @@ def process_solutions(sol_pdf_path, questions, exam_info):
 # ---------------------------------------------------------------------------
 
 def main():
+    print(f"Subject: {args.subject}")
+    print(f"Uploads dir: {UPLOADS}")
     pairs = find_exam_pairs()
     print(f"Found {len(pairs)} exam pairs:\n")
     for p in pairs:
