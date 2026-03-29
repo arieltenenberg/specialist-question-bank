@@ -1215,7 +1215,7 @@ p { color:#718096; font-size:.85rem; margin-bottom:32px; line-height:1.6; }
 <div class="card">
   <h1>Specialist Maths Question Bank</h1>
   <p>Sign in with your Google account.</p>
-  {% if rejected %}<div class="msg error">Your access request was not approved. Contact your Ariel.</div>{% endif %}
+  {% if rejected %}<div class="msg error">Your access request was not approved. Contact Ariel.</div>{% endif %}
   {% if pending %}<div class="msg info">Your account is awaiting approval. Sign in again to check your status.</div>{% endif %}
   <a class="google-btn" href="/oauth/google">
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -1255,7 +1255,7 @@ a:hover { color:#a0aec0; }
   <h1>Awaiting Approval</h1>
   <p>You're signed in as <span class="email">{{ user.email }}</span>.<br>
   Your account is pending approval from the administrator.<br>
-  You'll receive access once your Ariel approves your request.</p>
+  You'll receive access once Ariel approves your request.</p>
   <a href="/logout">Sign out</a>
 </div>
 </body>
