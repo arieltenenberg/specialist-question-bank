@@ -11,7 +11,8 @@ parser.add_argument("--subject", choices=["specialist", "methods"], required=Tru
                     help="Which subject's upload folder to process")
 args = parser.parse_args()
 
-UPLOADS = f"/home/ubuntu/webpage/uploads/{args.subject}"
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+UPLOADS = os.path.join(BASE, "uploads", args.subject)
 
 docx_files = glob.glob(os.path.join(UPLOADS, "**/*.docx"), recursive=True)
 docx_files = [f for f in docx_files if "__MACOSX" not in f]

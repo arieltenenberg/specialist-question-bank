@@ -22,9 +22,10 @@ parser.add_argument("--subject", choices=["specialist", "methods"], required=Tru
                     help="Which subject to process")
 args = parser.parse_args()
 
-UPLOADS = f"/home/ubuntu/webpage/uploads/{args.subject}"
-OUT_DIR = "/home/ubuntu/webpage/question_images"
-RAW_JSON = f"/home/ubuntu/webpage/raw_questions_{args.subject}.json"
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+UPLOADS = os.path.join(BASE, "uploads", args.subject)
+OUT_DIR = os.path.join(BASE, "question_images")
+RAW_JSON = os.path.join(BASE, f"raw_questions_{args.subject}.json")
 
 os.makedirs(OUT_DIR, exist_ok=True)
 
