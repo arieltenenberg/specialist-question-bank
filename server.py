@@ -1755,7 +1755,7 @@ def login():
 
 @app.route("/oauth/google")
 def oauth_google():
-    redirect_uri = url_for("oauth_google_callback", _external=True)
+    redirect_uri = "http://ariel.tenenberg.com/oauth/google/callback"
     return google_oauth.authorize_redirect(redirect_uri)
 
 @app.route("/oauth/google/callback")
