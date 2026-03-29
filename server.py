@@ -531,7 +531,6 @@ a { color:var(--primary); text-decoration:none; }
     <a class="tab" href="/">← Subjects</a>
     <a class="tab active" href="/{{ subject }}">Questions</a>
     {% if is_admin %}<a class="tab" href="/admin?subject={{ subject }}">Admin</a>{% endif %}
-    {% if is_admin %}<a class="tab" href="/admin/users">Users</a>{% endif %}
   </div>
   <span class="count">{{ user_name }}</span>
   <a class="admin-mode-btn {% if is_admin %}exit{% endif %}" href="/logout">Sign out</a>
@@ -1267,7 +1266,7 @@ HOME_HTML = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>VCE Maths Question Bank</title>
+<title>VCE Mathematics Question Bank</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -1312,7 +1311,7 @@ body { font-family:'Poppins',system-ui,sans-serif; background:#f0f0f0; color:#1a
 </head>
 <body>
 <div class="topbar">
-  <h1>VCE Maths Question Bank</h1>
+  <h1>VCE Mathematics Question Bank</h1>
   <div class="spacer"></div>
   <span class="user-name">{{ user_name }}</span>
   {% if is_admin %}<a class="signout-btn" href="/admin/users">Users</a>{% endif %}
@@ -1419,26 +1418,25 @@ USERS_HTML = r"""<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:#f5f7fa; --surface:#fff; --border:#e2e8f0; --text:#1a202c;
-  --muted:#718096; --primary:#196061; --primary-dark:#042f3a;
-  --accent-green:#38a169; --red:#e53e3e;
+  --bg:#f0f0f0; --surface:#fff; --border:#e4e4e4; --text:#1a202c;
+  --muted:#718096; --accent-green:#38a169; --red:#e53e3e;
   --shadow-sm:0 1px 3px rgba(0,0,0,.06); --radius:12px;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
-.topbar { background:var(--primary-dark); padding:0 32px; display:flex; align-items:center; gap:16px; position:sticky; top:0; z-index:100; height:60px; box-shadow:0 2px 8px rgba(0,0,0,.15); }
-.topbar h1 { font-size:1.1rem; font-weight:700; color:#fff; white-space:nowrap; }
+.topbar { background:#2d2d2d; padding:0 32px; display:flex; align-items:center; gap:16px; position:sticky; top:0; z-index:100; height:60px; }
+.topbar h1 { font-size:1.05rem; font-weight:600; color:#fff; white-space:nowrap; }
 .tabs { display:flex; gap:4px; margin-left:24px; }
-.tab { background:none; border:none; color:rgba(255,255,255,.6); font-family:inherit; font-size:.875rem; font-weight:500; padding:8px 18px; border-radius:8px; cursor:pointer; text-decoration:none; transition:all .15s; }
+.tab { background:none; border:none; color:rgba(255,255,255,.55); font-family:inherit; font-size:.875rem; font-weight:500; padding:8px 18px; border-radius:8px; cursor:pointer; text-decoration:none; transition:all .15s; }
 .tab:hover { color:#fff; background:rgba(255,255,255,.1); }
-.tab.active { color:#fff; background:rgba(255,255,255,.15); }
+.tab.active { color:#fff; background:rgba(255,255,255,.12); }
 .spacer { flex:1; }
-.signout { color:rgba(255,255,255,.6); font-size:.8rem; text-decoration:none; padding:6px 14px; border:1px solid rgba(255,255,255,.2); border-radius:8px; white-space:nowrap; }
+.signout { color:rgba(255,255,255,.6); font-size:.78rem; text-decoration:none; padding:5px 12px; border:1px solid rgba(255,255,255,.2); border-radius:6px; white-space:nowrap; }
 .signout:hover { color:#fff; background:rgba(255,255,255,.1); }
 .container { max-width:820px; margin:0 auto; padding:40px 24px; }
 .section { margin-bottom:44px; }
-.section h2 { font-size:1.05rem; font-weight:600; margin-bottom:14px; color:var(--primary-dark); display:flex; align-items:center; gap:8px; }
-.badge { font-size:.7rem; font-weight:600; padding:2px 9px; border-radius:99px; color:#fff; background:var(--primary); }
+.section h2 { font-size:1.05rem; font-weight:600; margin-bottom:14px; color:#1a202c; display:flex; align-items:center; gap:8px; }
+.badge { font-size:.7rem; font-weight:600; padding:2px 9px; border-radius:99px; color:#fff; background:#555; }
 .badge.green { background:var(--accent-green); }
 .badge.red { background:var(--red); }
 .user-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px 18px; display:flex; align-items:center; gap:14px; box-shadow:var(--shadow-sm); margin-bottom:8px; }
@@ -1449,8 +1447,8 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
 .udate { font-size:.75rem; color:var(--muted); white-space:nowrap; flex-shrink:0; }
 .actions { display:flex; gap:8px; flex-shrink:0; }
 .btn { padding:7px 16px; border-radius:8px; font-size:.8rem; font-weight:500; cursor:pointer; border:none; font-family:inherit; transition:all .15s; }
-.btn-approve { background:var(--primary); color:#fff; }
-.btn-approve:hover { background:#1a7a7b; }
+.btn-approve { background:#2d2d2d; color:#fff; }
+.btn-approve:hover { background:#444; }
 .btn-reject { background:none; border:1px solid var(--border); color:var(--muted); }
 .btn-reject:hover { border-color:var(--red); color:var(--red); }
 .btn-revoke { background:none; border:1px solid var(--border); color:var(--muted); font-size:.75rem; padding:5px 12px; }
@@ -1460,7 +1458,7 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
 </head>
 <body>
 <div class="topbar">
-  <h1>VCE Maths Question Bank</h1>
+  <h1>VCE Mathematics Question Bank</h1>
   <div class="tabs">
     <a class="tab" href="/">← Subjects</a>
     <a class="tab active" href="/admin/users">Users</a>
@@ -1731,7 +1729,6 @@ input:checked + .slider:before { transform:translateX(20px); }
     <a class="tab" href="/">← Subjects</a>
     <a class="tab" href="/{{ subject }}">Questions</a>
     <a class="tab active" href="/admin?subject={{ subject }}">Admin</a>
-    <a class="tab" href="/admin/users">Users</a>
   </div>
 </div>
 
