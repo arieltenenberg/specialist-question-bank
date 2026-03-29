@@ -1254,7 +1254,6 @@ a:hover { color:#a0aec0; }
   <div class="icon">&#x23F3;</div>
   <h1>Awaiting Approval</h1>
   <p>You're signed in as <span class="email">{{ user.email }}</span>.<br>
-  Your account is pending approval from the administrator.<br>
   You'll receive access once Ariel approves your request.</p>
   <a href="/logout">Sign out</a>
 </div>
