@@ -5,6 +5,7 @@ import sqlite3
 import datetime
 from authlib.integrations.flask_client import OAuth
 from flask import Flask, request, jsonify, send_from_directory, render_template_string, session, redirect, url_for
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 BASE = os.path.dirname(__file__)
 UPLOAD_DIR = os.path.join(BASE, "uploads")
@@ -23,6 +24,7 @@ GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "")
 DB_PATH = os.path.join(BASE, "users.db")
 
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 app.secret_key = os.environ.get("FLASK_SECRET", "change-me-in-production-32chars!")
 app.config["MAX_CONTENT_LENGTH"] = 500 * 1024 * 1024
 
@@ -1755,7 +1757,7 @@ def login():
 
 @app.route("/oauth/google")
 def oauth_google():
-    redirect_uri = "http://ariel.tenenberg.com/oauth/google/callback"
+    redirect_uri = url_for("oauth_google_callback", _external=True)
     return google_oauth.authorize_redirect(redirect_uri)
 
 @app.route("/oauth/google/callback")
