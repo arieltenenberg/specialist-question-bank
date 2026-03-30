@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Classify extracted questions into 6 Areas of Study using keyword matching.
-Reads raw_questions.json, outputs questions.json.
+Reads raw_questions_{subject}.json, outputs specialist_questions.json or methods_questions.json.
 
 Priority order (first match wins):
   1. Probability and Statistics
@@ -19,7 +19,7 @@ Key improvements over v1:
   - Particle disambiguation: particle + "straight line" → Calculus; particle alone → Vectors
   - VECTORS_STRONG_KW checked before Calculus
   - Unsorted (aos=0) is the fallback instead of Functions
-  - Manually reviewed publisher/year sets are preserved from existing questions.json
+  - Manually reviewed publisher/year sets are preserved from existing specialist_questions.json
 """
 
 import json
@@ -35,7 +35,7 @@ args = parser.parse_args()
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 RAW_JSON = os.path.join(BASE, f"raw_questions_{args.subject}.json")
-OUT_JSON = os.path.join(BASE, "questions.json" if args.subject == "specialist" else "methods_questions.json")
+OUT_JSON = os.path.join(BASE, "specialist_questions.json" if args.subject == "specialist" else "methods_questions.json")
 EXISTING_JSON = OUT_JSON  # same file — we load before overwriting
 
 # Publisher/year sets that have been manually reviewed — preserve their classifications (specialist only)

@@ -5,7 +5,6 @@ venv/
 __pycache__/
 *.pyc
 raw_questions_specialist.json
-raw_questions.json
 pipeline_log_*.txt
 users.db
 flags.json

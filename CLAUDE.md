@@ -10,7 +10,7 @@ Questions are classified into Areas of Study (AOS) per subject.
 
 ## Tech Stack
 - **Backend:** Python / Flask (`server.py`), port 8080
-- **Data:** `questions.json` (Specialist), `methods_questions.json` (Methods)
+- **Data:** `specialist_questions.json` (Specialist), `methods_questions.json` (Methods)
 - **Images:** `question_images/` — PNG crops of each question and solution (not in git)
 - **Pipeline:** `pipeline/` — docx → PDF → image crops → classification
 - **Local dev:** `DEV_MODE=1 python3 server.py` (bypasses Google OAuth)
@@ -32,9 +32,10 @@ Questions are classified into Areas of Study (AOS) per subject.
 | `/api/flag` | Flag a question (subject in POST body) |
 
 ### Data & Config
-- `questions.json` — Specialist questions
+- `specialist_questions.json` — Specialist questions
 - `methods_questions.json` — Methods questions
 - `raw_questions_methods.json` — Methods raw extracted text (in git — needed for classifier analysis)
+- `raw_questions_specialist.json` — Specialist raw extracted text (gitignored — local only)
 - `settings.json` — Per-subject publisher visibility (gitignored)
 - `get_subject_config(subject)` helper returns data, file path, AOS map, and subject name
 - Colour themes: Specialist = teal (`#196061`, `#042f3a`), Methods = blue (`#2563eb`, `#1e3a5f`)
@@ -77,6 +78,7 @@ Being imported batch by batch. All pipeline work is done locally.
 - Methods classifier is in `classify_for_methods()` and `METHODS_*` keyword sets at the bottom of that file — do not touch the Specialist logic above it
 - When confidence is low, mark as **Unsorted (aos=0)** — never guess
 - Manual corrections are the ground truth used to improve the classifier
+- Classifier improvements require a deliberate session: commit the sorted JSON, then show corrections to Claude to update keyword rules in `03_classify.py`
 
 ### Known Classifier Issues (Methods)
 - Normal distribution questions may not trigger Continuous Probability if they use unusual phrasing
@@ -102,7 +104,12 @@ Being imported batch by batch. All pipeline work is done locally.
 
 ## Local Pipeline Workflow
 
-All Methods work is done locally. The pipeline is fully portable — no server-specific paths.
+All pipeline work (importing exams, classification, reclassification) is done locally. The server is never used for classification.
+
+### Workflow rules
+- **All classification and reclassification is done locally** — commit and deploy. Never reclassify on the server; a `git pull` would overwrite any server-side changes.
+- **Flagged questions**: students flag via the browse UI; flags are stored in `flags.json` (gitignored, server-only). Use flags as a reminder list only — dismiss on the server, fix locally in the next session.
+- Fixing a flag means reclassifying the question → always do this locally.
 
 ### Per-batch workflow
 1. Upload exam zip via `http://localhost:8080/admin?subject=methods` (with `DEV_MODE=1` server running)
@@ -129,7 +136,7 @@ All Methods work is done locally. The pipeline is fully portable — no server-s
 
 ### Pipeline scripts (run from project root)
 ```bash
-python3 pipeline/01_convert_docx.py --subject methods   # DOCX → PDF (needs LibreOffice)
+python3 pipeline/01_convert_docx.py --subject methods      # DOCX → PDF (needs LibreOffice)
 python3 pipeline/02_extract_and_crop.py --subject methods  # extract text + crop images
 python3 pipeline/03_classify.py --subject methods          # classify → methods_questions.json
 ```
@@ -185,3 +192,4 @@ pip install pymupdf Pillow
 
 ## Future Improvements
 - [ ] Set up automated SSL renewal check (Certbot should handle this automatically)
+- [ ] Move HTML templates out of server.py into a `templates/` folder
