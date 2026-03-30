@@ -156,8 +156,9 @@ METHODS_AOS = {
     3: "Integration",
     4: "Discrete Probability",
     5: "Continuous Probability",
-    6: "Core Content",
-    7: "Probability and Statistics",
+    6: "Core Content",                # Exam 2 only
+    7: "Probability and Statistics",  # Exam 2 only
+    8: "Pseudocode",                  # Exam 1 only
 }
 
 SUBJECT_CONFIG = {
@@ -602,7 +603,7 @@ let filters = { aos: null, tag: null, extended: null, year: null, publisher: nul
 
 const sectionLabels = { short_answer: 'Short Answer', multiple_choice: 'Multiple Choice', extended_response: 'Extended Response' };
 
-// Methods tag colours: AOS 1–5 (shades of blue), exam 2 (grey)
+// Methods tag colours: AOS 1–5 (shades of blue), exam 2 (grey), pseudocode (purple)
 const METHODS_TAG_STYLES = {
   1: { bg:'#bfdbfe', color:'#1e3a5f' },
   2: { bg:'#93c5fd', color:'#1e3a5f' },
@@ -611,6 +612,7 @@ const METHODS_TAG_STYLES = {
   5: { bg:'#1d4ed8', color:'#ffffff' },
   6: { bg:'#e5e7eb', color:'#374151' },
   7: { bg:'#e5e7eb', color:'#374151' },
+  8: { bg:'#ede9fe', color:'#5b21b6' },
 };
 
 fetch('/api/questions?subject={{ subject }}').then(r => r.json()).then(data => {
@@ -1090,6 +1092,9 @@ body { font-family:'Poppins',system-ui,sans-serif; background:#0f1117; color:#e2
   <h1>{% if flagged_mode %}Flagged Questions ({{ questions|length }}){% elif unsorted_mode %}Unsorted Questions ({{ questions|length }}){% else %}Classifying: {{ publisher }} {{ year }}{% endif %}</h1>
   <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
   <span class="progress-label" id="progress-label">0 / {{ questions|length }}</span>
+  {% if is_methods %}
+  <button id="save-all-btn" onclick="saveAllProgress()" style="font-family:inherit;font-size:.82rem;font-weight:600;padding:7px 18px;border-radius:8px;border:none;background:#4ade80;color:#0a1a0a;cursor:pointer;white-space:nowrap;transition:background .15s">Save All</button>
+  {% endif %}
 </div>
 <div class="exam-nav">
   <a class="exam-nav-btn flagged-tab {% if flagged_mode %}current{% endif %}"
@@ -1135,9 +1140,6 @@ body { font-family:'Poppins',system-ui,sans-serif; background:#0f1117; color:#e2
       Unsorted
     </button>
   </div>
-  <div style="padding:0 20px 14px">
-    <button class="aos-btn" style="font-size:.75rem;padding:5px 14px;opacity:.7" onclick="methodsSaveTags('{{ q.id }}')">Save tags ↵</button>
-  </div>
   {% elif is_methods and q.section == 'extended_response' %}
   {# Methods exam 2: binary radio — Core Content vs Probability and Statistics #}
   <div class="aos-buttons">
@@ -1177,87 +1179,141 @@ body { font-family:'Poppins',system-ui,sans-serif; background:#0f1117; color:#e2
 <script>
 const total = {{ questions|length }};
 const IS_METHODS_CLASSIFY = {{ is_methods|tojson }};
+const METHODS_AOS_EXAM1 = {{ methods_aos_exam1|tojson }};
 let classified = document.querySelectorAll('.qblock.classified').length;
-// Track pending multi-tags for Methods exam 1 questions: { id: Set of AOS numbers }
+// Track pending multi-tags for Methods exam 1: { id: Set of AOS numbers }
 const pendingTags = {};
+// Track pending single-tag changes (exam 2 + unsorted): { id: {aos, aos_name} }
+const pendingSingle = {};
 updateProgress();
 
 function classify(id, aos, aosName, btn) {
   const block = document.getElementById('block-' + id);
   const status = document.getElementById('status-' + id);
-
-  // Update button states
   block.querySelectorAll('.aos-btn').forEach(b => b.classList.remove('active', 'active-new'));
   btn.classList.add('active-new');
-
   const wasClassified = block.classList.contains('classified');
   if (!wasClassified) { classified++; block.classList.add('classified'); updateProgress(); }
   status.textContent = aosName;
   status.className = (aos === 0) ? 'status unsorted-status' : (aos === 7 && !IS_METHODS_CLASSIFY) ? 'status pseudocode-status' : 'status saved';
 
-  fetch('/api/classify', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id, aos, aos_name: aosName, subject: '{{ subject }}',
-                           tags: [aos], tag_names: [aosName] })
-  }).then(r => r.json()).then(data => {
-    if (data.ok) { btn.classList.remove('active-new'); btn.classList.add('active'); }
-  });
+  if (IS_METHODS_CLASSIFY) {
+    // Queue for batch save
+    pendingSingle[id] = { aos, aos_name: aosName, tags: [aos], tag_names: [aosName] };
+    markSaveBtn('unsaved');
+  } else {
+    fetch('/api/classify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, aos, aos_name: aosName, subject: '{{ subject }}' })
+    }).then(r => r.json()).then(data => {
+      if (data.ok) { btn.classList.remove('active-new'); btn.classList.add('active'); }
+    });
+  }
 }
 
 // Methods exam 1: toggle a tag on/off
 function methodsToggleTag(id, aos, aosName, btn) {
-  if (!pendingTags[id]) pendingTags[id] = new Set();
+  if (!pendingTags[id]) pendingTags[id] = new Map();
   if (pendingTags[id].has(aos)) {
     pendingTags[id].delete(aos);
     btn.classList.remove('active', 'active-new');
   } else {
-    pendingTags[id].add(aos);
+    pendingTags[id].set(aos, aosName);
     btn.classList.add('active-new');
     btn.classList.remove('active');
-    // Clear unsorted if any real tag selected
     const block = document.getElementById('block-' + id);
     block.querySelectorAll('.aos-btn.unsorted').forEach(b => b.classList.remove('active', 'active-new'));
   }
+  // Mark block as having pending changes
+  const block = document.getElementById('block-' + id);
+  const wasClassified = block.classList.contains('classified');
+  if (!wasClassified && pendingTags[id].size > 0) { classified++; block.classList.add('classified'); updateProgress(); }
+  const status = document.getElementById('status-' + id);
+  if (pendingTags[id].size > 0) {
+    status.textContent = [...pendingTags[id].values()].join(', ') + ' *';
+    status.className = 'status unsaved';
+  }
+  markSaveBtn('unsaved');
 }
 
-// Methods exam 1: mark as unsorted
+// Methods exam 1: mark as unsorted (immediate queue)
 function methodsSetUnsorted(id, btn) {
-  pendingTags[id] = new Set();
+  pendingTags[id] = new Map();
   const block = document.getElementById('block-' + id);
   block.querySelectorAll('.aos-btn').forEach(b => b.classList.remove('active', 'active-new'));
   btn.classList.add('active-new');
-  classify(id, 0, 'Unsorted', btn);
+  pendingSingle[id] = { aos: 0, aos_name: 'Unsorted', tags: [0], tag_names: ['Unsorted'] };
+  const status = document.getElementById('status-' + id);
+  status.textContent = 'Unsorted *';
+  status.className = 'status unsorted-status';
+  markSaveBtn('unsaved');
 }
 
-// Methods exam 1: commit selected tags to server
-function methodsSaveTags(id) {
-  const tags = pendingTags[id] ? [...pendingTags[id]] : [];
-  if (!tags.length) return;
-  const aosMap = {{ methods_aos_exam1|tojson }};
-  const tag_names = tags.map(t => aosMap[t] || String(t));
-  const primaryAos = tags[0];
-  const primaryName = tag_names[0];
+function markSaveBtn(state) {
+  const btn = document.getElementById('save-all-btn');
+  if (!btn) return;
+  if (state === 'unsaved') {
+    btn.textContent = 'Save All *';
+    btn.style.background = '#facc15';
+    btn.style.color = '#1a1200';
+  } else if (state === 'saving') {
+    btn.textContent = 'Saving…';
+    btn.style.background = '#60a5fa';
+    btn.style.color = '#fff';
+  } else {
+    btn.textContent = 'Saved ✓';
+    btn.style.background = '#4ade80';
+    btn.style.color = '#0a1a0a';
+  }
+}
 
-  const block = document.getElementById('block-' + id);
-  const status = document.getElementById('status-' + id);
-  const wasClassified = block.classList.contains('classified');
-  if (!wasClassified) { classified++; block.classList.add('classified'); updateProgress(); }
-  status.textContent = tag_names.join(', ');
-  status.className = 'status saved';
+function saveAllProgress() {
+  const updates = [];
 
-  fetch('/api/classify', {
+  // Collect multi-tag changes (exam 1)
+  for (const [id, tagMap] of Object.entries(pendingTags)) {
+    if (tagMap.size === 0) continue;
+    const tags = [...tagMap.keys()];
+    const tag_names = [...tagMap.values()];
+    updates.push({ id, aos: tags[0], aos_name: tag_names[0], tags, tag_names });
+  }
+  // Collect single-tag changes (exam 2 / unsorted)
+  for (const [id, u] of Object.entries(pendingSingle)) {
+    // Don't double-add if already in multi-tag
+    if (!pendingTags[id] || pendingTags[id].size === 0) {
+      updates.push({ id, ...u });
+    }
+  }
+
+  if (!updates.length) { markSaveBtn('saved'); return; }
+  markSaveBtn('saving');
+
+  fetch('/api/classify/batch', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id, aos: primaryAos, aos_name: primaryName,
-                           tags, tag_names, subject: '{{ subject }}' })
+    body: JSON.stringify({ subject: '{{ subject }}', updates })
   }).then(r => r.json()).then(data => {
     if (data.ok) {
-      // Flip active-new → active on all selected buttons
-      block.querySelectorAll('.aos-btn.active-new').forEach(b => {
-        b.classList.remove('active-new'); b.classList.add('active');
+      // Flip active-new → active on all touched blocks
+      updates.forEach(u => {
+        const block = document.getElementById('block-' + u.id);
+        if (block) {
+          block.querySelectorAll('.aos-btn.active-new').forEach(b => {
+            b.classList.remove('active-new'); b.classList.add('active');
+          });
+          const status = document.getElementById('status-' + u.id);
+          if (status) {
+            const label = u.tag_names ? u.tag_names.join(', ') : u.aos_name;
+            status.textContent = label;
+            status.className = u.aos === 0 ? 'status unsorted-status' : 'status saved';
+          }
+        }
       });
-      delete pendingTags[id];
+      // Clear pending state
+      for (const id in pendingTags) delete pendingTags[id];
+      for (const id in pendingSingle) delete pendingSingle[id];
+      markSaveBtn('saved');
     }
   });
 }
@@ -1338,7 +1394,9 @@ def api_classify():
     if not qid or aos is None:
         return jsonify(error="missing fields"), 400
     cfg = get_subject_config(subject)
-    subject_data = cfg["data"]()
+    # Always read from file (not memory) to avoid multi-worker data loss
+    with open(cfg["file"]) as f:
+        subject_data = json.load(f)
     for q in subject_data:
         if q["id"] == qid:
             q["aos"] = aos
@@ -1352,6 +1410,34 @@ def api_classify():
     with open(cfg["file"], "w") as f:
         json.dump(subject_data, f, indent=2)
     return jsonify(ok=True)
+
+@app.route("/api/classify/batch", methods=["POST"])
+def api_classify_batch():
+    if not admin_required():
+        return jsonify(error="forbidden"), 403
+    data = request.get_json()
+    subject = data.get("subject", "specialist")
+    updates = data.get("updates", [])  # list of {id, aos, aos_name, tags, tag_names}
+    if not updates:
+        return jsonify(ok=True, saved=0)
+    cfg = get_subject_config(subject)
+    with open(cfg["file"]) as f:
+        subject_data = json.load(f)
+    update_map = {u["id"]: u for u in updates}
+    saved = 0
+    for q in subject_data:
+        if q["id"] in update_map:
+            u = update_map[q["id"]]
+            q["aos"] = u["aos"]
+            q["aos_name"] = u["aos_name"]
+            if subject == "methods":
+                q["tags"] = u.get("tags", [u["aos"]])
+                q["tag_names"] = u.get("tag_names", [u["aos_name"]])
+            saved += 1
+    with open(cfg["file"], "w") as f:
+        json.dump(subject_data, f, indent=2)
+    return jsonify(ok=True, saved=saved)
+
 
 @app.route("/classify")
 def classify_page():
@@ -1395,7 +1481,7 @@ def classify_page():
 
     is_methods = subject == "methods"
     # For Methods classify page: split AOS map into exam-1 (1–5) and exam-2 (6–7) groups
-    methods_aos_exam1 = {k: v for k, v in aos_map.items() if 1 <= k <= 5} if is_methods else {}
+    methods_aos_exam1 = {k: v for k, v in aos_map.items() if 1 <= k <= 5 or k == 8} if is_methods else {}
     methods_aos_exam2 = {k: v for k, v in aos_map.items() if k in (6, 7)} if is_methods else {}
 
     return render_template_string(CLASSIFY_HTML, questions=questions, publisher=publisher, year=year,

@@ -63,8 +63,9 @@ METHODS_AOS = {
     3: "Integration",
     4: "Discrete Probability",
     5: "Continuous Probability",
-    6: "Core Content",            # Exam 2 only
+    6: "Core Content",                # Exam 2 only
     7: "Probability and Statistics",  # Exam 2 only
+    8: "Pseudocode",                  # Exam 1 only
 }
 
 AOS = SPECIALIST_AOS if args.subject == "specialist" else METHODS_AOS
@@ -521,7 +522,11 @@ def classify_for_methods(text, section):
             return 7, METHODS_AOS[7], [7], [METHODS_AOS[7]]
         return 6, METHODS_AOS[6], [6], [METHODS_AOS[6]]
 
-    # Exam 1 (MCQ + short answer): AOS 1–5, multi-tag possible
+    # Exam 1 (MCQ + short answer): AOS 1–5 + Pseudocode, multi-tag possible
+
+    # Pseudocode — checked first, very distinct question type (reuses Specialist keywords)
+    if has_match(t, PSEUDOCODE_KW):
+        return 8, METHODS_AOS[8], [8], [METHODS_AOS[8]]
 
     is_continuous = has_match(t, METHODS_CONTINUOUS_PROB_KW)
     is_discrete = has_match(t, METHODS_DISCRETE_PROB_KW)
