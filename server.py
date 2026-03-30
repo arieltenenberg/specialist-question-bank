@@ -1528,6 +1528,7 @@ def _git_push_classifications(filepath, subject, count):
         subprocess.run(["git", "add", filename], cwd=BASE, capture_output=True)
         result = subprocess.run(["git", "commit", "-m", msg], cwd=BASE, capture_output=True)
         if result.returncode == 0:
+            subprocess.run(["git", "pull", "--rebase"], cwd=BASE, capture_output=True)
             subprocess.run(["git", "push"], cwd=BASE, capture_output=True)
     except Exception:
         pass
