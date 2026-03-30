@@ -656,6 +656,18 @@ def main():
         aos_counts[f"{out['aos']}. {out['aos_name']}"] += 1
         output.append(out)
 
+    # For Methods: merge with existing questions so previous batches are never lost.
+    # Questions in the current raw batch are freshly classified (or preserved above).
+    # Questions from previous batches that aren't in this raw file are kept as-is.
+    if args.subject == "methods" and manual:
+        new_ids = {q["id"] for q in output}
+        carried = [q for q in existing if q["id"] not in new_ids]
+        if carried:
+            print(f"Carrying forward {len(carried)} questions from previous batches")
+            for q in carried:
+                aos_counts[f"{q['aos']}. {q['aos_name']}"] += 1
+        output = carried + output
+
     with open(OUT_JSON, "w") as f:
         json.dump(output, f, indent=2)
 
