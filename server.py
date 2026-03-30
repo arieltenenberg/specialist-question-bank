@@ -1445,7 +1445,8 @@ def classify_page():
         return redirect(url_for("admin_login") + "?next=/classify")
     subject = request.args.get("subject", "specialist")
     cfg = get_subject_config(subject)
-    subject_data = cfg["data"]()
+    with open(cfg["file"]) as f:
+        subject_data = json.load(f)
     aos_map = cfg["aos_map"]
 
     unsorted_mode = request.args.get("unsorted") == "1"
