@@ -1409,6 +1409,7 @@ def api_classify():
         return jsonify(error="question not found"), 404
     with open(cfg["file"], "w") as f:
         json.dump(subject_data, f, indent=2)
+    threading.Thread(target=_git_push_classifications, args=(cfg["file"], subject, 1), daemon=True).start()
     return jsonify(ok=True)
 
 @app.route("/api/classify/batch", methods=["POST"])
