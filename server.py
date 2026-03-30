@@ -1436,6 +1436,7 @@ def api_classify_batch():
             saved += 1
     with open(cfg["file"], "w") as f:
         json.dump(subject_data, f, indent=2)
+    threading.Thread(target=_git_push_classifications, args=(cfg["file"], subject, saved), daemon=True).start()
     return jsonify(ok=True, saved=saved)
 
 
@@ -1518,6 +1519,19 @@ function upload(file){const row=document.createElement('div');row.className='fil
 @app.route("/upload-page")
 def upload_page():
     return render_template_string(UPLOAD_HTML)
+
+def _git_push_classifications(filepath, subject, count):
+    """Commit and push the updated questions file so local can git pull to see changes."""
+    try:
+        filename = os.path.basename(filepath)
+        msg = f"Manual classifications: {count} {subject} questions updated"
+        subprocess.run(["git", "add", filename], cwd=BASE, capture_output=True)
+        result = subprocess.run(["git", "commit", "-m", msg], cwd=BASE, capture_output=True)
+        if result.returncode == 0:
+            subprocess.run(["git", "push"], cwd=BASE, capture_output=True)
+    except Exception:
+        pass
+
 
 def _run_pipeline(subject, base_dir):
     log_path = os.path.join(base_dir, f"pipeline_log_{subject}.txt")
