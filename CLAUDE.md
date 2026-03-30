@@ -104,20 +104,39 @@ Heffernan — 2025 (first batch imported, 67 questions)
 - Explain the plan before implementing significant changes
 - Flag when something looks wrong (e.g. wrong username in a path)
 
-### Classification Workflow
+### Classification Workflow (fully local)
+Everything runs locally. No SSH or EC2 Instance Connect needed for normal work.
+
+**Per-batch workflow:**
+1. Place exam DOCX files in `uploads/methods/YYYY/Publisher/`
+2. `python3 pipeline/01_convert_docx.py --subject methods`
+3. `python3 pipeline/02_extract_and_crop.py --subject methods`
+4. `python3 pipeline/03_classify.py --subject methods`
+5. `DEV_MODE=1 python3 server.py` → visit `http://localhost:8080/classify?subject=methods&unsorted=1`
+6. Sort Unsorted questions, Save All
+7. `git add methods_questions.json raw_questions_methods.json && git commit -m "..." && git push`
+8. scp new images to server (see Image Deployment below)
+9. SSH to server: `cd ~/newapp && git pull origin master && sudo systemctl restart webapp`
+
+**After git pull, Claude has `raw_questions_methods.json` with full extracted text → proper classifier analysis.**
+
+Other rules:
 - Do one publisher/year set at a time
 - Analyse corrections after each batch before moving to the next
-- Never re-run the classifier on all questions until enough manual data has been collected
 - Mark genuinely ambiguous questions as Unsorted (red) — don't force a category
-- After sorting on the live site, push from the server: `git add methods_questions.json && git commit -m "..." && git push`
-- Then pull locally to analyse corrections and improve `pipeline/03_classify.py`
+- `DEV_MODE=1` bypasses Google OAuth — only use locally, never set on the server
+
+**One-time local setup (if not done):**
+```bash
+brew install libreoffice
+pip install pymupdf Pillow
+```
 
 ### Image Deployment
-- `question_images/` is NOT in git (124MB of binary files — intentional)
-- Images live on the server and are uploaded once via scp:
-  `scp -i "/path/to/specialistquestionbankkey.pem" -r question_images ubuntu@3.27.217.188:~/newapp/`
-- Key file location: `/Users/arieltenenberg/Desktop/Specialist Website/specialistquestionbankkey.pem`
-- When new exam images are generated locally, scp just the new files to the server
+- `question_images/` is NOT in git (binary files — intentional)
+- `raw_questions_methods.json` IS in git (needed for classifier analysis — contains extracted text)
+- After each pipeline batch, scp only the new image files to the server:
+  `scp -i "/Users/arieltenenberg/Desktop/Specialist Website/specialistquestionbankkey.pem" -r question_images ubuntu@3.27.217.188:~/newapp/`
 
 ### UI/UX Standards
 - Educator perspective: solutions hidden by default, student must reveal

@@ -404,6 +404,9 @@ METHODS_CONTINUOUS_PROB_KW = [
     r"probability\s+density\s+function",
     r"\bpdf\b",
     r"probability\s+density",
+    r"normally\s+distributed",   # "X is normally distributed with mean..."
+    r"normal\s+distribution",    # "follows a normal distribution"
+    r"standard\s+normal",        # "standard normal distribution"
 ]
 
 METHODS_DISCRETE_PROB_KW = [
@@ -419,6 +422,9 @@ METHODS_DISCRETE_PROB_KW = [
     r"significance\s+level",
     r"hypothesis",
     r"p[\-\s]?value",
+    r"\bpr\s*\(",                # Pr(X = k) notation
+    r"x\s*[~∼]\s*b\s*\(",       # X ~ B(n, p) notation
+    r"\brandom\s+variable\b",   # "a random variable X has..."
 ]
 
 # General probability — used to detect exam 2 probability questions
@@ -444,6 +450,9 @@ METHODS_INTEGRATION_KW = [
     r"area\s+under",
     r"area\s+between",
     r"area\s+bound",
+    r"total\s+area",                         # "find the total area enclosed by..."
+    r"area\s+of\s+(?:the\s+)?region",        # "the area of the region bounded by..."
+    r"net\s+(?:area|change|displacement)",   # net area / net change via integration
     r"average\s+value",
     r"hence.*(?:evaluate|find.*integral|antiderivat)",
     r"find.*antiderivat.*hence",
@@ -472,6 +481,11 @@ METHODS_DIFF_KW = [
     r"chain\s+rule",
     r"product\s+rule",
     r"quotient\s+rule",
+    r"\bincreasing\b",           # "f is increasing on (a, b)"
+    r"\bdecreasing\b",           # "f is decreasing on (a, b)"
+    r"concav",                   # "concave up", "concave down"
+    r"inflect",                  # "point of inflection"
+    r"f\s*'\s*\(",               # f'(x) notation in text
 ]
 
 METHODS_FUNCTIONS_KW = [

@@ -10,6 +10,8 @@ from authlib.integrations.flask_client import OAuth
 from flask import Flask, request, jsonify, send_from_directory, render_template_string, session, redirect, url_for
 from werkzeug.middleware.proxy_fix import ProxyFix
 
+DEV_MODE = os.environ.get("DEV_MODE") == "1"
+
 BASE = os.path.dirname(__file__)
 UPLOAD_DIR = os.path.join(BASE, "uploads")
 ADMIN_UPLOAD_DIR = os.path.join(BASE, "admin_uploads")
@@ -100,6 +102,8 @@ def current_user():
 
 def check_approved():
     """Return a redirect if user is not logged in or not yet approved, else None."""
+    if DEV_MODE:
+        return None
     user = current_user()
     if not user:
         return redirect(url_for("login"))
@@ -2286,6 +2290,8 @@ function togglePublisher(publisher, checkbox) {
 </html>"""
 
 def admin_required():
+    if DEV_MODE:
+        return True
     return session.get("is_admin") is True
 
 @app.route("/login")
