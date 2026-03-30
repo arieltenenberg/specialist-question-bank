@@ -402,7 +402,8 @@ def process_pdf(doc, markers, exam_info):
         # Build unique ID
         pub_slug = exam_info["publisher"].lower().replace(" ", "_").replace("-", "_")
         section_code = marker["section"][0]  # s, m, or e
-        qid = f"{pub_slug}_{exam_info['year']}_exam{exam_info['exam_num']}_{section_code}_q{marker['num']}"
+        subject_prefix = f"{args.subject}_" if args.subject != "specialist" else ""
+        qid = f"{subject_prefix}{pub_slug}_{exam_info['year']}_exam{exam_info['exam_num']}_{section_code}_q{marker['num']}"
 
         # Crop question image
         q_img = crop_region(doc, page_start, y_start, page_end, y_end)
