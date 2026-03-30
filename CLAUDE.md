@@ -58,10 +58,14 @@ Questions are classified into Areas of Study (AOS) per subject.
 ## Mathematical Methods — Areas of Study (AOS)
 | # | Name |
 |---|------|
-| 1 | Functions and Graphs |
-| 2 | Algebra |
-| 3 | Calculus |
-| 4 | Probability and Statistics |
+| 1 | Algebra and Functions |
+| 2 | Differentiation |
+| 3 | Integration |
+| 4 | Discrete Probability |
+| 5 | Continuous Probability |
+| 6 | Core Content (Exam 2 only) |
+| 7 | Probability and Statistics (Exam 2 only) |
+| 8 | Pseudocode (Exam 1 only) |
 | 0 | Unsorted (flagged for manual review) |
 
 ## Specialist Publishers in the Dataset
@@ -69,13 +73,13 @@ Heffernan, Insight, Kilbaha, MAV, NEAP, QATs-Janison, Sequoia, TSSM
 Years: 2023, 2024, 2025
 
 ## Methods Publishers in the Dataset
-To be added — awaiting first exam import.
+Heffernan — 2025 (first batch imported, 67 questions)
 
 ## Classification Approach
 - Text is extracted from PDFs using PyMuPDF (text layer, not OCR)
 - Classified via keyword/regex matching in `pipeline/03_classify.py`
 - When confidence is low, mark as **Unsorted (aos=0)** — never guess
-- Manual review tool: `http://localhost:8080/classify`
+- Manual review tool: `https://ariel.tenenberg.com/classify` (Google auth required — use live site, not localhost)
 - Manual corrections are the ground truth used to improve the classifier
 
 ### Known Classifier Issues
@@ -105,7 +109,15 @@ To be added — awaiting first exam import.
 - Analyse corrections after each batch before moving to the next
 - Never re-run the classifier on all questions until enough manual data has been collected
 - Mark genuinely ambiguous questions as Unsorted (red) — don't force a category
-- Methods classifier rules to be defined before first exam import — user will provide sorting instructions
+- After sorting on the live site, push from the server: `git add methods_questions.json && git commit -m "..." && git push`
+- Then pull locally to analyse corrections and improve `pipeline/03_classify.py`
+
+### Image Deployment
+- `question_images/` is NOT in git (124MB of binary files — intentional)
+- Images live on the server and are uploaded once via scp:
+  `scp -i "/path/to/specialistquestionbankkey.pem" -r question_images ubuntu@3.27.217.188:~/newapp/`
+- Key file location: `/Users/arieltenenberg/Desktop/Specialist Website/specialistquestionbankkey.pem`
+- When new exam images are generated locally, scp just the new files to the server
 
 ### UI/UX Standards
 - Educator perspective: solutions hidden by default, student must reveal
