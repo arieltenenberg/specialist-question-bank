@@ -1409,7 +1409,6 @@ def api_classify():
         return jsonify(error="question not found"), 404
     with open(cfg["file"], "w") as f:
         json.dump(subject_data, f, indent=2)
-    threading.Thread(target=_git_push_classifications, args=(cfg["file"], subject, 1), daemon=True).start()
     return jsonify(ok=True)
 
 @app.route("/api/classify/batch", methods=["POST"])
@@ -1437,7 +1436,6 @@ def api_classify_batch():
             saved += 1
     with open(cfg["file"], "w") as f:
         json.dump(subject_data, f, indent=2)
-    threading.Thread(target=_git_push_classifications, args=(cfg["file"], subject, saved), daemon=True).start()
     return jsonify(ok=True, saved=saved)
 
 
@@ -1520,27 +1518,6 @@ function upload(file){const row=document.createElement('div');row.className='fil
 @app.route("/upload-page")
 def upload_page():
     return render_template_string(UPLOAD_HTML)
-
-def _git_push_classifications(filepath, subject, count):
-    """Commit and push the updated questions file so local can git pull to see changes."""
-    log_path = os.path.join(BASE, "git_push_log.txt")
-    try:
-        filename = os.path.basename(filepath)
-        msg = f"Manual classifications: {count} {subject} questions updated"
-        with open(log_path, "w") as log:
-            r1 = subprocess.run(["git", "add", filename], cwd=BASE, capture_output=True, text=True)
-            log.write(f"add: rc={r1.returncode}\n{r1.stdout}{r1.stderr}\n")
-            r2 = subprocess.run(["git", "commit", "-m", msg], cwd=BASE, capture_output=True, text=True)
-            log.write(f"commit: rc={r2.returncode}\n{r2.stdout}{r2.stderr}\n")
-            if r2.returncode == 0:
-                r3 = subprocess.run(["git", "pull", "--rebase"], cwd=BASE, capture_output=True, text=True)
-                log.write(f"pull: rc={r3.returncode}\n{r3.stdout}{r3.stderr}\n")
-                r4 = subprocess.run(["git", "push"], cwd=BASE, capture_output=True, text=True)
-                log.write(f"push: rc={r4.returncode}\n{r4.stdout}{r4.stderr}\n")
-    except Exception as e:
-        with open(log_path, "a") as log:
-            log.write(f"exception: {e}\n")
-
 
 def _run_pipeline(subject, base_dir):
     log_path = os.path.join(base_dir, f"pipeline_log_{subject}.txt")
