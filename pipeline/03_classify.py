@@ -504,10 +504,10 @@ METHODS_FUNCTIONS_KW = [
 ]
 
 
-def classify_for_methods(text, exam_type):
+def classify_for_methods(text, section):
     """
     Classify a Methods question. Returns (primary_aos, primary_name, tags_list, tag_names_list).
-    exam_type: 1 (MCQ/short answer) or 2 (extended response)
+    section: 'extended_response' | 'multiple_choice' | 'short_answer'
     """
     if not text or not text.strip():
         return 0, METHODS_AOS[0], [0], [METHODS_AOS[0]]
@@ -515,8 +515,8 @@ def classify_for_methods(text, exam_type):
     text = strip_header(text)
     t = text.lower()
 
-    # Exam 2: binary classification — Core Content vs Probability and Statistics
-    if exam_type == 2:
+    # Extended response only: binary classification — Core Content vs Probability and Statistics
+    if section == 'extended_response':
         if has_match(t, METHODS_PROB_GENERAL_KW):
             return 7, METHODS_AOS[7], [7], [METHODS_AOS[7]]
         return 6, METHODS_AOS[6], [6], [METHODS_AOS[6]]
@@ -564,9 +564,9 @@ def classify_for_methods(text, exam_type):
 # Main
 # ---------------------------------------------------------------------------
 
-def classify_for_subject(text, subject, exam_type=1):
+def classify_for_subject(text, subject, section='short_answer'):
     if subject == "methods":
-        return classify_for_methods(text, exam_type)
+        return classify_for_methods(text, section)
     aos_num, aos_name = classify_question(text)
     return aos_num, aos_name, [aos_num], [aos_name]
 
@@ -618,9 +618,9 @@ def main():
                 out["tag_names"] = manual[qid]["tag_names"]
             preserved += 1
         else:
-            exam_type = q.get("exam_type", 1)
+            section = q.get("section", "short_answer")
             aos_num, aos_name, tags, tag_names = classify_for_subject(
-                q.get("extracted_text", ""), args.subject, exam_type
+                q.get("extracted_text", ""), args.subject, section
             )
             out["aos"] = aos_num
             out["aos_name"] = aos_name
