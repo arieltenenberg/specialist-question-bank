@@ -1523,16 +1523,23 @@ def upload_page():
 
 def _git_push_classifications(filepath, subject, count):
     """Commit and push the updated questions file so local can git pull to see changes."""
+    log_path = os.path.join(BASE, "git_push_log.txt")
     try:
         filename = os.path.basename(filepath)
         msg = f"Manual classifications: {count} {subject} questions updated"
-        subprocess.run(["git", "add", filename], cwd=BASE, capture_output=True)
-        result = subprocess.run(["git", "commit", "-m", msg], cwd=BASE, capture_output=True)
-        if result.returncode == 0:
-            subprocess.run(["git", "pull", "--rebase"], cwd=BASE, capture_output=True)
-            subprocess.run(["git", "push"], cwd=BASE, capture_output=True)
-    except Exception:
-        pass
+        with open(log_path, "w") as log:
+            r1 = subprocess.run(["git", "add", filename], cwd=BASE, capture_output=True, text=True)
+            log.write(f"add: rc={r1.returncode}\n{r1.stdout}{r1.stderr}\n")
+            r2 = subprocess.run(["git", "commit", "-m", msg], cwd=BASE, capture_output=True, text=True)
+            log.write(f"commit: rc={r2.returncode}\n{r2.stdout}{r2.stderr}\n")
+            if r2.returncode == 0:
+                r3 = subprocess.run(["git", "pull", "--rebase"], cwd=BASE, capture_output=True, text=True)
+                log.write(f"pull: rc={r3.returncode}\n{r3.stdout}{r3.stderr}\n")
+                r4 = subprocess.run(["git", "push"], cwd=BASE, capture_output=True, text=True)
+                log.write(f"push: rc={r4.returncode}\n{r4.stdout}{r4.stderr}\n")
+    except Exception as e:
+        with open(log_path, "a") as log:
+            log.write(f"exception: {e}\n")
 
 
 def _run_pipeline(subject, base_dir):
