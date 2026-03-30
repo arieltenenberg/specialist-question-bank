@@ -425,6 +425,8 @@ METHODS_DISCRETE_PROB_KW = [
     r"\bpr\s*\(",                # Pr(X = k) notation
     r"x\s*[~∼]\s*b\s*\(",       # X ~ B(n, p) notation
     r"\brandom\s+variable\b",   # "a random variable X has..."
+    r"\bprobability\b",         # "the probability that..." — safe fallback since continuous is checked first
+    r"\bwith(?:out)?\s+replacement\b",  # "chosen without replacement"
 ]
 
 # General probability — used to detect exam 2 probability questions
@@ -447,6 +449,7 @@ METHODS_INTEGRATION_KW = [
     r"antiderivat",
     r"∫",
     r"\bdx\b",
+    r"\bdt\b",                               # "∫ f(t) dt" — integral with dt variable
     r"area\s+under",
     r"area\s+between",
     r"area\s+bound",
@@ -462,7 +465,7 @@ METHODS_INTEGRATION_KW = [
 
 METHODS_DIFF_KW = [
     r"differentiat",
-    r"\bderivative\b",
+    r"\bderivatives?\b",         # "derivative" or "derivatives"
     r"\bd\s*/\s*dx\b",
     r"\bdy\s*/\s*dx\b",
     r"stationary\s+point",
@@ -471,6 +474,8 @@ METHODS_DIFF_KW = [
     r"minimum.*value",
     r"local\s+(?:max|min)",
     r"optimis",        # optimise, optimisation
+    r"\bmaximis",      # maximise, maximises (AU spelling)
+    r"\bminimis",      # minimise, minimises (AU spelling)
     r"tangent\s+(?:to|at|line)",
     r"normal\s+to",
     r"average\s+rate\s+of\s+change",
@@ -485,7 +490,8 @@ METHODS_DIFF_KW = [
     r"\bdecreasing\b",           # "f is decreasing on (a, b)"
     r"concav",                   # "concave up", "concave down"
     r"inflect",                  # "point of inflection"
-    r"f\s*'\s*\(",               # f'(x) notation in text
+    r"\bnewton.?s\s+method\b",   # Newton's method — root-finding via differentiation
+    r"\bcontinuous\s+at\b",      # "f is continuous at x = 1" — continuity in calculus
 ]
 
 METHODS_FUNCTIONS_KW = [
@@ -502,6 +508,7 @@ METHODS_FUNCTIONS_KW = [
     r"\basymptote\b",
     r"inverse.*function",
     r"one[\-\s]?to[\-\s]?one",
+    r"\bsolve\b",                # "solve    for x" (formula may be stripped)
     r"solve.*equation",
     r"solving.*equation",
     r"simultaneous",
@@ -509,13 +516,24 @@ METHODS_FUNCTIONS_KW = [
     r"\bpolynomial\b",
     r"exponential.*function",
     r"logarithm",
-    r"\blog\b",
+    r"\blog\d*",                 # log, log2, log10, loge (no trailing \b — catches log2 etc.)
     r"trigonometric\s+function",
+    r"\bsin\b",                  # standalone trig — "y = sin(2x)", "sin function"
+    r"\bcos\b",
+    r"\btan\b",
     r"\bsin\b.*\bfunction\b|\bcos\b.*\bfunction\b|\btan\b.*\bfunction\b",
     r"reflection",
     r"vertical.*asymptote",
     r"horizontal.*asymptote",
-    r"turning\s+point",   # graph-feature in a sketch context
+    r"turning\s+point",          # graph-feature in a sketch context
+    r"\bamplitude\b",            # "amplitude and period of the function"
+    r"\bperiod\b",               # "period of the function f(x) = tan..."
+    r"\bparabola\b",             # "axis of symmetry for the parabola"
+    r"\baxis\s+of\s+symmetry\b",
+    r"\bmidpoint\b",             # coordinate geometry
+    r"\bsystem\s+of\s+equations\b",
+    r"\bdiscriminant\b",
+    r"\bexactly\s+one\s+solution\b",  # "has exactly one solution for x ∈ R"
 ]
 
 
@@ -548,19 +566,20 @@ def classify_for_methods(text, section):
     is_diff = has_match(t, METHODS_DIFF_KW)
     is_functions = has_match(t, METHODS_FUNCTIONS_KW)
 
-    # Continuous Probability wins over Integration when both are present
+    # Continuous Probability wins over everything when present
     if is_continuous:
         return 5, METHODS_AOS[5], [5], [METHODS_AOS[5]]
 
-    if is_discrete:
-        return 4, METHODS_AOS[4], [4], [METHODS_AOS[4]]
-
-    # Integration (primary), possibly multi-tagged with Differentiation
+    # Integration beats Discrete — prevents probability bleed-in from adjacent question context
+    # from overriding a clear integration signal (e.g. "area of the region bounded by...")
     if is_integration:
         tags = [3]
         if is_diff:
             tags.append(2)
         return 3, METHODS_AOS[3], tags, [METHODS_AOS[n] for n in tags]
+
+    if is_discrete:
+        return 4, METHODS_AOS[4], [4], [METHODS_AOS[4]]
 
     # Differentiation (primary), possibly multi-tagged with Algebra/Functions
     if is_diff:

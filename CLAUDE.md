@@ -122,6 +122,10 @@ All Methods work is done locally. The pipeline is fully portable — no server-s
 - `DEV_MODE=1 python3 server.py` bypasses Google OAuth for all auth-protected routes
 - Only use locally — never set on the server
 - Kill any existing process first: `kill $(lsof -ti:8080)`
+- To refresh local data (e.g. after a reset or git pull), always restart the server — Flask loads data files at startup, so stale data will show until restarted:
+  ```bash
+  kill $(lsof -ti:8080) && DEV_MODE=1 python3 server.py
+  ```
 
 ### Pipeline scripts (run from project root)
 ```bash
