@@ -1,19 +1,20 @@
 # VCE Mathematics Question Bank — Project Standards
 
 ## Project Overview
-A web-based question bank for VCE Mathematics (Units 3 & 4), currently covering two subjects:
+A web-based question bank for VCE Mathematics (Units 3 & 4), covering two subjects:
 - **Specialist Mathematics** — at `/specialist`
-- **Mathematical Methods** — at `/methods` (questions to be added)
+- **Mathematical Methods** — at `/methods`
 
 Students browse, filter, and practise questions sourced from multiple trial exam publishers.
 Questions are classified into Areas of Study (AOS) per subject.
 
 ## Tech Stack
 - **Backend:** Python / Flask (`server.py`), port 8080
-- **Data:** `questions.json` (Specialist), `methods_questions.json` (Methods, starts empty)
-- **Images:** `question_images/` — PNG crops of each question and solution
+- **Data:** `questions.json` (Specialist), `methods_questions.json` (Methods)
+- **Images:** `question_images/` — PNG crops of each question and solution (not in git)
 - **Pipeline:** `pipeline/` — docx → PDF → image crops → classification
-- Start server: `python3 server.py` from project root
+- **Local dev:** `DEV_MODE=1 python3 server.py` (bypasses Google OAuth)
+- **Production:** `https://ariel.tenenberg.com` (AWS EC2, Sydney)
 
 ## Multi-Subject Architecture
 
@@ -31,17 +32,12 @@ Questions are classified into Areas of Study (AOS) per subject.
 | `/api/flag` | Flag a question (subject in POST body) |
 
 ### Data & Config
-- `questions.json` — Specialist questions (do not add a `subject` field; separate files per subject)
+- `questions.json` — Specialist questions
 - `methods_questions.json` — Methods questions
-- `settings.json` — Per-subject publisher visibility: `{"specialist": {"hidden_publishers": []}, "methods": {"hidden_publishers": []}}`
+- `raw_questions_methods.json` — Methods raw extracted text (in git — needed for classifier analysis)
+- `settings.json` — Per-subject publisher visibility (gitignored)
 - `get_subject_config(subject)` helper returns data, file path, AOS map, and subject name
 - Colour themes: Specialist = teal (`#196061`, `#042f3a`), Methods = blue (`#2563eb`, `#1e3a5f`)
-
-### Workflow for Adding a New Subject's Exams
-1. Create an empty `<subject>_questions.json`
-2. Add subject config to `SUBJECT_CONFIG` dict in `server.py`
-3. Run pipeline to extract and classify questions into that file
-4. Add subject card to `HOME_HTML`
 
 ## Specialist Mathematics — Areas of Study (AOS)
 | # | Name |
@@ -73,22 +69,21 @@ Heffernan, Insight, Kilbaha, MAV, NEAP, QATs-Janison, Sequoia, TSSM
 Years: 2023, 2024, 2025
 
 ## Methods Publishers in the Dataset
-Heffernan — 2025 (first batch imported, 67 questions)
+Being imported batch by batch. All pipeline work is done locally.
 
 ## Classification Approach
 - Text is extracted from PDFs using PyMuPDF (text layer, not OCR)
 - Classified via keyword/regex matching in `pipeline/03_classify.py`
+- Methods classifier is in `classify_for_methods()` and `METHODS_*` keyword sets at the bottom of that file — do not touch the Specialist logic above it
 - When confidence is low, mark as **Unsorted (aos=0)** — never guess
-- Manual review tool: `https://ariel.tenenberg.com/classify` (Google auth required — use live site, not localhost)
 - Manual corrections are the ground truth used to improve the classifier
 
-### Known Classifier Issues
-- Vector unit vectors `i`, `j`, `k` (e.g. `2i − j + 3k`) falsely trigger Complex Numbers
-- `displacement` / `position` of particle in 2D/3D goes to Calculus instead of Vectors
-- Publisher copyright headers (especially Heffernan) dominate extracted text, leaving little question content
-- `partial fractions` keyword fires Calculus even when the question is a Logic/Proof question
-- Stats keywords (`proportion`, `rate`) fire on differential equation / modelling questions
-- `rotated about` (volume of revolution) is not in the Calculus keyword list
+### Known Classifier Issues (Methods)
+- Normal distribution questions may not trigger Continuous Probability if they use unusual phrasing
+- `Pr(` and `X ~ B(n,p)` notation needed for Discrete Probability detection
+- "increasing/decreasing" needed for Differentiation detection
+
+---
 
 ## Working Standards
 
@@ -102,59 +97,59 @@ Heffernan — 2025 (first batch imported, 67 questions)
 ### Decision Making
 - When unsure about scope or approach, ask before acting
 - Explain the plan before implementing significant changes
-- Flag when something looks wrong (e.g. wrong username in a path)
-
-### Classification Workflow (fully local)
-Everything runs locally. No SSH or EC2 Instance Connect needed for normal work.
-
-**Per-batch workflow:**
-1. Place exam DOCX files in `uploads/methods/YYYY/Publisher/`
-2. `python3 pipeline/01_convert_docx.py --subject methods`
-3. `python3 pipeline/02_extract_and_crop.py --subject methods`
-4. `python3 pipeline/03_classify.py --subject methods`
-5. `DEV_MODE=1 python3 server.py` → visit `http://localhost:8080/classify?subject=methods&unsorted=1`
-6. Sort Unsorted questions, Save All
-7. `git add methods_questions.json raw_questions_methods.json && git commit -m "..." && git push`
-8. scp new images to server (see Image Deployment below)
-9. SSH to server: `cd ~/newapp && git pull origin master && sudo systemctl restart webapp`
-
-**After git pull, Claude has `raw_questions_methods.json` with full extracted text → proper classifier analysis.**
-
-Other rules:
-- Do one publisher/year set at a time
-- Analyse corrections after each batch before moving to the next
-- Mark genuinely ambiguous questions as Unsorted (red) — don't force a category
-- `DEV_MODE=1` bypasses Google OAuth — only use locally, never set on the server
-
-**One-time local setup (if not done):**
-```bash
-brew install libreoffice
-pip install pymupdf Pillow
-```
-
-### Image Deployment
-- `question_images/` is NOT in git (binary files — intentional)
-- `raw_questions_methods.json` IS in git (needed for classifier analysis — contains extracted text)
-- After each pipeline batch, scp only the new image files to the server:
-  `scp -i "/Users/arieltenenberg/Desktop/Specialist Website/specialistquestionbankkey.pem" -r question_images ubuntu@3.27.217.188:~/newapp/`
-
-### UI/UX Standards
-- Educator perspective: solutions hidden by default, student must reveal
-- Keep the interface clean and low cognitive load
-- Unsorted questions displayed in red throughout the UI
-- Landing page: neutral grey (`#f0f0f0`), dark charcoal topbar (`#2d2d2d`)
-- Subject pages use their own colour theme (teal/blue) — passed as Jinja2 CSS variables
-- Users page matches the landing page colour scheme (not subject-specific)
-- Users tab only accessible from the landing page (not in subject or admin navbars)
-
-### Server
-- Restart required after changes to `server.py`
-- Kill existing process: `kill $(lsof -ti:8080)`
-- Verify after restart: `curl -s -o /dev/null -w "%{http_code}" http://localhost:8080`
 
 ---
 
-# Specialist Question Bank — Project Notes
+## Local Pipeline Workflow
+
+All Methods work is done locally. The pipeline is fully portable — no server-specific paths.
+
+### Per-batch workflow
+1. Upload exam zip via `http://localhost:8080/admin?subject=methods` (with `DEV_MODE=1` server running)
+   - Zip must contain folder structure: `2025/Publisher/Exam 1.pdf`, `Exam 1 Solutions.pdf`, etc.
+   - This triggers the pipeline automatically
+2. Visit `http://localhost:8080/classify?subject=methods&unsorted=1` and sort Unsorted questions
+3. Press Save All
+4. `git add methods_questions.json raw_questions_methods.json && git commit -m "..." && git push`
+5. scp new images to server:
+   ```bash
+   scp -i "/Users/arieltenenberg/Desktop/Specialist Website/specialistquestionbankkey.pem" \
+     question_images/methods_<publisher>_* ubuntu@3.27.217.188:~/newapp/question_images/
+   ```
+6. Deploy: SSH to server → `cd ~/newapp && git pull origin master && sudo systemctl restart webapp`
+
+### DEV_MODE
+- `DEV_MODE=1 python3 server.py` bypasses Google OAuth for all auth-protected routes
+- Only use locally — never set on the server
+- Kill any existing process first: `kill $(lsof -ti:8080)`
+
+### Pipeline scripts (run from project root)
+```bash
+python3 pipeline/01_convert_docx.py --subject methods   # DOCX → PDF (needs LibreOffice)
+python3 pipeline/02_extract_and_crop.py --subject methods  # extract text + crop images
+python3 pipeline/03_classify.py --subject methods          # classify → methods_questions.json
+```
+The admin upload UI triggers all three automatically.
+
+### Important pipeline behaviour
+- `03_classify.py` **merges** new questions with existing `methods_questions.json` — previous batches are never lost
+- `raw_questions_methods.json` contains the current batch's extracted text and is committed to git so Claude can analyse it
+- Do one publisher/year at a time; analyse classifier corrections after each batch
+
+### One-time local setup
+```bash
+brew install --cask libreoffice
+pip install pymupdf Pillow
+```
+
+---
+
+## Image Deployment
+- `question_images/` is NOT in git (binary files)
+- Images live on the server permanently; only new images need to be scp'd per batch
+- Key file: `/Users/arieltenenberg/Desktop/Specialist Website/specialistquestionbankkey.pem`
+
+---
 
 ## Server Details
 
@@ -162,69 +157,25 @@ pip install pymupdf Pillow
 |--------|-------|
 | **Provider** | AWS EC2 (ap-southeast-2 / Sydney) |
 | **Instance** | Specialist Question Bank (i-027bc033117bae0c5) |
-| **Instance type** | t3.small |
 | **Public IP** | 3.27.217.188 |
 | **Live URL** | https://ariel.tenenberg.com |
 | **OS** | Ubuntu 22.04 |
-| **Key pair** | specialistquestionbankkey |
+| **Repo on server** | `~/newapp` |
+| **Key pair** | `/Users/arieltenenberg/Desktop/Specialist Website/specialistquestionbankkey.pem` |
 
-## Stack
+## Server Stack
+- Python / Flask → Gunicorn (2 workers) → Nginx reverse proxy
+- Process manager: systemd (`webapp.service`)
+- HTTPS: Let's Encrypt / Certbot
+- Nginx: `client_max_body_size 500m` in `/etc/nginx/nginx.conf`
 
-- **Backend:** Python / Flask (`server.py`)
-- **Server:** Gunicorn (2 workers) behind Nginx reverse proxy
-- **Process manager:** systemd (`webapp.service`)
-- **HTTPS:** Let's Encrypt / Certbot
-- **Repo on server:** `~/newapp`
-
-## Deployment Workflow
-
-Every time you make changes to the app:
-
-### 1. Work locally in VS Code as normal
-
-### 2. Push changes to GitHub
-```bash
-git add .
-git commit -m "describe your changes"
-git push
-```
-
-### 3. Connect to the server
-- Go to: https://ap-southeast-2.console.aws.amazon.com/ec2/home?region=ap-southeast-2#Instances:
-- Click on **Specialist Question Bank**
-- Click **Connect** → **EC2 Instance Connect** → **Connect**
-
-### 4. Pull changes and restart the app
-```bash
-cd ~/newapp && git pull origin master
-sudo systemctl restart webapp
-```
-
-### 5. Verify it's running
-```bash
-sudo systemctl status webapp
-```
-You should see `Active: active (running)` in green.
-
-### 6. Check the live site
-Open https://ariel.tenenberg.com in any browser.
-
----
-
-## Useful Commands
-
+## Useful Server Commands
 | Task | Command |
 |------|---------|
 | Restart app | `sudo systemctl restart webapp` |
-| Stop app | `sudo systemctl stop webapp` |
-| Start app | `sudo systemctl start webapp` |
 | View logs | `sudo journalctl -u webapp -f` |
-| View Nginx logs | `sudo tail -f /var/log/nginx/access.log` |
-| Reload Nginx | `sudo systemctl reload nginx` |
-| Pull latest code | `cd ~/newapp && git pull origin master` |
-
-### Nginx config note
-Nginx proxies HTTPS traffic to Gunicorn. `client_max_body_size 500m` is set in the `http {}` block of `/etc/nginx/nginx.conf` to allow large exam file uploads.
+| Pull latest | `cd ~/newapp && git pull origin master` |
+| Pull (with local changes) | `cd ~/newapp && git stash && git pull origin master` |
 
 ---
 
