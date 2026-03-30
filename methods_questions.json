@@ -47,15 +47,15 @@
     "marks": 6,
     "question_image": "/qimg/methods_heffernan_2025_exam1_s_q3_question.png",
     "solution_image": "/qimg/methods_heffernan_2025_exam1_s_q3_solution.png",
-    "aos": 2,
-    "aos_name": "Differentiation",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
     "tags": [
-      2,
-      1
+      1,
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Algebra and Functions",
+      "Differentiation"
     ]
   },
   {
@@ -203,13 +203,13 @@
     "marks": null,
     "question_image": "/qimg/methods_heffernan_2025_exam2_m_q3_question.png",
     "solution_image": "/qimg/methods_heffernan_2025_exam2_m_q3_solution.png",
-    "aos": 2,
-    "aos_name": "Differentiation",
+    "aos": 3,
+    "aos_name": "Integration",
     "tags": [
-      2
+      3
     ],
     "tag_names": [
-      "Differentiation"
+      "Integration"
     ]
   },
   {
@@ -241,13 +241,13 @@
     "marks": null,
     "question_image": "/qimg/methods_heffernan_2025_exam2_m_q5_question.png",
     "solution_image": "/qimg/methods_heffernan_2025_exam2_m_q5_solution.png",
-    "aos": 1,
-    "aos_name": "Algebra and Functions",
+    "aos": 2,
+    "aos_name": "Differentiation",
     "tags": [
-      1
+      2
     ],
     "tag_names": [
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -263,12 +263,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -357,13 +355,13 @@
     "marks": null,
     "question_image": "/qimg/methods_heffernan_2025_exam2_m_q11_question.png",
     "solution_image": "/qimg/methods_heffernan_2025_exam2_m_q11_solution.png",
-    "aos": 1,
-    "aos_name": "Algebra and Functions",
+    "aos": 2,
+    "aos_name": "Differentiation",
     "tags": [
-      1
+      2
     ],
     "tag_names": [
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -531,12 +529,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -682,12 +678,14 @@
     "marks": 5,
     "question_image": "/qimg/methods_neap_2025_exam1_s_q3_question.png",
     "solution_image": "/qimg/methods_neap_2025_exam1_s_q3_solution.png",
-    "aos": 1,
-    "aos_name": "Algebra and Functions",
+    "aos": 2,
+    "aos_name": "Differentiation",
     "tags": [
+      2,
       1
     ],
     "tag_names": [
+      "Differentiation",
       "Algebra and Functions"
     ]
   },
@@ -1292,13 +1290,13 @@
     "marks": 3,
     "question_image": "/qimg/methods_sequoia_2025_exam1_s_q1_question.png",
     "solution_image": "/qimg/methods_sequoia_2025_exam1_s_q1_solution.png",
-    "aos": 3,
-    "aos_name": "Integration",
+    "aos": 2,
+    "aos_name": "Differentiation",
     "tags": [
-      3
+      2
     ],
     "tag_names": [
-      "Integration"
+      "Differentiation"
     ]
   },
   {
@@ -1425,12 +1423,14 @@
     "marks": 7,
     "question_image": "/qimg/methods_sequoia_2025_exam1_s_q8_question.png",
     "solution_image": "/qimg/methods_sequoia_2025_exam1_s_q8_solution.png",
-    "aos": 3,
-    "aos_name": "Integration",
+    "aos": 2,
+    "aos_name": "Differentiation",
     "tags": [
+      2,
       3
     ],
     "tag_names": [
+      "Differentiation",
       "Integration"
     ]
   },
@@ -1807,12 +1807,14 @@
     "marks": null,
     "question_image": "/qimg/methods_sequoia_2025_exam2_m_q19_question.png",
     "solution_image": "/qimg/methods_sequoia_2025_exam2_m_q19_solution.png",
-    "aos": 1,
-    "aos_name": "Algebra and Functions",
+    "aos": 2,
+    "aos_name": "Differentiation",
     "tags": [
+      2,
       1
     ],
     "tag_names": [
+      "Differentiation",
       "Algebra and Functions"
     ]
   },
@@ -1921,13 +1923,13 @@
     "marks": 10,
     "question_image": "/qimg/methods_sequoia_2025_exam2_e_q5_question.png",
     "solution_image": "/qimg/methods_sequoia_2025_exam2_e_q5_solution.png",
-    "aos": 7,
-    "aos_name": "Probability and Statistics",
+    "aos": 6,
+    "aos_name": "Core Content",
     "tags": [
-      7
+      6
     ],
     "tag_names": [
-      "Probability and Statistics"
+      "Core Content"
     ]
   }
 ]

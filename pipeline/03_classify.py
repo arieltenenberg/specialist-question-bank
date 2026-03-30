@@ -434,7 +434,7 @@ METHODS_PROB_GENERAL_KW = METHODS_CONTINUOUS_PROB_KW + METHODS_DISCRETE_PROB_KW 
     r"\bprobability\b",
     r"random\s+variable",
     r"expected\s+value",
-    r"e\s*\(\s*x\s*\)",
+    r"\be\s*\(\s*x\s*\)",        # E(X) — \b prevents matching "loge(x)"
     r"var\s*\(",
     r"normally\s+distributed",
     r"normal\s+distribution",
@@ -448,8 +448,9 @@ METHODS_INTEGRATION_KW = [
     r"anti[\-\s]?derivat",
     r"antiderivat",
     r"∫",
-    r"\bdx\b",
     r"\bdt\b",                               # "∫ f(t) dt" — integral with dt variable
+    r"(?<!\n)dx\b",                          # "f(x) dx" — NOT "d\ndx" (split d/dx operator)
+    r"trapezium\s+rule",                     # numerical integration
     r"area\s+under",
     r"area\s+between",
     r"area\s+bound",
@@ -465,6 +466,7 @@ METHODS_INTEGRATION_KW = [
 
 METHODS_DIFF_KW = [
     r"differentiat",
+    r"differentiabl",            # "differentiable" — not caught by "differentiat"
     r"\bderivatives?\b",         # "derivative" or "derivatives"
     r"\bd\s*/\s*dx\b",
     r"\bdy\s*/\s*dx\b",
@@ -490,6 +492,9 @@ METHODS_DIFF_KW = [
     r"\bdecreasing\b",           # "f is decreasing on (a, b)"
     r"concav",                   # "concave up", "concave down"
     r"inflect",                  # "point of inflection"
+    r"f\s*[′']\s*\(",            # f'(x) or f′(x) notation (ASCII or Unicode prime)
+    r"\bdy[\s/]+dx\b",           # "dy/dx" or "dy\ndx" (fraction split across lines in PDF)
+    r"\bd[\s/]+dx\b",            # "d/dx" or "d\ndx" (differential operator split across lines)
     r"\bnewton.?s\s+method\b",   # Newton's method — root-finding via differentiation
     r"\bcontinuous\s+at\b",      # "f is continuous at x = 1" — continuity in calculus
 ]
