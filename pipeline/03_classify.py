@@ -58,10 +58,13 @@ SPECIALIST_AOS = {
 
 METHODS_AOS = {
     0: "Unsorted",
-    1: "Functions and Graphs",
-    2: "Algebra",
-    3: "Calculus",
-    4: "Probability and Statistics",
+    1: "Algebra and Functions",
+    2: "Differentiation",
+    3: "Integration",
+    4: "Discrete Probability",
+    5: "Continuous Probability",
+    6: "Core Content",            # Exam 2 only
+    7: "Probability and Statistics",  # Exam 2 only
 }
 
 AOS = SPECIALIST_AOS if args.subject == "specialist" else METHODS_AOS
@@ -392,14 +395,180 @@ def classify_question(text):
 
 
 # ---------------------------------------------------------------------------
+# Methods keyword sets
+# ---------------------------------------------------------------------------
+
+METHODS_CONTINUOUS_PROB_KW = [
+    r"continuous\s+random\s+variable",
+    r"probability\s+density\s+function",
+    r"\bpdf\b",
+    r"probability\s+density",
+]
+
+METHODS_DISCRETE_PROB_KW = [
+    r"discrete\s+random\s+variable",
+    r"binomial\s+distribution",
+    r"bernoulli",
+    r"probability\s+mass\s+function",
+    r"\bpmf\b",
+    r"sampling\s+distribution",
+    r"confidence\s+interval",
+    r"margin\s+of\s+error",
+    r"level\s+of\s+significance",
+    r"significance\s+level",
+    r"hypothesis",
+    r"p[\-\s]?value",
+]
+
+# General probability — used to detect exam 2 probability questions
+METHODS_PROB_GENERAL_KW = METHODS_CONTINUOUS_PROB_KW + METHODS_DISCRETE_PROB_KW + [
+    r"\bprobability\b",
+    r"random\s+variable",
+    r"expected\s+value",
+    r"e\s*\(\s*x\s*\)",
+    r"var\s*\(",
+    r"normally\s+distributed",
+    r"normal\s+distribution",
+    r"standard\s+deviation",
+    r"binomial",
+]
+
+METHODS_INTEGRATION_KW = [
+    r"indefinite\s+integral",
+    r"definite\s+integral",
+    r"anti[\-\s]?derivat",
+    r"antiderivat",
+    r"∫",
+    r"\bdx\b",
+    r"area\s+under",
+    r"area\s+between",
+    r"area\s+bound",
+    r"average\s+value",
+    r"hence.*(?:evaluate|find.*integral|antiderivat)",
+    r"find.*antiderivat.*hence",
+    r"find.*integral",
+    r"integrat",
+]
+
+METHODS_DIFF_KW = [
+    r"differentiat",
+    r"\bderivative\b",
+    r"\bd\s*/\s*dx\b",
+    r"\bdy\s*/\s*dx\b",
+    r"stationary\s+point",
+    r"turning\s+point",
+    r"maximum.*value",
+    r"minimum.*value",
+    r"local\s+(?:max|min)",
+    r"optimis",        # optimise, optimisation
+    r"tangent\s+(?:to|at|line)",
+    r"normal\s+to",
+    r"average\s+rate\s+of\s+change",
+    r"instantaneous\s+rate\s+of\s+change",
+    r"rate\s+of\s+change",
+    r"gradient\s+of.*(?:curve|function|graph)",
+    r"d\s*/\s*dx",
+    r"chain\s+rule",
+    r"product\s+rule",
+    r"quotient\s+rule",
+]
+
+METHODS_FUNCTIONS_KW = [
+    r"inverse\s+function",
+    r"composite\s+function",
+    r"\bdomain\b",
+    r"\brange\b",
+    r"transformation",
+    r"\bdilation\b",
+    r"\btranslation\b",
+    r"sketch",
+    r"graph\s+of",
+    r"graphs?\s+of",
+    r"\basymptote\b",
+    r"inverse.*function",
+    r"one[\-\s]?to[\-\s]?one",
+    r"solve.*equation",
+    r"solving.*equation",
+    r"simultaneous",
+    r"\bquadratic\b",
+    r"\bpolynomial\b",
+    r"exponential.*function",
+    r"logarithm",
+    r"\blog\b",
+    r"trigonometric\s+function",
+    r"\bsin\b.*\bfunction\b|\bcos\b.*\bfunction\b|\btan\b.*\bfunction\b",
+    r"reflection",
+    r"vertical.*asymptote",
+    r"horizontal.*asymptote",
+    r"turning\s+point",   # graph-feature in a sketch context
+]
+
+
+def classify_for_methods(text, exam_type):
+    """
+    Classify a Methods question. Returns (primary_aos, primary_name, tags_list, tag_names_list).
+    exam_type: 1 (MCQ/short answer) or 2 (extended response)
+    """
+    if not text or not text.strip():
+        return 0, METHODS_AOS[0], [0], [METHODS_AOS[0]]
+
+    text = strip_header(text)
+    t = text.lower()
+
+    # Exam 2: binary classification — Core Content vs Probability and Statistics
+    if exam_type == 2:
+        if has_match(t, METHODS_PROB_GENERAL_KW):
+            return 7, METHODS_AOS[7], [7], [METHODS_AOS[7]]
+        return 6, METHODS_AOS[6], [6], [METHODS_AOS[6]]
+
+    # Exam 1 (MCQ + short answer): AOS 1–5, multi-tag possible
+
+    is_continuous = has_match(t, METHODS_CONTINUOUS_PROB_KW)
+    is_discrete = has_match(t, METHODS_DISCRETE_PROB_KW)
+    is_integration = has_match(t, METHODS_INTEGRATION_KW)
+    is_diff = has_match(t, METHODS_DIFF_KW)
+    is_functions = has_match(t, METHODS_FUNCTIONS_KW)
+
+    # Continuous Probability wins over Integration when both are present
+    if is_continuous:
+        return 5, METHODS_AOS[5], [5], [METHODS_AOS[5]]
+
+    if is_discrete:
+        return 4, METHODS_AOS[4], [4], [METHODS_AOS[4]]
+
+    # Integration (primary), possibly multi-tagged with Differentiation
+    if is_integration:
+        tags = [3]
+        if is_diff:
+            tags.append(2)
+        return 3, METHODS_AOS[3], tags, [METHODS_AOS[n] for n in tags]
+
+    # Differentiation (primary), possibly multi-tagged with Algebra/Functions
+    if is_diff:
+        tags = [2]
+        # Sketch + stationary point → also tag Functions
+        is_sketch = bool(re.search(r"sketch|graph\s+of|draw.*graph", t))
+        if is_sketch and is_functions:
+            tags.append(1)
+        return 2, METHODS_AOS[2], tags, [METHODS_AOS[n] for n in tags]
+
+    # Algebra and Functions — any positive signal
+    if is_functions:
+        return 1, METHODS_AOS[1], [1], [METHODS_AOS[1]]
+
+    # Unsorted
+    return 0, METHODS_AOS[0], [0], [METHODS_AOS[0]]
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
-def classify_for_subject(text, subject):
+def classify_for_subject(text, subject, exam_type=1):
     if subject == "methods":
-        # Methods classifier not yet built — all questions go to Unsorted for manual review
-        return 0, METHODS_AOS[0]
-    return classify_question(text)
+        return classify_for_methods(text, exam_type)
+    aos_num, aos_name = classify_question(text)
+    return aos_num, aos_name, [aos_num], [aos_name]
 
 
 def main():
@@ -444,11 +613,20 @@ def main():
             # Preserve the manually reviewed classification
             out["aos"] = manual[qid]["aos"]
             out["aos_name"] = manual[qid]["aos_name"]
+            if "tags" in manual[qid]:
+                out["tags"] = manual[qid]["tags"]
+                out["tag_names"] = manual[qid]["tag_names"]
             preserved += 1
         else:
-            aos_num, aos_name = classify_for_subject(q.get("extracted_text", ""), args.subject)
+            exam_type = q.get("exam_type", 1)
+            aos_num, aos_name, tags, tag_names = classify_for_subject(
+                q.get("extracted_text", ""), args.subject, exam_type
+            )
             out["aos"] = aos_num
             out["aos_name"] = aos_name
+            if args.subject == "methods":
+                out["tags"] = tags
+                out["tag_names"] = tag_names
             reclassified += 1
 
         # Exam 1 is always short answer

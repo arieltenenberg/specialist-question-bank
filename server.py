@@ -149,7 +149,16 @@ if os.path.exists(METHODS_QUESTIONS_JSON):
 
 # AOS maps per subject
 SPECIALIST_AOS = {0: "Unsorted", 1: "Logic and Proof", 2: "Functions, Relations and Graphs", 3: "Complex Numbers", 4: "Calculus", 5: "Vectors, Lines and Planes", 6: "Probability and Statistics", 7: "Pseudocode"}
-METHODS_AOS = {0: "Unsorted", 1: "Functions and Graphs", 2: "Algebra", 3: "Calculus", 4: "Probability and Statistics"}
+METHODS_AOS = {
+    0: "Unsorted",
+    1: "Algebra and Functions",
+    2: "Differentiation",
+    3: "Integration",
+    4: "Discrete Probability",
+    5: "Continuous Probability",
+    6: "Core Content",
+    7: "Probability and Statistics",
+}
 
 SUBJECT_CONFIG = {
     "specialist": {
@@ -552,8 +561,15 @@ a { color:var(--primary); text-decoration:none; }
     {% if is_admin %}
     <a class="sort-unsorted-btn" id="sort-unsorted-btn" href="/classify?subject={{ subject }}&unsorted=1">Sort Unsorted (<span id="unsorted-count">…</span>)</a>
     {% endif %}
+    {% if is_methods %}
+    <h3>Short Answer and Multiple Choice</h3>
+    <div class="filter-group" id="fg-tag"></div>
+    <h3>Extended Response</h3>
+    <div class="filter-group" id="fg-extended"></div>
+    {% else %}
     <h3>Area of Study</h3>
     <div class="filter-group" id="fg-aos"></div>
+    {% endif %}
     <h3>Year</h3>
     <div class="filter-group" id="fg-year"></div>
     <h3>Publisher</h3>
@@ -577,13 +593,25 @@ a { color:var(--primary); text-decoration:none; }
 
 <script>
 const IS_ADMIN = {{ is_admin|tojson }};
+const IS_METHODS = {{ is_methods|tojson }};
 const PER_PAGE = 20;
 let allQ = [];
 let filtered = [];
 let page = 0;
-let filters = { aos: null, year: null, publisher: null, exam_type: null, section: null };
+let filters = { aos: null, tag: null, extended: null, year: null, publisher: null, exam_type: null, section: null };
 
 const sectionLabels = { short_answer: 'Short Answer', multiple_choice: 'Multiple Choice', extended_response: 'Extended Response' };
+
+// Methods tag colours: AOS 1–5 (shades of blue), exam 2 (grey)
+const METHODS_TAG_STYLES = {
+  1: { bg:'#bfdbfe', color:'#1e3a5f' },
+  2: { bg:'#93c5fd', color:'#1e3a5f' },
+  3: { bg:'#60a5fa', color:'#1e3a5f' },
+  4: { bg:'#3b82f6', color:'#ffffff' },
+  5: { bg:'#1d4ed8', color:'#ffffff' },
+  6: { bg:'#e5e7eb', color:'#374151' },
+  7: { bg:'#e5e7eb', color:'#374151' },
+};
 
 fetch('/api/questions?subject={{ subject }}').then(r => r.json()).then(data => {
   allQ = IS_ADMIN ? data : data.filter(q => q.aos !== 0);
@@ -602,7 +630,26 @@ function buildFilters() {
     return m;
   };
 
-  buildGroup('fg-aos', counts('aos_name'), 'aos');
+  if (IS_METHODS) {
+    // Count by each tag (exam 1 only: AOS 1-5)
+    const tagCounts = {};
+    allQ.filter(q => q.section !== 'extended_response').forEach(q => {
+      (q.tags || [q.aos]).forEach(t => {
+        const name = (q.tag_names || [q.aos_name])[q.tags ? q.tags.indexOf(t) : 0] || q.aos_name;
+        tagCounts[name] = (tagCounts[name] || 0) + 1;
+      });
+    });
+    // Count by extended category (exam 2 only: AOS 6-7)
+    const extCounts = {};
+    allQ.filter(q => q.section === 'extended_response').forEach(q => {
+      extCounts[q.aos_name] = (extCounts[q.aos_name] || 0) + 1;
+    });
+    buildGroup('fg-tag', tagCounts, 'tag');
+    buildGroup('fg-extended', extCounts, 'extended');
+  } else {
+    buildGroup('fg-aos', counts('aos_name'), 'aos');
+  }
+
   buildGroup('fg-year', counts('year'), 'year');
   buildGroup('fg-pub', counts('publisher'), 'publisher');
   buildGroup('fg-exam', { 'Exam 1': allQ.filter(q=>q.exam_type===1).length, 'Exam 2': allQ.filter(q=>q.exam_type===2).length }, 'exam_type');
@@ -611,6 +658,7 @@ function buildFilters() {
 
 function buildGroup(elId, countsObj, filterKey) {
   const el = document.getElementById(elId);
+  if (!el) return;
   el.innerHTML = '';
   const sorted = Object.entries(countsObj).sort((a,b) => {
     if (filterKey === 'year') return a[0]-b[0];
@@ -639,7 +687,7 @@ function toggleFilter(key, value, btn) {
 }
 
 function clearAll() {
-  filters = { aos: null, year: null, publisher: null, exam_type: null, section: null };
+  filters = { aos: null, tag: null, extended: null, year: null, publisher: null, exam_type: null, section: null };
   document.querySelectorAll('.filter-btn.active').forEach(b => b.classList.remove('active'));
   page = 0;
   applyFilters();
@@ -647,7 +695,21 @@ function clearAll() {
 
 function applyFilters() {
   filtered = allQ.filter(q => {
-    if (filters.aos && q.aos_name !== filters.aos) return false;
+    if (IS_METHODS) {
+      // Tag filter applies to non-extended questions
+      if (filters.tag) {
+        if (q.section === 'extended_response') return false;
+        const names = q.tag_names || [q.aos_name];
+        if (!names.includes(filters.tag)) return false;
+      }
+      // Extended filter applies to extended response questions only
+      if (filters.extended) {
+        if (q.section !== 'extended_response') return false;
+        if (q.aos_name !== filters.extended) return false;
+      }
+    } else {
+      if (filters.aos && q.aos_name !== filters.aos) return false;
+    }
     if (filters.year && q.year !== Number(filters.year)) return false;
     if (filters.publisher && q.publisher !== filters.publisher) return false;
     if (filters.exam_type) {
@@ -678,10 +740,23 @@ function renderActiveFilters() {
 
 function removeFilter(key) {
   filters[key] = null;
-  const groupMap = { aos:'fg-aos', year:'fg-year', publisher:'fg-pub', exam_type:'fg-exam', section:'fg-section' };
+  const groupMap = { aos:'fg-aos', tag:'fg-tag', extended:'fg-extended', year:'fg-year', publisher:'fg-pub', exam_type:'fg-exam', section:'fg-section' };
   document.querySelectorAll(`#${groupMap[key]} .filter-btn`).forEach(b => b.classList.remove('active'));
   page = 0;
   applyFilters();
+}
+
+function renderMethodsTagPills(q) {
+  if (q.section === 'extended_response') {
+    const s = METHODS_TAG_STYLES[q.aos] || METHODS_TAG_STYLES[6];
+    return `<span class="qtag" style="background:${s.bg};color:${s.color}">${q.aos_name}</span>`;
+  }
+  const tags = q.tags || [q.aos];
+  const names = q.tag_names || [q.aos_name];
+  return tags.map((t, i) => {
+    const s = METHODS_TAG_STYLES[t] || { bg:'#e5e7eb', color:'#374151' };
+    return `<span class="qtag" style="background:${s.bg};color:${s.color}">${names[i] || t}</span>`;
+  }).join('');
 }
 
 function renderCards() {
@@ -695,10 +770,10 @@ function renderCards() {
   }
 
   grid.innerHTML = pageQ.map(q => {
-    const tags = [
-      `<span class="qtag aos">${q.aos_name}</span>`,
-      `<span class="qtag pub">${q.publisher} ${q.year}</span>`,
-    ].join('');
+    const aosPills = IS_METHODS
+      ? renderMethodsTagPills(q)
+      : `<span class="qtag aos">${q.aos_name}</span>`;
+    const tagHtml = aosPills + `<span class="qtag pub">${q.publisher} ${q.year}</span>`;
     const sLabel = sectionLabels[q.section] || q.section;
     const marksStr = q.marks ? `${q.marks} marks` : '';
     const solInner = q.solution_image
@@ -724,7 +799,7 @@ function renderCards() {
     return `<div class="qcard" id="qcard-${q.id}" onclick="this.classList.toggle('open')">
       <div class="qcard-header">
         <span class="qnum">Q${q.question_number}</span>
-        <div class="qtags">${tags}</div>
+        <div class="qtags">${tagHtml}</div>
         <span class="marks">${sLabel}${marksStr ? ' &middot; '+marksStr : ''}</span>
         <span class="toggle-icon">&#9656;</span>
       </div>
@@ -769,18 +844,29 @@ function toggleSol(btn) {
 function adminReclassify(id, sel) {
   const [aos, aosName] = sel.value.split('|');
   if (!aos && aos !== '0') return;
+  const aosNum = Number(aos);
   fetch('/api/classify', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id, aos: Number(aos), aos_name: aosName, subject: '{{ subject }}' })
+    body: JSON.stringify({ id, aos: aosNum, aos_name: aosName, subject: '{{ subject }}',
+                           tags: [aosNum], tag_names: [aosName] })
   }).then(r => r.json()).then(data => {
     if (data.ok) {
       const q = allQ.find(q => q.id === id);
-      if (q) { q.aos = Number(aos); q.aos_name = aosName; }
+      if (q) { q.aos = aosNum; q.aos_name = aosName; q.tags = [aosNum]; q.tag_names = [aosName]; }
       sel.value = '';
-      document.getElementById('qcard-' + id)?.querySelector('.qtag.aos')?.replaceWith(
-        Object.assign(document.createElement('span'), { className: 'qtag aos', textContent: aosName })
-      );
+      // Refresh the tag pills for this card
+      const card = document.getElementById('qcard-' + id);
+      if (card) {
+        const pillContainer = card.querySelector('.qtags');
+        if (pillContainer) {
+          const updatedQ = allQ.find(q => q.id === id);
+          if (updatedQ) {
+            const aosPills = IS_METHODS ? renderMethodsTagPills(updatedQ) : `<span class="qtag aos">${aosName}</span>`;
+            pillContainer.innerHTML = aosPills + `<span class="qtag pub">${updatedQ.publisher} ${updatedQ.year}</span>`;
+          }
+        }
+      }
     }
   });
 }
@@ -1023,7 +1109,7 @@ body { font-family:'Poppins',system-ui,sans-serif; background:#0f1117; color:#e2
   <div class="qblock-header">
     <span class="qnum">{{ q.publisher }} {{ q.year }} — Exam {{ q.exam_type }} Q{{ q.question_number }}</span>
     <span class="qmeta">{{ q.section.replace('_',' ').title() }}{% if q.marks %} · {{ q.marks }} marks{% endif %}</span>
-    <span class="status {% if q.aos == 0 %}unsorted-status{% elif q.aos == 7 %}pseudocode-status{% elif q.aos %}saved{% else %}unsaved{% endif %}" id="status-{{ q.id }}">
+    <span class="status {% if q.aos == 0 %}unsorted-status{% elif q.aos == 7 and not is_methods %}pseudocode-status{% elif q.aos %}saved{% else %}unsaved{% endif %}" id="status-{{ q.id }}">
       {% if q.aos == 0 %}Unsorted{% elif q.aos %}{{ q.aos_name }}{% else %}Unclassified{% endif %}
     </span>
   </div>
@@ -1035,6 +1121,39 @@ body { font-family:'Poppins',system-ui,sans-serif; background:#0f1117; color:#e2
     <span class="flag-hint">⚑ Flagged as misclassified ({{ flags_by_qid[q.id]|length }}×)</span>
   </div>
   {% endif %}
+  {% if is_methods and q.section != 'extended_response' %}
+  {# Methods exam 1 / MCQ: multi-select checkboxes for AOS 1–5 #}
+  <div class="aos-buttons" id="btns-{{ q.id }}">
+    {% for num, name in methods_aos_exam1.items() %}
+    <button class="aos-btn {% if q.tags and num in q.tags %}active{% elif q.aos == num and not q.tags %}active{% endif %}"
+            onclick="methodsToggleTag('{{ q.id }}', {{ num }}, '{{ name }}', this)">
+      {{ name }}
+    </button>
+    {% endfor %}
+    <button class="aos-btn unsorted {% if q.aos == 0 %}active{% endif %}"
+            onclick="methodsSetUnsorted('{{ q.id }}', this)">
+      Unsorted
+    </button>
+  </div>
+  <div style="padding:0 20px 14px">
+    <button class="aos-btn" style="font-size:.75rem;padding:5px 14px;opacity:.7" onclick="methodsSaveTags('{{ q.id }}')">Save tags ↵</button>
+  </div>
+  {% elif is_methods and q.section == 'extended_response' %}
+  {# Methods exam 2: binary radio — Core Content vs Probability and Statistics #}
+  <div class="aos-buttons">
+    {% for num, name in methods_aos_exam2.items() %}
+    <button class="aos-btn {% if q.aos == num %}active{% endif %}"
+            onclick="classify('{{ q.id }}', {{ num }}, '{{ name }}', this)">
+      {{ name }}
+    </button>
+    {% endfor %}
+    <button class="aos-btn unsorted {% if q.aos == 0 %}active{% endif %}"
+            onclick="classify('{{ q.id }}', 0, 'Unsorted', this)">
+      Unsorted
+    </button>
+  </div>
+  {% else %}
+  {# Specialist: single-select AOS buttons #}
   <div class="aos-buttons">
     {% for num, name in aos_map.items() %}
     {% if num != 0 %}
@@ -1049,6 +1168,7 @@ body { font-family:'Poppins',system-ui,sans-serif; background:#0f1117; color:#e2
       Unsorted
     </button>
   </div>
+  {% endif %}
 </div>
 {% endfor %}
 <div class="done-banner" id="done-banner">All {{ questions|length }} questions classified!</div>
@@ -1056,7 +1176,10 @@ body { font-family:'Poppins',system-ui,sans-serif; background:#0f1117; color:#e2
 
 <script>
 const total = {{ questions|length }};
+const IS_METHODS_CLASSIFY = {{ is_methods|tojson }};
 let classified = document.querySelectorAll('.qblock.classified').length;
+// Track pending multi-tags for Methods exam 1 questions: { id: Set of AOS numbers }
+const pendingTags = {};
 updateProgress();
 
 function classify(id, aos, aosName, btn) {
@@ -1064,29 +1187,77 @@ function classify(id, aos, aosName, btn) {
   const status = document.getElementById('status-' + id);
 
   // Update button states
-  block.querySelectorAll('.aos-btn').forEach(b => {
-    b.classList.remove('active', 'active-new');
-  });
+  block.querySelectorAll('.aos-btn').forEach(b => b.classList.remove('active', 'active-new'));
   btn.classList.add('active-new');
 
-  // Update status badge
   const wasClassified = block.classList.contains('classified');
-  if (!wasClassified) {
-    classified++;
-    block.classList.add('classified');
-    updateProgress();
-  }
+  if (!wasClassified) { classified++; block.classList.add('classified'); updateProgress(); }
   status.textContent = aosName;
-  status.className = aos === 0 ? 'status unsorted-status' : aos === 7 ? 'status pseudocode-status' : 'status saved';
+  status.className = (aos === 0) ? 'status unsorted-status' : (aos === 7 && !IS_METHODS_CLASSIFY) ? 'status pseudocode-status' : 'status saved';
 
   fetch('/api/classify', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id, aos, aos_name: aosName, subject: '{{ subject }}' })
+    body: JSON.stringify({ id, aos, aos_name: aosName, subject: '{{ subject }}',
+                           tags: [aos], tag_names: [aosName] })
+  }).then(r => r.json()).then(data => {
+    if (data.ok) { btn.classList.remove('active-new'); btn.classList.add('active'); }
+  });
+}
+
+// Methods exam 1: toggle a tag on/off
+function methodsToggleTag(id, aos, aosName, btn) {
+  if (!pendingTags[id]) pendingTags[id] = new Set();
+  if (pendingTags[id].has(aos)) {
+    pendingTags[id].delete(aos);
+    btn.classList.remove('active', 'active-new');
+  } else {
+    pendingTags[id].add(aos);
+    btn.classList.add('active-new');
+    btn.classList.remove('active');
+    // Clear unsorted if any real tag selected
+    const block = document.getElementById('block-' + id);
+    block.querySelectorAll('.aos-btn.unsorted').forEach(b => b.classList.remove('active', 'active-new'));
+  }
+}
+
+// Methods exam 1: mark as unsorted
+function methodsSetUnsorted(id, btn) {
+  pendingTags[id] = new Set();
+  const block = document.getElementById('block-' + id);
+  block.querySelectorAll('.aos-btn').forEach(b => b.classList.remove('active', 'active-new'));
+  btn.classList.add('active-new');
+  classify(id, 0, 'Unsorted', btn);
+}
+
+// Methods exam 1: commit selected tags to server
+function methodsSaveTags(id) {
+  const tags = pendingTags[id] ? [...pendingTags[id]] : [];
+  if (!tags.length) return;
+  const aosMap = {{ methods_aos_exam1|tojson }};
+  const tag_names = tags.map(t => aosMap[t] || String(t));
+  const primaryAos = tags[0];
+  const primaryName = tag_names[0];
+
+  const block = document.getElementById('block-' + id);
+  const status = document.getElementById('status-' + id);
+  const wasClassified = block.classList.contains('classified');
+  if (!wasClassified) { classified++; block.classList.add('classified'); updateProgress(); }
+  status.textContent = tag_names.join(', ');
+  status.className = 'status saved';
+
+  fetch('/api/classify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id, aos: primaryAos, aos_name: primaryName,
+                           tags, tag_names, subject: '{{ subject }}' })
   }).then(r => r.json()).then(data => {
     if (data.ok) {
-      btn.classList.remove('active-new');
-      btn.classList.add('active');
+      // Flip active-new → active on all selected buttons
+      block.querySelectorAll('.aos-btn.active-new').forEach(b => {
+        b.classList.remove('active-new'); b.classList.add('active');
+      });
+      delete pendingTags[id];
     }
   });
 }
@@ -1123,7 +1294,7 @@ def browse_specialist():
     cfg = get_subject_config("specialist")
     return render_template_string(BROWSE_HTML, is_admin=admin_required(), user_name=user["name"] if user else "",
                                   subject="specialist", subject_name="Specialist Mathematics",
-                                  aos_map=cfg["aos_map"],
+                                  aos_map=cfg["aos_map"], is_methods=False,
                                   css_primary="#196061", css_primary_dark="#042f3a",
                                   css_primary_light="#e6f2f2", css_primary_hover="#1a7a7b")
 
@@ -1135,7 +1306,7 @@ def browse_methods():
     cfg = get_subject_config("methods")
     return render_template_string(BROWSE_HTML, is_admin=admin_required(), user_name=user["name"] if user else "",
                                   subject="methods", subject_name="Mathematical Methods",
-                                  aos_map=cfg["aos_map"],
+                                  aos_map=cfg["aos_map"], is_methods=True,
                                   css_primary="#2563eb", css_primary_dark="#1e3a5f",
                                   css_primary_light="#eff6ff", css_primary_hover="#1d4ed8")
 
@@ -1162,6 +1333,8 @@ def api_classify():
     aos = data.get("aos")
     aos_name = data.get("aos_name")
     subject = data.get("subject", "specialist")
+    tags = data.get("tags")       # optional; Methods only
+    tag_names = data.get("tag_names")  # optional; Methods only
     if not qid or aos is None:
         return jsonify(error="missing fields"), 400
     cfg = get_subject_config(subject)
@@ -1170,6 +1343,9 @@ def api_classify():
         if q["id"] == qid:
             q["aos"] = aos
             q["aos_name"] = aos_name
+            if subject == "methods":
+                q["tags"] = tags if tags is not None else [aos]
+                q["tag_names"] = tag_names if tag_names is not None else [aos_name]
             break
     else:
         return jsonify(error="question not found"), 404
@@ -1217,10 +1393,16 @@ def classify_page():
     for f in subject_flags:
         flags_by_qid.setdefault(f["question_id"], []).append(f)
 
+    is_methods = subject == "methods"
+    # For Methods classify page: split AOS map into exam-1 (1–5) and exam-2 (6–7) groups
+    methods_aos_exam1 = {k: v for k, v in aos_map.items() if 1 <= k <= 5} if is_methods else {}
+    methods_aos_exam2 = {k: v for k, v in aos_map.items() if k in (6, 7)} if is_methods else {}
+
     return render_template_string(CLASSIFY_HTML, questions=questions, publisher=publisher, year=year,
                                   exam_sets=exam_sets, unsorted_mode=unsorted_mode, unsorted_count=unsorted_count,
                                   flagged_mode=flagged_mode, flagged_count=flagged_count, flags_by_qid=flags_by_qid,
-                                  subject=subject, aos_map=aos_map)
+                                  subject=subject, aos_map=aos_map, is_methods=is_methods,
+                                  methods_aos_exam1=methods_aos_exam1, methods_aos_exam2=methods_aos_exam2)
 
 @app.route("/qimg/<path:filename>")
 def serve_qimg(filename):
