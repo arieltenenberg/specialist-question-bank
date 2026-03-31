@@ -30,6 +30,8 @@ Questions are classified into Areas of Study (AOS) per subject.
 | `/api/questions?subject=specialist\|methods` | Questions API |
 | `/api/classify` | Classify a question (subject in POST body) |
 | `/api/flag` | Flag a question (subject in POST body) |
+| `GET /api/saved?subject=specialist\|methods` | Get current user's saved question IDs |
+| `POST /api/saved` | Toggle a question saved/unsaved (subject in POST body) |
 
 ### Data & Config
 - `specialist_questions.json` — Specialist questions
@@ -39,6 +41,7 @@ Questions are classified into Areas of Study (AOS) per subject.
 - `settings.json` — Per-subject publisher visibility (gitignored)
 - `get_subject_config(subject)` helper returns data, file path, AOS map, and subject name
 - Colour themes: Specialist = teal (`#196061`, `#042f3a`), Methods = blue (`#2563eb`, `#1e3a5f`)
+- `users.db` — SQLite database for user accounts and saved questions (server-only, not in git)
 
 ## Specialist Mathematics — Areas of Study (AOS)
 | # | Name |
@@ -198,6 +201,14 @@ pip install pymupdf Pillow
 | Pull (with local changes) | `cd ~/newapp && git stash && git pull origin master` |
 
 ---
+
+## Saved Questions Feature
+Students can save questions from the browse page for easy access later.
+- **UI:** "Save" / "Unsave" button on each question card (next to "Show Solution"); "Saved (N)" tab in the topbar toggles a saved-only filter
+- **Storage:** `difficult_questions` table in `users.db` (column name is historical; feature is called "Saved Questions" in the UI)
+- **Schema:** `user_id TEXT, question_id TEXT, subject TEXT, created_at TEXT, PRIMARY KEY (user_id, question_id, subject)`
+- **Isolation:** Specialist and Methods saved collections are completely separate (scoped by `subject` column)
+- **DEV_MODE:** Uses `"dev_user"` as the user ID when no session exists
 
 ## Known Issues
 _(none)_
