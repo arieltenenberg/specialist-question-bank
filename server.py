@@ -64,6 +64,15 @@ def init_db():
                 approved_at TEXT
             )
         """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS difficult_questions (
+                user_id     TEXT NOT NULL,
+                question_id TEXT NOT NULL,
+                subject     TEXT NOT NULL,
+                created_at  TEXT NOT NULL,
+                PRIMARY KEY (user_id, question_id, subject)
+            )
+        """)
         conn.commit()
 
 init_db()
@@ -99,6 +108,11 @@ def current_user():
         "status": session["user_status"],
         "is_admin": session.get("is_admin", False),
     }
+
+def get_current_user_id():
+    if DEV_MODE:
+        return session.get("user_id", "dev_user")
+    return session.get("user_id")
 
 def check_approved():
     """Return a redirect if user is not logged in or not yet approved, else None."""
@@ -546,6 +560,38 @@ a { color:var(--primary); text-decoration:none; }
 }
 .flag-btn:hover { border-color:#dd6b20; color:#dd6b20; }
 .flag-btn.flagged { border-color:#dd6b20; color:#dd6b20; background:#fff8f0; cursor:default; }
+
+/* ----- Difficult controls ----- */
+.diff-btn {
+  font-family:inherit;
+  font-size:.78rem;
+  color:var(--muted);
+  background:none;
+  border:1px solid var(--border);
+  padding:5px 12px;
+  border-radius:6px;
+  cursor:pointer;
+  transition:all .15s;
+  align-self:flex-start;
+}
+.diff-btn:hover { border-color:#d97706; color:#d97706; }
+.diff-btn.marked { border-color:#d97706; color:#d97706; background:#fffbeb; }
+.difficult-filter-btn {
+  width:100%;
+  text-align:left;
+  font-family:inherit;
+  font-size:.85rem;
+  padding:6px 10px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:none;
+  cursor:pointer;
+  transition:all .15s;
+  color:var(--text);
+  font-weight:500;
+}
+.difficult-filter-btn:hover { border-color:#d97706; color:#d97706; }
+.difficult-filter-btn.active { background:#fffbeb; border-color:#d97706; color:#d97706; font-weight:600; }
 </style>
 </head>
 <body>
@@ -566,6 +612,9 @@ a { color:var(--primary); text-decoration:none; }
     {% if is_admin %}
     <a class="sort-unsorted-btn" id="sort-unsorted-btn" href="/classify?subject={{ subject }}&unsorted=1">Sort Unsorted (<span id="unsorted-count">…</span>)</a>
     {% endif %}
+    <div style="margin-bottom:16px;">
+      <button class="difficult-filter-btn" id="difficult-filter-btn" onclick="toggleDifficultFilter()">&#9733; My Difficult (<span id="difficult-count">0</span>)</button>
+    </div>
     {% if is_methods %}
     <h3>Short Answer and Multiple Choice</h3>
     <div class="filter-group" id="fg-tag"></div>
@@ -604,6 +653,8 @@ let allQ = [];
 let filtered = [];
 let page = 0;
 let filters = { aos: null, tag: null, extended: null, year: null, publisher: null, exam_type: null, section: null };
+let difficultIds = new Set();
+let difficultOnly = false;
 
 const sectionLabels = { short_answer: 'Short Answer', multiple_choice: 'Multiple Choice', extended_response: 'Extended Response' };
 
@@ -627,6 +678,7 @@ fetch('/api/questions?subject={{ subject }}').then(r => r.json()).then(data => {
   }
   buildFilters();
   applyFilters();
+  loadDifficultIds();
 });
 
 function buildFilters() {
@@ -695,6 +747,8 @@ function toggleFilter(key, value, btn) {
 function clearAll() {
   filters = { aos: null, tag: null, extended: null, year: null, publisher: null, exam_type: null, section: null };
   document.querySelectorAll('.filter-btn.active').forEach(b => b.classList.remove('active'));
+  difficultOnly = false;
+  document.getElementById('difficult-filter-btn').classList.remove('active');
   page = 0;
   applyFilters();
 }
@@ -726,6 +780,7 @@ function applyFilters() {
       const sl = Object.entries(sectionLabels).find(([k,v]) => v===filters.section);
       if (sl && q.section !== sl[0]) return false;
     }
+    if (difficultOnly && !difficultIds.has(q.id)) return false;
     return true;
   });
 
@@ -800,7 +855,8 @@ function renderCards() {
       </div>` : '';
 
     const flagControls = !IS_ADMIN ? `
-      <button class="flag-btn" id="flag-btn-${q.id}" onclick="submitFlag('${q.id}', this)">⚑ Flag as misclassified</button>` : '';
+      <button class="flag-btn" id="flag-btn-${q.id}" onclick="submitFlag('${q.id}', this)">⚑ Flag as misclassified</button>
+      <button class="diff-btn" id="diff-btn-${q.id}" onclick="toggleDifficult('${q.id}', this)">&#9734; Mark as difficult</button>` : '';
 
     return `<div class="qcard" id="qcard-${q.id}" onclick="this.classList.toggle('open')">
       <div class="qcard-header">
@@ -908,6 +964,51 @@ function submitFlag(id, btn) {
       btn.onclick = null;
     }
   });
+}
+
+function loadDifficultIds() {
+  fetch('/api/difficult?subject={{ subject }}').then(r => r.json()).then(data => {
+    difficultIds = new Set(data.ids);
+    document.getElementById('difficult-count').textContent = difficultIds.size;
+    difficultIds.forEach(id => {
+      const btn = document.getElementById('diff-btn-' + id);
+      if (btn) markDifficultBtn(btn, true);
+    });
+  });
+}
+
+function toggleDifficult(id, btn) {
+  fetch('/api/difficult', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question_id: id, subject: '{{ subject }}' })
+  }).then(r => r.json()).then(data => {
+    if (data.marked) {
+      difficultIds.add(id);
+    } else {
+      difficultIds.delete(id);
+    }
+    markDifficultBtn(btn, data.marked);
+    document.getElementById('difficult-count').textContent = difficultIds.size;
+    if (difficultOnly) applyFilters();
+  });
+}
+
+function markDifficultBtn(btn, marked) {
+  if (marked) {
+    btn.innerHTML = '&#9733; Difficult';
+    btn.classList.add('marked');
+  } else {
+    btn.innerHTML = '&#9734; Mark as difficult';
+    btn.classList.remove('marked');
+  }
+}
+
+function toggleDifficultFilter() {
+  difficultOnly = !difficultOnly;
+  document.getElementById('difficult-filter-btn').classList.toggle('active', difficultOnly);
+  page = 0;
+  applyFilters();
 }
 
 </script>
@@ -2439,6 +2540,43 @@ def api_flag():
     flags.append(flag)
     _write_flags(flags)
     return jsonify(ok=True)
+
+@app.route("/api/difficult")
+def api_get_difficult():
+    user_id = get_current_user_id()
+    subject = request.args.get("subject", "specialist")
+    with get_db() as conn:
+        rows = conn.execute(
+            "SELECT question_id FROM difficult_questions WHERE user_id=? AND subject=?",
+            (user_id, subject)
+        ).fetchall()
+    return jsonify({"ids": [r["question_id"] for r in rows]})
+
+@app.route("/api/difficult", methods=["POST"])
+def api_toggle_difficult():
+    user_id = get_current_user_id()
+    data = request.get_json()
+    question_id = data["question_id"]
+    subject = data.get("subject", "specialist")
+    with get_db() as conn:
+        existing = conn.execute(
+            "SELECT 1 FROM difficult_questions WHERE user_id=? AND question_id=? AND subject=?",
+            (user_id, question_id, subject)
+        ).fetchone()
+        if existing:
+            conn.execute(
+                "DELETE FROM difficult_questions WHERE user_id=? AND question_id=? AND subject=?",
+                (user_id, question_id, subject)
+            )
+            marked = False
+        else:
+            conn.execute(
+                "INSERT INTO difficult_questions (user_id, question_id, subject, created_at) VALUES (?,?,?,?)",
+                (user_id, question_id, subject, datetime.datetime.utcnow().isoformat())
+            )
+            marked = True
+        conn.commit()
+    return jsonify({"ok": True, "marked": marked})
 
 @app.route("/api/admin/publishers/toggle", methods=["POST"])
 def toggle_publisher():
