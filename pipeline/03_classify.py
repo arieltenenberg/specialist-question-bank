@@ -473,12 +473,14 @@ METHODS_INTEGRATION_KW = [
     r"anti[\-\s]?derivat",
     r"antiderivat",
     r"∫",
+    r"\uf0f3",                               # Symbol-font integral sign (PDF extraction artifact)
     r"\bdt\b",                               # "∫ f(t) dt" — integral with dt variable
     r"(?<!\n)dx\b",                          # "f(x) dx" — NOT "d\ndx" (split d/dx operator)
     r"trapezium\s+rule",                     # numerical integration
     r"area\s+under",
     r"area\s+between",
-    r"area\s+bound",
+    r"area\s+(?:\w+\s+)*bound",               # "area that is bound by", "area bounded by"
+    r"shaded\s+area",                        # "find the shaded area"
     r"total\s+area",                         # "find the total area enclosed by..."
     r"area\s+of\s+(?:the\s+)?region",        # "the area of the region bounded by..."
     r"net\s+(?:area|change|displacement)",   # net area / net change via integration
@@ -503,7 +505,7 @@ METHODS_DIFF_KW = [
     r"optimis",        # optimise, optimisation
     r"\bmaximis",      # maximise, maximises (AU spelling)
     r"\bminimis",      # minimise, minimises (AU spelling)
-    r"tangent\s+(?:to|at|line)",
+    r"tangent\s+(?:to|at|line|of)\b",
     r"normal\s+to",
     r"average\s+rate\s+of\s+change",
     r"instantaneous\s+rate\s+of\s+change",
@@ -522,6 +524,8 @@ METHODS_DIFF_KW = [
     r"\bd[\s/]+dx\b",            # "d/dx" or "d\ndx" (differential operator split across lines)
     r"\bnewton.?s\s+method\b",   # Newton's method — root-finding via differentiation
     r"\bcontinuous\s+at\b",      # "f is continuous at x = 1" — continuity in calculus
+    r"\uf0a2",                   # Symbol-font prime (PDF extraction artifact for f′, g′)
+    r"\b(?:minimum|maximum)\s+(?:area|volume|perimeter|length|distance|cost|profit)",  # geometric optimisation
 ]
 
 METHODS_FUNCTIONS_KW = [
@@ -615,7 +619,7 @@ def classify_for_methods(text, section):
     if is_diff:
         tags = [2]
         # Sketch + stationary point → also tag Functions
-        is_sketch = bool(re.search(r"sketch|graph\s+of|draw.*graph", t))
+        is_sketch = bool(re.search(r"\bsketch\b|draw.*graph", t))
         if is_sketch and is_functions:
             tags.append(1)
         return 2, METHODS_AOS[2], tags, [METHODS_AOS[n] for n in tags]
