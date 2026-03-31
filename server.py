@@ -607,13 +607,13 @@ let filters = { aos: null, tag: null, extended: null, year: null, publisher: nul
 
 const sectionLabels = { short_answer: 'Short Answer', multiple_choice: 'Multiple Choice', extended_response: 'Extended Response' };
 
-// Methods tag colours: AOS 1–5 (shades of blue), exam 2 (grey), pseudocode (purple)
+// Methods tag colours: all topic tags same blue
 const METHODS_TAG_STYLES = {
   1: { bg:'#bfdbfe', color:'#1e3a5f' },
-  2: { bg:'#93c5fd', color:'#1e3a5f' },
-  3: { bg:'#60a5fa', color:'#1e3a5f' },
-  4: { bg:'#3b82f6', color:'#ffffff' },
-  5: { bg:'#1d4ed8', color:'#ffffff' },
+  2: { bg:'#bfdbfe', color:'#1e3a5f' },
+  3: { bg:'#bfdbfe', color:'#1e3a5f' },
+  4: { bg:'#bfdbfe', color:'#1e3a5f' },
+  5: { bg:'#bfdbfe', color:'#1e3a5f' },
   6: { bg:'#e5e7eb', color:'#374151' },
   7: { bg:'#e5e7eb', color:'#374151' },
   8: { bg:'#ede9fe', color:'#5b21b6' },
