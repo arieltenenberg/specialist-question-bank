@@ -866,7 +866,7 @@ function renderCards() {
       <div class="qcard-body" onclick="event.stopPropagation()">
         <div class="qimg-wrap"><h4>Question</h4><img src="${q.question_image}" loading="lazy"/></div>
         ${cardActions}
-        <div class="sol-hidden">${solInner}</div>
+        <div class="sol-wrap sol-hidden">${solInner}</div>
         ${adminControls}
       </div>
     </div>`;
@@ -894,7 +894,7 @@ function renderPagination() {
 }
 
 function toggleSol(btn) {
-  const sol = btn.nextElementSibling;
+  const sol = btn.closest('.qcard-body').querySelector('.sol-wrap');
   if (sol.classList.contains('sol-hidden')) {
     sol.classList.remove('sol-hidden');
     btn.textContent = 'Hide Solution';
