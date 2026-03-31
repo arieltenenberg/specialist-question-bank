@@ -99,6 +99,10 @@ def detect_exam_number(fname):
     m = re.search(r"maths\s*(\d)", fl)
     if m:
         return int(m.group(1))
+    # "MM1" / "MM2" (Kilbaha and Insight Methods naming)
+    m = re.search(r"mm(\d)", fl)
+    if m:
+        return int(m.group(1))
     return None
 
 
