@@ -7016,8 +7016,8 @@
     "marks": 2,
     "question_image": "/qimg/heffernan_2022_exam1_s_q1_question.png",
     "solution_image": "/qimg/heffernan_2022_exam1_s_q1_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 2,
+    "aos_name": "Functions, Relations and Graphs"
   },
   {
     "id": "heffernan_2022_exam1_s_q2",
@@ -7185,8 +7185,8 @@
     "marks": null,
     "question_image": "/qimg/heffernan_2022_exam2_m_q4_question.png",
     "solution_image": "/qimg/heffernan_2022_exam2_m_q4_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 2,
+    "aos_name": "Functions, Relations and Graphs"
   },
   {
     "id": "heffernan_2022_exam2_m_q5",
@@ -7393,8 +7393,8 @@
     "marks": null,
     "question_image": "/qimg/heffernan_2022_exam2_m_q20_question.png",
     "solution_image": "/qimg/heffernan_2022_exam2_m_q20_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 6,
+    "aos_name": "Probability and Statistics"
   },
   {
     "id": "heffernan_2022_exam2_e_q1",
@@ -7653,8 +7653,8 @@
     "marks": null,
     "question_image": "/qimg/insight_2022_exam2_m_q5_question.png",
     "solution_image": "/qimg/insight_2022_exam2_m_q5_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 3,
+    "aos_name": "Complex Numbers"
   },
   {
     "id": "insight_2022_exam2_m_q6",
@@ -7705,8 +7705,8 @@
     "marks": null,
     "question_image": "/qimg/insight_2022_exam2_m_q9_question.png",
     "solution_image": "/qimg/insight_2022_exam2_m_q9_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 4,
+    "aos_name": "Calculus"
   },
   {
     "id": "insight_2022_exam2_m_q10",
@@ -7926,8 +7926,8 @@
     "marks": 8,
     "question_image": "/qimg/insight_2022_exam2_e_q6_question.png",
     "solution_image": "/qimg/insight_2022_exam2_e_q6_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 5,
+    "aos_name": "Vectors, Lines and Planes"
   },
   {
     "id": "kilbaha_2022_exam1_s_q1",
@@ -8199,8 +8199,8 @@
     "marks": null,
     "question_image": "/qimg/kilbaha_2022_exam2_m_q10_question.png",
     "solution_image": "/qimg/kilbaha_2022_exam2_m_q10_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 4,
+    "aos_name": "Calculus"
   },
   {
     "id": "kilbaha_2022_exam2_m_q11",
@@ -8420,8 +8420,8 @@
     "marks": 2,
     "question_image": "/qimg/mav_2022_exam1_s_q1_question.png",
     "solution_image": "/qimg/mav_2022_exam1_s_q1_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 8,
+    "aos_name": "Mechanics"
   },
   {
     "id": "mav_2022_exam1_s_q2",
@@ -8485,8 +8485,8 @@
     "marks": 3,
     "question_image": "/qimg/mav_2022_exam1_s_q6_question.png",
     "solution_image": "/qimg/mav_2022_exam1_s_q6_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 2,
+    "aos_name": "Functions, Relations and Graphs"
   },
   {
     "id": "mav_2022_exam1_s_q7",
@@ -8550,8 +8550,8 @@
     "marks": null,
     "question_image": "/qimg/mav_2022_exam2_m_q1_question.png",
     "solution_image": "/qimg/mav_2022_exam2_m_q1_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 2,
+    "aos_name": "Functions, Relations and Graphs"
   },
   {
     "id": "mav_2022_exam2_m_q2",
@@ -8563,8 +8563,8 @@
     "marks": null,
     "question_image": "/qimg/mav_2022_exam2_m_q2_question.png",
     "solution_image": "/qimg/mav_2022_exam2_m_q2_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 2,
+    "aos_name": "Functions, Relations and Graphs"
   },
   {
     "id": "mav_2022_exam2_m_q3",
@@ -8680,8 +8680,8 @@
     "marks": null,
     "question_image": "/qimg/mav_2022_exam2_m_q11_question.png",
     "solution_image": "/qimg/mav_2022_exam2_m_q11_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 5,
+    "aos_name": "Vectors, Lines and Planes"
   },
   {
     "id": "mav_2022_exam2_m_q12",
@@ -8901,8 +8901,8 @@
     "marks": 3,
     "question_image": "/qimg/neap_2022_exam1_s_q2_question.png",
     "solution_image": "/qimg/neap_2022_exam1_s_q2_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 2,
+    "aos_name": "Functions, Relations and Graphs"
   },
   {
     "id": "neap_2022_exam1_s_q3",
@@ -8979,8 +8979,8 @@
     "marks": 5,
     "question_image": "/qimg/neap_2022_exam1_s_q8_question.png",
     "solution_image": "/qimg/neap_2022_exam1_s_q8_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 4,
+    "aos_name": "Calculus"
   },
   {
     "id": "neap_2022_exam1_s_q9",
@@ -9083,8 +9083,8 @@
     "marks": null,
     "question_image": "/qimg/neap_2022_exam2_m_q6_question.png",
     "solution_image": "/qimg/neap_2022_exam2_m_q6_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 3,
+    "aos_name": "Complex Numbers"
   },
   {
     "id": "neap_2022_exam2_m_q7",
@@ -9096,8 +9096,8 @@
     "marks": null,
     "question_image": "/qimg/neap_2022_exam2_m_q7_question.png",
     "solution_image": "/qimg/neap_2022_exam2_m_q7_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 5,
+    "aos_name": "Vectors, Lines and Planes"
   },
   {
     "id": "neap_2022_exam2_m_q8",
@@ -9109,8 +9109,8 @@
     "marks": null,
     "question_image": "/qimg/neap_2022_exam2_m_q8_question.png",
     "solution_image": "/qimg/neap_2022_exam2_m_q8_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 2,
+    "aos_name": "Functions, Relations and Graphs"
   },
   {
     "id": "neap_2022_exam2_m_q9",
@@ -9213,8 +9213,8 @@
     "marks": null,
     "question_image": "/qimg/neap_2022_exam2_m_q16_question.png",
     "solution_image": "/qimg/neap_2022_exam2_m_q16_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 8,
+    "aos_name": "Mechanics"
   },
   {
     "id": "neap_2022_exam2_m_q17",
@@ -9252,8 +9252,8 @@
     "marks": null,
     "question_image": "/qimg/neap_2022_exam2_m_q19_question.png",
     "solution_image": "/qimg/neap_2022_exam2_m_q19_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 6,
+    "aos_name": "Probability and Statistics"
   },
   {
     "id": "neap_2022_exam2_m_q20",
@@ -9343,8 +9343,8 @@
     "marks": 2,
     "question_image": "/qimg/tssm_2022_exam1_s_q1_question.png",
     "solution_image": "/qimg/tssm_2022_exam1_s_q1_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 2,
+    "aos_name": "Functions, Relations and Graphs"
   },
   {
     "id": "tssm_2022_exam1_s_q2",
@@ -9421,8 +9421,8 @@
     "marks": 6,
     "question_image": "/qimg/tssm_2022_exam1_s_q7_question.png",
     "solution_image": "/qimg/tssm_2022_exam1_s_q7_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 8,
+    "aos_name": "Mechanics"
   },
   {
     "id": "tssm_2022_exam1_s_q8",
@@ -9447,8 +9447,8 @@
     "marks": null,
     "question_image": "/qimg/tssm_2022_exam2_m_q1_question.png",
     "solution_image": "/qimg/tssm_2022_exam2_m_q1_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 3,
+    "aos_name": "Complex Numbers"
   },
   {
     "id": "tssm_2022_exam2_m_q2",
@@ -9460,8 +9460,8 @@
     "marks": null,
     "question_image": "/qimg/tssm_2022_exam2_m_q2_question.png",
     "solution_image": "/qimg/tssm_2022_exam2_m_q2_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 2,
+    "aos_name": "Functions, Relations and Graphs"
   },
   {
     "id": "tssm_2022_exam2_m_q3",
@@ -9473,8 +9473,8 @@
     "marks": null,
     "question_image": "/qimg/tssm_2022_exam2_m_q3_question.png",
     "solution_image": "/qimg/tssm_2022_exam2_m_q3_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 3,
+    "aos_name": "Complex Numbers"
   },
   {
     "id": "tssm_2022_exam2_m_q4",
@@ -9486,8 +9486,8 @@
     "marks": null,
     "question_image": "/qimg/tssm_2022_exam2_m_q4_question.png",
     "solution_image": "/qimg/tssm_2022_exam2_m_q4_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 2,
+    "aos_name": "Functions, Relations and Graphs"
   },
   {
     "id": "tssm_2022_exam2_m_q5",
@@ -9499,8 +9499,8 @@
     "marks": null,
     "question_image": "/qimg/tssm_2022_exam2_m_q5_question.png",
     "solution_image": "/qimg/tssm_2022_exam2_m_q5_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 4,
+    "aos_name": "Calculus"
   },
   {
     "id": "tssm_2022_exam2_m_q6",
@@ -9551,8 +9551,8 @@
     "marks": null,
     "question_image": "/qimg/tssm_2022_exam2_m_q9_question.png",
     "solution_image": "/qimg/tssm_2022_exam2_m_q9_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 3,
+    "aos_name": "Complex Numbers"
   },
   {
     "id": "tssm_2022_exam2_m_q10",
@@ -9668,8 +9668,8 @@
     "marks": null,
     "question_image": "/qimg/tssm_2022_exam2_m_q18_question.png",
     "solution_image": "/qimg/tssm_2022_exam2_m_q18_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 3,
+    "aos_name": "Complex Numbers"
   },
   {
     "id": "tssm_2022_exam2_m_q19",
