@@ -158,6 +158,7 @@ The admin upload UI triggers all three automatically.
 - `raw_questions_methods.json` contains the current batch's extracted text and is committed to git so Claude can analyse it
 - Do one publisher/year at a time; analyse classifier corrections after each batch
 - **Classifier improvement workflow**: after manually sorting unsorted questions, ask Claude to analyse the corrections (via `git diff`) and update keyword rules in `03_classify.py`. Do NOT rerun the classifier — it's slow and unnecessary since questions are already manually fixed. Improvements apply to the next batch.
+- **Reclassification commit workflow**: reclassify questions locally via the classify UI, then tell Claude "I have reclassified some questions locally". Claude will run `git diff` to review, commit, and push. Then pull and restart on the server.
 
 ### One-time local setup
 ```bash
