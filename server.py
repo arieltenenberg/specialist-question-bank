@@ -871,6 +871,10 @@ function renderCards() {
       </div>
     </div>`;
   }).join('');
+  savedIds.forEach(id => {
+    const btn = document.getElementById('save-btn-' + id);
+    if (btn) markSaveBtn(btn, true);
+  });
 }
 
 function renderPagination() {
