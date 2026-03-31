@@ -113,16 +113,16 @@ All pipeline work (importing exams, classification, reclassification) is done lo
 - Fixing a flag means reclassifying the question → always do this locally.
 
 ### Per-batch workflow
-1. Upload exam zip via `http://localhost:8080/admin?subject=methods` (with `DEV_MODE=1` server running)
+1. Upload exam zip via `http://localhost:8080/admin?subject=specialist|methods` (with `DEV_MODE=1` server running)
    - Zip must contain folder structure: `2025/Publisher/Exam 1.pdf`, `Exam 1 Solutions.pdf`, etc.
    - This triggers the pipeline automatically
-2. Visit `http://localhost:8080/classify?subject=methods&unsorted=1` and sort Unsorted questions
-3. Press Save All
-4. `git add methods_questions.json raw_questions_methods.json && git commit -m "..." && git push`
-5. scp new images to server:
+2. Visit `http://localhost:8080/classify?subject=specialist|methods&unsorted=1` and sort Unsorted questions
+3. Restart local server to load new data: `kill $(lsof -ti:8080) && DEV_MODE=1 python3 server.py`
+4. `git add specialist_questions.json && git commit -m "..." && git push` (or `methods_questions.json raw_questions_methods.json` for Methods)
+5. scp new images to server (use `*_<year>_*` to catch all publishers for that year):
    ```bash
    scp -i "/Users/arieltenenberg/Desktop/Specialist Website/specialistquestionbankkey.pem" \
-     question_images/methods_<publisher>_* ubuntu@3.27.217.188:~/newapp/question_images/
+     question_images/*_2022_* ubuntu@3.27.217.188:~/newapp/question_images/
    ```
 6. Deploy: SSH to server → `cd ~/newapp && git pull origin master && sudo systemctl restart webapp`
 
@@ -144,7 +144,7 @@ python3 pipeline/03_classify.py --subject methods          # classify → method
 The admin upload UI triggers all three automatically.
 
 ### Important pipeline behaviour
-- `03_classify.py` **merges** new questions with existing `methods_questions.json` — previous batches are never lost
+- `03_classify.py` **merges** new questions with existing JSON — previous batches are never lost (applies to both specialist and methods)
 - `raw_questions_methods.json` contains the current batch's extracted text and is committed to git so Claude can analyse it
 - Do one publisher/year at a time; analyse classifier corrections after each batch
 
@@ -190,6 +190,9 @@ pip install pymupdf Pillow
 | Pull (with local changes) | `cd ~/newapp && git stash && git pull origin master` |
 
 ---
+
+## Known Issues
+- Kilbaha 2022 Exam 1 Q1: solution image shown where question should be (pipeline paired PDFs in wrong order). Needs investigation of PDF filenames in `uploads/specialist/2022/Kilbaha/`.
 
 ## Future Improvements
 - [ ] Set up automated SSL renewal check (Certbot should handle this automatically)
