@@ -1,5 +1,2542 @@
 [
   {
+    "id": "methods_heffernan_2022_exam1_s_q1",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 1,
+    "marks": 3,
+    "question_image": "/qimg/methods_heffernan_2022_exam1_s_q1_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam1_s_q1_solution.png",
+    "aos": 2,
+    "aos_name": "Differentiation",
+    "tags": [
+      2
+    ],
+    "tag_names": [
+      "Differentiation"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam1_s_q2",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 2,
+    "marks": 2,
+    "question_image": "/qimg/methods_heffernan_2022_exam1_s_q2_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam1_s_q2_solution.png",
+    "aos": 3,
+    "aos_name": "Integration",
+    "tags": [
+      3
+    ],
+    "tag_names": [
+      "Integration"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam1_s_q3",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 3,
+    "marks": 4,
+    "question_image": "/qimg/methods_heffernan_2022_exam1_s_q3_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam1_s_q3_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam1_s_q4",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 4,
+    "marks": 4,
+    "question_image": "/qimg/methods_heffernan_2022_exam1_s_q4_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam1_s_q4_solution.png",
+    "aos": 4,
+    "aos_name": "Discrete Probability",
+    "tags": [
+      4
+    ],
+    "tag_names": [
+      "Discrete Probability"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam1_s_q5",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 5,
+    "marks": 7,
+    "question_image": "/qimg/methods_heffernan_2022_exam1_s_q5_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam1_s_q5_solution.png",
+    "aos": 2,
+    "aos_name": "Differentiation",
+    "tags": [
+      2,
+      1
+    ],
+    "tag_names": [
+      "Differentiation",
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam1_s_q6",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 6,
+    "marks": 4,
+    "question_image": "/qimg/methods_heffernan_2022_exam1_s_q6_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam1_s_q6_solution.png",
+    "aos": 2,
+    "aos_name": "Differentiation",
+    "tags": [
+      2
+    ],
+    "tag_names": [
+      "Differentiation"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam1_s_q7",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 7,
+    "marks": 5,
+    "question_image": "/qimg/methods_heffernan_2022_exam1_s_q7_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam1_s_q7_solution.png",
+    "aos": 4,
+    "aos_name": "Discrete Probability",
+    "tags": [
+      4
+    ],
+    "tag_names": [
+      "Discrete Probability"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam1_s_q8",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 8,
+    "marks": 6,
+    "question_image": "/qimg/methods_heffernan_2022_exam1_s_q8_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam1_s_q8_solution.png",
+    "aos": 3,
+    "aos_name": "Integration",
+    "tags": [
+      3,
+      2
+    ],
+    "tag_names": [
+      "Integration",
+      "Differentiation"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam1_s_q9",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 9,
+    "marks": 5,
+    "question_image": "/qimg/methods_heffernan_2022_exam1_s_q9_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam1_s_q9_solution.png",
+    "aos": 4,
+    "aos_name": "Discrete Probability",
+    "tags": [
+      4
+    ],
+    "tag_names": [
+      "Discrete Probability"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_m_q1",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 1,
+    "marks": null,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_m_q1_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_m_q1_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_m_q2",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 2,
+    "marks": null,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_m_q2_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_m_q2_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_m_q3",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 3,
+    "marks": null,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_m_q3_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_m_q3_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_m_q4",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 4,
+    "marks": null,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_m_q4_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_m_q4_solution.png",
+    "aos": 4,
+    "aos_name": "Discrete Probability",
+    "tags": [
+      4
+    ],
+    "tag_names": [
+      "Discrete Probability"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_m_q5",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 5,
+    "marks": null,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_m_q5_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_m_q5_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_m_q6",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 6,
+    "marks": null,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_m_q6_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_m_q6_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_m_q7",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 7,
+    "marks": null,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_m_q7_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_m_q7_solution.png",
+    "aos": 2,
+    "aos_name": "Differentiation",
+    "tags": [
+      2
+    ],
+    "tag_names": [
+      "Differentiation"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_m_q8",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 8,
+    "marks": null,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_m_q8_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_m_q8_solution.png",
+    "aos": 2,
+    "aos_name": "Differentiation",
+    "tags": [
+      2
+    ],
+    "tag_names": [
+      "Differentiation"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_m_q9",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 9,
+    "marks": null,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_m_q9_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_m_q9_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_m_q10",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 10,
+    "marks": null,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_m_q10_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_m_q10_solution.png",
+    "aos": 5,
+    "aos_name": "Continuous Probability",
+    "tags": [
+      5
+    ],
+    "tag_names": [
+      "Continuous Probability"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_m_q11",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 11,
+    "marks": null,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_m_q11_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_m_q11_solution.png",
+    "aos": 3,
+    "aos_name": "Integration",
+    "tags": [
+      3
+    ],
+    "tag_names": [
+      "Integration"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_m_q12",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 12,
+    "marks": null,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_m_q12_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_m_q12_solution.png",
+    "aos": 3,
+    "aos_name": "Integration",
+    "tags": [
+      3
+    ],
+    "tag_names": [
+      "Integration"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_m_q13",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 13,
+    "marks": null,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_m_q13_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_m_q13_solution.png",
+    "aos": 3,
+    "aos_name": "Integration",
+    "tags": [
+      3
+    ],
+    "tag_names": [
+      "Integration"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_m_q14",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 14,
+    "marks": null,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_m_q14_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_m_q14_solution.png",
+    "aos": 4,
+    "aos_name": "Discrete Probability",
+    "tags": [
+      4
+    ],
+    "tag_names": [
+      "Discrete Probability"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_m_q15",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 15,
+    "marks": null,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_m_q15_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_m_q15_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_m_q16",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 16,
+    "marks": null,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_m_q16_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_m_q16_solution.png",
+    "aos": 4,
+    "aos_name": "Discrete Probability",
+    "tags": [
+      4
+    ],
+    "tag_names": [
+      "Discrete Probability"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_m_q17",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 17,
+    "marks": null,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_m_q17_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_m_q17_solution.png",
+    "aos": 4,
+    "aos_name": "Discrete Probability",
+    "tags": [
+      4
+    ],
+    "tag_names": [
+      "Discrete Probability"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_m_q18",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 18,
+    "marks": null,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_m_q18_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_m_q18_solution.png",
+    "aos": 3,
+    "aos_name": "Integration",
+    "tags": [
+      3
+    ],
+    "tag_names": [
+      "Integration"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_m_q19",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 19,
+    "marks": null,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_m_q19_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_m_q19_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_m_q20",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 20,
+    "marks": null,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_m_q20_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_m_q20_solution.png",
+    "aos": 2,
+    "aos_name": "Differentiation",
+    "tags": [
+      2
+    ],
+    "tag_names": [
+      "Differentiation"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_e_q1",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "extended_response",
+    "question_number": 1,
+    "marks": 12,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_e_q1_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_e_q1_solution.png",
+    "aos": 6,
+    "aos_name": "Core Content",
+    "tags": [
+      6
+    ],
+    "tag_names": [
+      "Core Content"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_e_q2",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "extended_response",
+    "question_number": 2,
+    "marks": 9,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_e_q2_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_e_q2_solution.png",
+    "aos": 6,
+    "aos_name": "Core Content",
+    "tags": [
+      6
+    ],
+    "tag_names": [
+      "Core Content"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_e_q3",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "extended_response",
+    "question_number": 3,
+    "marks": 9,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_e_q3_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_e_q3_solution.png",
+    "aos": 6,
+    "aos_name": "Core Content",
+    "tags": [
+      6
+    ],
+    "tag_names": [
+      "Core Content"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_e_q4",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "extended_response",
+    "question_number": 4,
+    "marks": 16,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_e_q4_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_e_q4_solution.png",
+    "aos": 7,
+    "aos_name": "Probability and Statistics",
+    "tags": [
+      7
+    ],
+    "tag_names": [
+      "Probability and Statistics"
+    ]
+  },
+  {
+    "id": "methods_heffernan_2022_exam2_e_q5",
+    "year": 2022,
+    "publisher": "Heffernan",
+    "exam_type": 2,
+    "section": "extended_response",
+    "question_number": 5,
+    "marks": 14,
+    "question_image": "/qimg/methods_heffernan_2022_exam2_e_q5_question.png",
+    "solution_image": "/qimg/methods_heffernan_2022_exam2_e_q5_solution.png",
+    "aos": 6,
+    "aos_name": "Core Content",
+    "tags": [
+      6
+    ],
+    "tag_names": [
+      "Core Content"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam1_s_q1",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 1,
+    "marks": 4,
+    "question_image": "/qimg/methods_mav_2022_exam1_s_q1_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam1_s_q1_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam1_s_q2",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 2,
+    "marks": 3,
+    "question_image": "/qimg/methods_mav_2022_exam1_s_q2_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam1_s_q2_solution.png",
+    "aos": 3,
+    "aos_name": "Integration",
+    "tags": [
+      3
+    ],
+    "tag_names": [
+      "Integration"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam1_s_q3",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 3,
+    "marks": 6,
+    "question_image": "/qimg/methods_mav_2022_exam1_s_q3_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam1_s_q3_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam1_s_q4",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 4,
+    "marks": 3,
+    "question_image": "/qimg/methods_mav_2022_exam1_s_q4_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam1_s_q4_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam1_s_q5",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 5,
+    "marks": 4,
+    "question_image": "/qimg/methods_mav_2022_exam1_s_q5_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam1_s_q5_solution.png",
+    "aos": 2,
+    "aos_name": "Differentiation",
+    "tags": [
+      2
+    ],
+    "tag_names": [
+      "Differentiation"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam1_s_q6",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 6,
+    "marks": 3,
+    "question_image": "/qimg/methods_mav_2022_exam1_s_q6_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam1_s_q6_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam1_s_q7",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 7,
+    "marks": 7,
+    "question_image": "/qimg/methods_mav_2022_exam1_s_q7_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam1_s_q7_solution.png",
+    "aos": 4,
+    "aos_name": "Discrete Probability",
+    "tags": [
+      4
+    ],
+    "tag_names": [
+      "Discrete Probability"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam1_s_q8",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 8,
+    "marks": 4,
+    "question_image": "/qimg/methods_mav_2022_exam1_s_q8_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam1_s_q8_solution.png",
+    "aos": 3,
+    "aos_name": "Integration",
+    "tags": [
+      3
+    ],
+    "tag_names": [
+      "Integration"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam1_s_q9",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 9,
+    "marks": 6,
+    "question_image": "/qimg/methods_mav_2022_exam1_s_q9_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam1_s_q9_solution.png",
+    "aos": 2,
+    "aos_name": "Differentiation",
+    "tags": [
+      2,
+      1
+    ],
+    "tag_names": [
+      "Differentiation",
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_m_q1",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 1,
+    "marks": null,
+    "question_image": "/qimg/methods_mav_2022_exam2_m_q1_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_m_q1_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_m_q2",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 2,
+    "marks": null,
+    "question_image": "/qimg/methods_mav_2022_exam2_m_q2_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_m_q2_solution.png",
+    "aos": 3,
+    "aos_name": "Integration",
+    "tags": [
+      3
+    ],
+    "tag_names": [
+      "Integration"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_m_q3",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 3,
+    "marks": null,
+    "question_image": "/qimg/methods_mav_2022_exam2_m_q3_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_m_q3_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_m_q4",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 4,
+    "marks": null,
+    "question_image": "/qimg/methods_mav_2022_exam2_m_q4_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_m_q4_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_m_q5",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 5,
+    "marks": null,
+    "question_image": "/qimg/methods_mav_2022_exam2_m_q5_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_m_q5_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_m_q6",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 6,
+    "marks": null,
+    "question_image": "/qimg/methods_mav_2022_exam2_m_q6_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_m_q6_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_m_q7",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 7,
+    "marks": null,
+    "question_image": "/qimg/methods_mav_2022_exam2_m_q7_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_m_q7_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_m_q8",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 8,
+    "marks": null,
+    "question_image": "/qimg/methods_mav_2022_exam2_m_q8_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_m_q8_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_m_q9",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 9,
+    "marks": null,
+    "question_image": "/qimg/methods_mav_2022_exam2_m_q9_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_m_q9_solution.png",
+    "aos": 4,
+    "aos_name": "Discrete Probability",
+    "tags": [
+      4
+    ],
+    "tag_names": [
+      "Discrete Probability"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_m_q10",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 10,
+    "marks": null,
+    "question_image": "/qimg/methods_mav_2022_exam2_m_q10_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_m_q10_solution.png",
+    "aos": 5,
+    "aos_name": "Continuous Probability",
+    "tags": [
+      5
+    ],
+    "tag_names": [
+      "Continuous Probability"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_m_q11",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 11,
+    "marks": null,
+    "question_image": "/qimg/methods_mav_2022_exam2_m_q11_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_m_q11_solution.png",
+    "aos": 4,
+    "aos_name": "Discrete Probability",
+    "tags": [
+      4
+    ],
+    "tag_names": [
+      "Discrete Probability"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_m_q12",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 12,
+    "marks": null,
+    "question_image": "/qimg/methods_mav_2022_exam2_m_q12_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_m_q12_solution.png",
+    "aos": 4,
+    "aos_name": "Discrete Probability",
+    "tags": [
+      4
+    ],
+    "tag_names": [
+      "Discrete Probability"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_m_q13",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 13,
+    "marks": null,
+    "question_image": "/qimg/methods_mav_2022_exam2_m_q13_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_m_q13_solution.png",
+    "aos": 2,
+    "aos_name": "Differentiation",
+    "tags": [
+      2
+    ],
+    "tag_names": [
+      "Differentiation"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_m_q14",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 14,
+    "marks": null,
+    "question_image": "/qimg/methods_mav_2022_exam2_m_q14_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_m_q14_solution.png",
+    "aos": 2,
+    "aos_name": "Differentiation",
+    "tags": [
+      2
+    ],
+    "tag_names": [
+      "Differentiation"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_m_q16",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 16,
+    "marks": null,
+    "question_image": "/qimg/methods_mav_2022_exam2_m_q16_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_m_q16_solution.png",
+    "aos": 3,
+    "aos_name": "Integration",
+    "tags": [
+      3
+    ],
+    "tag_names": [
+      "Integration"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_m_q17",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 17,
+    "marks": null,
+    "question_image": "/qimg/methods_mav_2022_exam2_m_q17_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_m_q17_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_m_q18",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 18,
+    "marks": null,
+    "question_image": "/qimg/methods_mav_2022_exam2_m_q18_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_m_q18_solution.png",
+    "aos": 3,
+    "aos_name": "Integration",
+    "tags": [
+      3
+    ],
+    "tag_names": [
+      "Integration"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_m_q19",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 19,
+    "marks": null,
+    "question_image": "/qimg/methods_mav_2022_exam2_m_q19_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_m_q19_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_m_q20",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 20,
+    "marks": null,
+    "question_image": "/qimg/methods_mav_2022_exam2_m_q20_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_m_q20_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_e_q1",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "extended_response",
+    "question_number": 1,
+    "marks": 11,
+    "question_image": "/qimg/methods_mav_2022_exam2_e_q1_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_e_q1_solution.png",
+    "aos": 6,
+    "aos_name": "Core Content",
+    "tags": [
+      6
+    ],
+    "tag_names": [
+      "Core Content"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_e_q2",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "extended_response",
+    "question_number": 2,
+    "marks": 11,
+    "question_image": "/qimg/methods_mav_2022_exam2_e_q2_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_e_q2_solution.png",
+    "aos": 6,
+    "aos_name": "Core Content",
+    "tags": [
+      6
+    ],
+    "tag_names": [
+      "Core Content"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_e_q3",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "extended_response",
+    "question_number": 3,
+    "marks": 16,
+    "question_image": "/qimg/methods_mav_2022_exam2_e_q3_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_e_q3_solution.png",
+    "aos": 7,
+    "aos_name": "Probability and Statistics",
+    "tags": [
+      7
+    ],
+    "tag_names": [
+      "Probability and Statistics"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_e_q4",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "extended_response",
+    "question_number": 4,
+    "marks": 14,
+    "question_image": "/qimg/methods_mav_2022_exam2_e_q4_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_e_q4_solution.png",
+    "aos": 6,
+    "aos_name": "Core Content",
+    "tags": [
+      6
+    ],
+    "tag_names": [
+      "Core Content"
+    ]
+  },
+  {
+    "id": "methods_mav_2022_exam2_e_q5",
+    "year": 2022,
+    "publisher": "MAV",
+    "exam_type": 2,
+    "section": "extended_response",
+    "question_number": 5,
+    "marks": 8,
+    "question_image": "/qimg/methods_mav_2022_exam2_e_q5_question.png",
+    "solution_image": "/qimg/methods_mav_2022_exam2_e_q5_solution.png",
+    "aos": 6,
+    "aos_name": "Core Content",
+    "tags": [
+      6
+    ],
+    "tag_names": [
+      "Core Content"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam1_s_q1",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 1,
+    "marks": 4,
+    "question_image": "/qimg/methods_neap_2022_exam1_s_q1_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam1_s_q1_solution.png",
+    "aos": 2,
+    "aos_name": "Differentiation",
+    "tags": [
+      2
+    ],
+    "tag_names": [
+      "Differentiation"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam1_s_q2",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 2,
+    "marks": 3,
+    "question_image": "/qimg/methods_neap_2022_exam1_s_q2_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam1_s_q2_solution.png",
+    "aos": 3,
+    "aos_name": "Integration",
+    "tags": [
+      3
+    ],
+    "tag_names": [
+      "Integration"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam1_s_q3",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 3,
+    "marks": 3,
+    "question_image": "/qimg/methods_neap_2022_exam1_s_q3_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam1_s_q3_solution.png",
+    "aos": 5,
+    "aos_name": "Continuous Probability",
+    "tags": [
+      5
+    ],
+    "tag_names": [
+      "Continuous Probability"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam1_s_q4",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 4,
+    "marks": 5,
+    "question_image": "/qimg/methods_neap_2022_exam1_s_q4_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam1_s_q4_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam1_s_q5",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 5,
+    "marks": 3,
+    "question_image": "/qimg/methods_neap_2022_exam1_s_q5_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam1_s_q5_solution.png",
+    "aos": 4,
+    "aos_name": "Discrete Probability",
+    "tags": [
+      4
+    ],
+    "tag_names": [
+      "Discrete Probability"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam1_s_q6",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 6,
+    "marks": 6,
+    "question_image": "/qimg/methods_neap_2022_exam1_s_q6_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam1_s_q6_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam1_s_q7",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 7,
+    "marks": 3,
+    "question_image": "/qimg/methods_neap_2022_exam1_s_q7_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam1_s_q7_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam1_s_q8",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 8,
+    "marks": 3,
+    "question_image": "/qimg/methods_neap_2022_exam1_s_q8_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam1_s_q8_solution.png",
+    "aos": 3,
+    "aos_name": "Integration",
+    "tags": [
+      3
+    ],
+    "tag_names": [
+      "Integration"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam1_s_q9",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 9,
+    "marks": 10,
+    "question_image": "/qimg/methods_neap_2022_exam1_s_q9_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam1_s_q9_solution.png",
+    "aos": 3,
+    "aos_name": "Integration",
+    "tags": [
+      3,
+      2
+    ],
+    "tag_names": [
+      "Integration",
+      "Differentiation"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_m_q1",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 1,
+    "marks": null,
+    "question_image": "/qimg/methods_neap_2022_exam2_m_q1_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_m_q1_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_m_q2",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 2,
+    "marks": null,
+    "question_image": "/qimg/methods_neap_2022_exam2_m_q2_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_m_q2_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_m_q3",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 3,
+    "marks": null,
+    "question_image": "/qimg/methods_neap_2022_exam2_m_q3_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_m_q3_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_m_q4",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 4,
+    "marks": null,
+    "question_image": "/qimg/methods_neap_2022_exam2_m_q4_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_m_q4_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_m_q5",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 5,
+    "marks": null,
+    "question_image": "/qimg/methods_neap_2022_exam2_m_q5_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_m_q5_solution.png",
+    "aos": 3,
+    "aos_name": "Integration",
+    "tags": [
+      3
+    ],
+    "tag_names": [
+      "Integration"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_m_q6",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 6,
+    "marks": null,
+    "question_image": "/qimg/methods_neap_2022_exam2_m_q6_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_m_q6_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_m_q7",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 7,
+    "marks": null,
+    "question_image": "/qimg/methods_neap_2022_exam2_m_q7_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_m_q7_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_m_q8",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 8,
+    "marks": null,
+    "question_image": "/qimg/methods_neap_2022_exam2_m_q8_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_m_q8_solution.png",
+    "aos": 2,
+    "aos_name": "Differentiation",
+    "tags": [
+      2
+    ],
+    "tag_names": [
+      "Differentiation"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_m_q9",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 9,
+    "marks": null,
+    "question_image": "/qimg/methods_neap_2022_exam2_m_q9_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_m_q9_solution.png",
+    "aos": 4,
+    "aos_name": "Discrete Probability",
+    "tags": [
+      4
+    ],
+    "tag_names": [
+      "Discrete Probability"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_m_q10",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 10,
+    "marks": null,
+    "question_image": "/qimg/methods_neap_2022_exam2_m_q10_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_m_q10_solution.png",
+    "aos": 5,
+    "aos_name": "Continuous Probability",
+    "tags": [
+      5
+    ],
+    "tag_names": [
+      "Continuous Probability"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_m_q11",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 11,
+    "marks": null,
+    "question_image": "/qimg/methods_neap_2022_exam2_m_q11_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_m_q11_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_m_q12",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 12,
+    "marks": null,
+    "question_image": "/qimg/methods_neap_2022_exam2_m_q12_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_m_q12_solution.png",
+    "aos": 4,
+    "aos_name": "Discrete Probability",
+    "tags": [
+      4
+    ],
+    "tag_names": [
+      "Discrete Probability"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_m_q13",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 13,
+    "marks": null,
+    "question_image": "/qimg/methods_neap_2022_exam2_m_q13_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_m_q13_solution.png",
+    "aos": 3,
+    "aos_name": "Integration",
+    "tags": [
+      3
+    ],
+    "tag_names": [
+      "Integration"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_m_q14",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 14,
+    "marks": null,
+    "question_image": "/qimg/methods_neap_2022_exam2_m_q14_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_m_q14_solution.png",
+    "aos": 3,
+    "aos_name": "Integration",
+    "tags": [
+      3
+    ],
+    "tag_names": [
+      "Integration"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_m_q15",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 15,
+    "marks": null,
+    "question_image": "/qimg/methods_neap_2022_exam2_m_q15_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_m_q15_solution.png",
+    "aos": 4,
+    "aos_name": "Discrete Probability",
+    "tags": [
+      4
+    ],
+    "tag_names": [
+      "Discrete Probability"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_m_q16",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 16,
+    "marks": null,
+    "question_image": "/qimg/methods_neap_2022_exam2_m_q16_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_m_q16_solution.png",
+    "aos": 5,
+    "aos_name": "Continuous Probability",
+    "tags": [
+      5
+    ],
+    "tag_names": [
+      "Continuous Probability"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_m_q17",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 17,
+    "marks": null,
+    "question_image": "/qimg/methods_neap_2022_exam2_m_q17_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_m_q17_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_m_q18",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 18,
+    "marks": null,
+    "question_image": "/qimg/methods_neap_2022_exam2_m_q18_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_m_q18_solution.png",
+    "aos": 2,
+    "aos_name": "Differentiation",
+    "tags": [
+      2
+    ],
+    "tag_names": [
+      "Differentiation"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_m_q19",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 19,
+    "marks": null,
+    "question_image": "/qimg/methods_neap_2022_exam2_m_q19_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_m_q19_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_m_q20",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 20,
+    "marks": null,
+    "question_image": "/qimg/methods_neap_2022_exam2_m_q20_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_m_q20_solution.png",
+    "aos": 2,
+    "aos_name": "Differentiation",
+    "tags": [
+      2
+    ],
+    "tag_names": [
+      "Differentiation"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_e_q1",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "extended_response",
+    "question_number": 1,
+    "marks": 11,
+    "question_image": "/qimg/methods_neap_2022_exam2_e_q1_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_e_q1_solution.png",
+    "aos": 6,
+    "aos_name": "Core Content",
+    "tags": [
+      6
+    ],
+    "tag_names": [
+      "Core Content"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_e_q2",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "extended_response",
+    "question_number": 2,
+    "marks": 13,
+    "question_image": "/qimg/methods_neap_2022_exam2_e_q2_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_e_q2_solution.png",
+    "aos": 6,
+    "aos_name": "Core Content",
+    "tags": [
+      6
+    ],
+    "tag_names": [
+      "Core Content"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_e_q3",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "extended_response",
+    "question_number": 3,
+    "marks": 16,
+    "question_image": "/qimg/methods_neap_2022_exam2_e_q3_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_e_q3_solution.png",
+    "aos": 7,
+    "aos_name": "Probability and Statistics",
+    "tags": [
+      7
+    ],
+    "tag_names": [
+      "Probability and Statistics"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_e_q4",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "extended_response",
+    "question_number": 4,
+    "marks": 13,
+    "question_image": "/qimg/methods_neap_2022_exam2_e_q4_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_e_q4_solution.png",
+    "aos": 6,
+    "aos_name": "Core Content",
+    "tags": [
+      6
+    ],
+    "tag_names": [
+      "Core Content"
+    ]
+  },
+  {
+    "id": "methods_neap_2022_exam2_e_q5",
+    "year": 2022,
+    "publisher": "NEAP",
+    "exam_type": 2,
+    "section": "extended_response",
+    "question_number": 5,
+    "marks": 7,
+    "question_image": "/qimg/methods_neap_2022_exam2_e_q5_question.png",
+    "solution_image": "/qimg/methods_neap_2022_exam2_e_q5_solution.png",
+    "aos": 6,
+    "aos_name": "Core Content",
+    "tags": [
+      6
+    ],
+    "tag_names": [
+      "Core Content"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam1_s_q1",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 1,
+    "marks": 3,
+    "question_image": "/qimg/methods_tssm_2022_exam1_s_q1_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam1_s_q1_solution.png",
+    "aos": 2,
+    "aos_name": "Differentiation",
+    "tags": [
+      2
+    ],
+    "tag_names": [
+      "Differentiation"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam1_s_q2",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 2,
+    "marks": 3,
+    "question_image": "/qimg/methods_tssm_2022_exam1_s_q2_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam1_s_q2_solution.png",
+    "aos": 2,
+    "aos_name": "Differentiation",
+    "tags": [
+      2
+    ],
+    "tag_names": [
+      "Differentiation"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam1_s_q3",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 3,
+    "marks": 4,
+    "question_image": "/qimg/methods_tssm_2022_exam1_s_q3_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam1_s_q3_solution.png",
+    "aos": 5,
+    "aos_name": "Continuous Probability",
+    "tags": [
+      5
+    ],
+    "tag_names": [
+      "Continuous Probability"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam1_s_q4",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 4,
+    "marks": 5,
+    "question_image": "/qimg/methods_tssm_2022_exam1_s_q4_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam1_s_q4_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam1_s_q5",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 5,
+    "marks": 5,
+    "question_image": "/qimg/methods_tssm_2022_exam1_s_q5_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam1_s_q5_solution.png",
+    "aos": 3,
+    "aos_name": "Integration",
+    "tags": [
+      3
+    ],
+    "tag_names": [
+      "Integration"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam1_s_q6",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 6,
+    "marks": 4,
+    "question_image": "/qimg/methods_tssm_2022_exam1_s_q6_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam1_s_q6_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam1_s_q7",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 7,
+    "marks": 7,
+    "question_image": "/qimg/methods_tssm_2022_exam1_s_q7_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam1_s_q7_solution.png",
+    "aos": 3,
+    "aos_name": "Integration",
+    "tags": [
+      3
+    ],
+    "tag_names": [
+      "Integration"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam1_s_q8",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 1,
+    "section": "short_answer",
+    "question_number": 8,
+    "marks": 9,
+    "question_image": "/qimg/methods_tssm_2022_exam1_s_q8_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam1_s_q8_solution.png",
+    "aos": 3,
+    "aos_name": "Integration",
+    "tags": [
+      3,
+      2
+    ],
+    "tag_names": [
+      "Integration",
+      "Differentiation"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_m_q1",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 1,
+    "marks": null,
+    "question_image": "/qimg/methods_tssm_2022_exam2_m_q1_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_m_q1_solution.png",
+    "aos": 2,
+    "aos_name": "Differentiation",
+    "tags": [
+      2
+    ],
+    "tag_names": [
+      "Differentiation"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_m_q2",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 2,
+    "marks": null,
+    "question_image": "/qimg/methods_tssm_2022_exam2_m_q2_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_m_q2_solution.png",
+    "aos": 5,
+    "aos_name": "Continuous Probability",
+    "tags": [
+      5
+    ],
+    "tag_names": [
+      "Continuous Probability"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_m_q3",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 3,
+    "marks": null,
+    "question_image": "/qimg/methods_tssm_2022_exam2_m_q3_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_m_q3_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_m_q4",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 4,
+    "marks": null,
+    "question_image": "/qimg/methods_tssm_2022_exam2_m_q4_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_m_q4_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_m_q5",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 5,
+    "marks": null,
+    "question_image": "/qimg/methods_tssm_2022_exam2_m_q5_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_m_q5_solution.png",
+    "aos": 3,
+    "aos_name": "Integration",
+    "tags": [
+      3
+    ],
+    "tag_names": [
+      "Integration"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_m_q6",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 6,
+    "marks": null,
+    "question_image": "/qimg/methods_tssm_2022_exam2_m_q6_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_m_q6_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_m_q7",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 7,
+    "marks": null,
+    "question_image": "/qimg/methods_tssm_2022_exam2_m_q7_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_m_q7_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_m_q8",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 8,
+    "marks": null,
+    "question_image": "/qimg/methods_tssm_2022_exam2_m_q8_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_m_q8_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_m_q9",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 9,
+    "marks": null,
+    "question_image": "/qimg/methods_tssm_2022_exam2_m_q9_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_m_q9_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_m_q10",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 10,
+    "marks": null,
+    "question_image": "/qimg/methods_tssm_2022_exam2_m_q10_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_m_q10_solution.png",
+    "aos": 3,
+    "aos_name": "Integration",
+    "tags": [
+      3
+    ],
+    "tag_names": [
+      "Integration"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_m_q11",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 11,
+    "marks": null,
+    "question_image": "/qimg/methods_tssm_2022_exam2_m_q11_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_m_q11_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_m_q12",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 12,
+    "marks": null,
+    "question_image": "/qimg/methods_tssm_2022_exam2_m_q12_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_m_q12_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_m_q13",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 13,
+    "marks": null,
+    "question_image": "/qimg/methods_tssm_2022_exam2_m_q13_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_m_q13_solution.png",
+    "aos": 2,
+    "aos_name": "Differentiation",
+    "tags": [
+      2
+    ],
+    "tag_names": [
+      "Differentiation"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_m_q14",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 14,
+    "marks": null,
+    "question_image": "/qimg/methods_tssm_2022_exam2_m_q14_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_m_q14_solution.png",
+    "aos": 4,
+    "aos_name": "Discrete Probability",
+    "tags": [
+      4
+    ],
+    "tag_names": [
+      "Discrete Probability"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_m_q15",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 15,
+    "marks": null,
+    "question_image": "/qimg/methods_tssm_2022_exam2_m_q15_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_m_q15_solution.png",
+    "aos": 4,
+    "aos_name": "Discrete Probability",
+    "tags": [
+      4
+    ],
+    "tag_names": [
+      "Discrete Probability"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_m_q16",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 16,
+    "marks": null,
+    "question_image": "/qimg/methods_tssm_2022_exam2_m_q16_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_m_q16_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_m_q17",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 17,
+    "marks": null,
+    "question_image": "/qimg/methods_tssm_2022_exam2_m_q17_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_m_q17_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_m_q18",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 18,
+    "marks": null,
+    "question_image": "/qimg/methods_tssm_2022_exam2_m_q18_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_m_q18_solution.png",
+    "aos": 4,
+    "aos_name": "Discrete Probability",
+    "tags": [
+      4
+    ],
+    "tag_names": [
+      "Discrete Probability"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_m_q19",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 19,
+    "marks": null,
+    "question_image": "/qimg/methods_tssm_2022_exam2_m_q19_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_m_q19_solution.png",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
+    "tags": [
+      1
+    ],
+    "tag_names": [
+      "Algebra and Functions"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_m_q20",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "multiple_choice",
+    "question_number": 20,
+    "marks": null,
+    "question_image": "/qimg/methods_tssm_2022_exam2_m_q20_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_m_q20_solution.png",
+    "aos": 3,
+    "aos_name": "Integration",
+    "tags": [
+      3
+    ],
+    "tag_names": [
+      "Integration"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_e_q1",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "extended_response",
+    "question_number": 1,
+    "marks": 8,
+    "question_image": "/qimg/methods_tssm_2022_exam2_e_q1_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_e_q1_solution.png",
+    "aos": 6,
+    "aos_name": "Core Content",
+    "tags": [
+      6
+    ],
+    "tag_names": [
+      "Core Content"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_e_q2",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "extended_response",
+    "question_number": 2,
+    "marks": 15,
+    "question_image": "/qimg/methods_tssm_2022_exam2_e_q2_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_e_q2_solution.png",
+    "aos": 6,
+    "aos_name": "Core Content",
+    "tags": [
+      6
+    ],
+    "tag_names": [
+      "Core Content"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_e_q3",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "extended_response",
+    "question_number": 3,
+    "marks": 18,
+    "question_image": "/qimg/methods_tssm_2022_exam2_e_q3_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_e_q3_solution.png",
+    "aos": 7,
+    "aos_name": "Probability and Statistics",
+    "tags": [
+      7
+    ],
+    "tag_names": [
+      "Probability and Statistics"
+    ]
+  },
+  {
+    "id": "methods_tssm_2022_exam2_e_q4",
+    "year": 2022,
+    "publisher": "TSSM",
+    "exam_type": 2,
+    "section": "extended_response",
+    "question_number": 4,
+    "marks": 19,
+    "question_image": "/qimg/methods_tssm_2022_exam2_e_q4_question.png",
+    "solution_image": "/qimg/methods_tssm_2022_exam2_e_q4_solution.png",
+    "aos": 6,
+    "aos_name": "Core Content",
+    "tags": [
+      6
+    ],
+    "tag_names": [
+      "Core Content"
+    ]
+  },
+  {
     "id": "methods_heffernan_2023_exam1_s_q1",
     "year": 2023,
     "publisher": "Heffernan",
@@ -491,12 +3028,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -1288,15 +3823,15 @@
     "marks": null,
     "question_image": "/qimg/methods_kilbaha_2023_exam1_s_q1_question.png",
     "solution_image": "/qimg/methods_kilbaha_2023_exam1_s_q1_solution.png",
-    "aos": 2,
-    "aos_name": "Differentiation",
+    "aos": 3,
+    "aos_name": "Integration",
     "tags": [
-      2,
-      3
+      3,
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Integration"
+      "Integration",
+      "Differentiation"
     ]
   },
   {
@@ -1449,12 +3984,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -1660,12 +4193,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -1833,12 +4364,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -2143,12 +4672,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -2449,12 +4976,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -2719,12 +5244,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -2759,12 +5282,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -2837,12 +5358,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -2953,12 +5472,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -3088,12 +5605,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -3109,12 +5624,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -3396,12 +5909,10 @@
     "aos": 3,
     "aos_name": "Integration",
     "tags": [
-      3,
-      2
+      3
     ],
     "tag_names": [
-      "Integration",
-      "Differentiation"
+      "Integration"
     ]
   },
   {
@@ -3455,12 +5966,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -3739,13 +6248,13 @@
     "marks": null,
     "question_image": "/qimg/methods_insight_2024_exam2_m_q17_question.png",
     "solution_image": "/qimg/methods_insight_2024_exam2_m_q17_solution.png",
-    "aos": 1,
-    "aos_name": "Algebra and Functions",
+    "aos": 2,
+    "aos_name": "Differentiation",
     "tags": [
-      1
+      2
     ],
     "tag_names": [
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -3799,12 +6308,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -3912,13 +6419,13 @@
     "marks": null,
     "question_image": "/qimg/methods_kilbaha_2024_exam1_s_q1_question.png",
     "solution_image": "/qimg/methods_kilbaha_2024_exam1_s_q1_solution.png",
-    "aos": 1,
-    "aos_name": "Algebra and Functions",
+    "aos": 2,
+    "aos_name": "Differentiation",
     "tags": [
-      1
+      2
     ],
     "tag_names": [
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -4219,12 +6726,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -4316,10 +6821,12 @@
     "aos": 3,
     "aos_name": "Integration",
     "tags": [
-      3
+      3,
+      2
     ],
     "tag_names": [
-      "Integration"
+      "Integration",
+      "Differentiation"
     ]
   },
   {
@@ -4831,12 +7338,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -4944,14 +7449,12 @@
     "marks": null,
     "question_image": "/qimg/methods_mav_2024_exam2_m_q11_question.png",
     "solution_image": "/qimg/methods_mav_2024_exam2_m_q11_solution.png",
-    "aos": 2,
-    "aos_name": "Differentiation",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
     "tags": [
-      2,
       1
     ],
     "tag_names": [
-      "Differentiation",
       "Algebra and Functions"
     ]
   },
@@ -5502,12 +8005,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -5615,13 +8116,13 @@
     "marks": null,
     "question_image": "/qimg/methods_neap_2024_exam2_m_q13_question.png",
     "solution_image": "/qimg/methods_neap_2024_exam2_m_q13_solution.png",
-    "aos": 1,
-    "aos_name": "Algebra and Functions",
+    "aos": 2,
+    "aos_name": "Differentiation",
     "tags": [
-      1
+      2
     ],
     "tag_names": [
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -5715,12 +8216,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -5736,12 +8235,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -5987,12 +8484,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -6122,12 +8617,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -6219,12 +8712,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -6392,12 +8883,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -6699,13 +9188,13 @@
     "marks": null,
     "question_image": "/qimg/methods_kilbaha_2025_exam2_m_q3_question.png",
     "solution_image": "/qimg/methods_kilbaha_2025_exam2_m_q3_solution.png",
-    "aos": 1,
-    "aos_name": "Algebra and Functions",
+    "aos": 2,
+    "aos_name": "Differentiation",
     "tags": [
-      1
+      2
     ],
     "tag_names": [
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -6721,12 +9210,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -7008,12 +9495,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -7406,14 +9891,12 @@
     "marks": null,
     "question_image": "/qimg/methods_mav_2025_exam2_m_q7_question.png",
     "solution_image": "/qimg/methods_mav_2025_exam2_m_q7_solution.png",
-    "aos": 2,
-    "aos_name": "Differentiation",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
     "tags": [
-      2,
       1
     ],
     "tag_names": [
-      "Differentiation",
       "Algebra and Functions"
     ]
   },
@@ -7430,12 +9913,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -8021,12 +10502,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -9223,13 +11702,13 @@
     "marks": 4,
     "question_image": "/qimg/methods_tssm_2025_exam1_s_q9_question.png",
     "solution_image": "/qimg/methods_tssm_2025_exam1_s_q9_solution.png",
-    "aos": 1,
-    "aos_name": "Algebra and Functions",
+    "aos": 2,
+    "aos_name": "Differentiation",
     "tags": [
-      1
+      2
     ],
     "tag_names": [
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -9416,12 +11895,10 @@
     "aos": 2,
     "aos_name": "Differentiation",
     "tags": [
-      2,
-      1
+      2
     ],
     "tag_names": [
-      "Differentiation",
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {

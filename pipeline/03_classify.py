@@ -452,6 +452,7 @@ METHODS_DISCRETE_PROB_KW = [
     r"\brandom\s+variable\b",   # "a random variable X has..."
     r"\bprobability\b",         # "the probability that..." — safe fallback since continuous is checked first
     r"\bwith(?:out)?\s+replacement\b",  # "chosen without replacement"
+    r"\bindependent\s+events?\b",       # "A and B are independent events"
 ]
 
 # General probability — used to detect exam 2 probability questions
@@ -485,6 +486,7 @@ METHODS_INTEGRATION_KW = [
     r"area\s+of\s+(?:the\s+)?region",        # "the area of the region bounded by..."
     r"net\s+(?:area|change|displacement)",   # net area / net change via integration
     r"average\s+value",
+    r"average\s+(?:height|rate|speed|velocity|temperature|concentration)\b",  # "average height of water over..." → definite integral
     r"hence.*(?:evaluate|find.*integral|antiderivat)",
     r"find.*antiderivat.*hence",
     r"find.*integral",
@@ -525,7 +527,7 @@ METHODS_DIFF_KW = [
     r"\bnewton.?s\s+method\b",   # Newton's method — root-finding via differentiation
     r"\bcontinuous\s+at\b",      # "f is continuous at x = 1" — continuity in calculus
     r"\uf0a2",                   # Symbol-font prime (PDF extraction artifact for f′, g′)
-    r"\b(?:minimum|maximum)\s+(?:area|volume|perimeter|length|distance|cost|profit)",  # geometric optimisation
+    r"\b(?:minimum|maximum)\s+(?:\w+\s+)?(?:area|volume|perimeter|length|distance|cost|profit)",  # geometric optimisation — "maximum possible area", "minimum total cost"
 ]
 
 METHODS_FUNCTIONS_KW = [
@@ -568,6 +570,11 @@ METHODS_FUNCTIONS_KW = [
     r"\bsystem\s+of\s+equations\b",
     r"\bdiscriminant\b",
     r"\bexactly\s+one\s+solution\b",  # "has exactly one solution for x ∈ R"
+    r"\bremainder\b",            # remainder theorem — "when P(x) is divided by (x-3), the remainder is"
+    r"\bfactor\b",               # factor theorem — "(x+1) is a factor of f(x)"
+    r"\bln\b",                   # natural log as ln (not caught by \blog\d* which requires "log" prefix)
+    r"bisection\s+method",       # numerical root-finding via bisection
+    r"angle\s+between.*lines?",  # angle between two lines (coordinate geometry)
 ]
 
 
@@ -658,9 +665,9 @@ def main():
     except (FileNotFoundError, json.JSONDecodeError):
         manual = {}
 
-    preserve_enabled = args.subject == "specialist"
+    preserve_enabled = True  # preserve non-zero AOS for both subjects
     print(f"Classifying {len(raw)} questions...")
-    if preserve_enabled:
+    if args.subject == "specialist":
         print(f"Preserving manual classifications for: {sorted(MANUALLY_REVIEWED)}")
 
     from collections import Counter
