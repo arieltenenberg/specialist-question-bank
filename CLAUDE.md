@@ -71,7 +71,9 @@ Heffernan, Insight, Kilbaha, MAV, NEAP, QATs-Janison, Sequoia, TSSM
 Years: pre-2023 (old study design), 2023, 2024, 2025
 
 ## Methods Publishers in the Dataset
-Being imported batch by batch. All pipeline work is done locally.
+Imported batch by batch. All pipeline work is done locally.
+Years imported so far: 2022 (Heffernan, MAV, NEAP, TSSM), 2023, 2024, 2025
+Still to import: 2021 and earlier
 
 ## Classification Approach
 - Text is extracted from PDFs using PyMuPDF (text layer, not OCR)
