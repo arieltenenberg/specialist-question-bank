@@ -81,6 +81,11 @@ Being imported batch by batch. All pipeline work is done locally.
 - Manual corrections are the ground truth used to improve the classifier
 - Classifier improvements require a deliberate session: commit the sorted JSON, then show corrections to Claude to update keyword rules in `03_classify.py`
 
+### Classifier Preservation Logic (Specialist)
+- Any question with a non-zero AOS in the existing `specialist_questions.json` is preserved on re-classification — this includes both auto-classified and manually sorted questions
+- The `MANUALLY_REVIEWED` set in `03_classify.py` is now redundant but kept for reference
+- Only AOS 0 (Unsorted) questions are ever re-classified when the pipeline runs
+
 ### Known Classifier Issues (Methods)
 - Normal distribution questions may not trigger Continuous Probability if they use unusual phrasing
 - `Pr(` and `X ~ B(n,p)` notation needed for Discrete Probability detection
@@ -192,7 +197,7 @@ pip install pymupdf Pillow
 ---
 
 ## Known Issues
-- Kilbaha 2022 Exam 1 Q1: solution image shown where question should be (pipeline paired PDFs in wrong order). Needs investigation of PDF filenames in `uploads/specialist/2022/Kilbaha/`.
+- Kilbaha 2022 Exam 1: "Show Solution" button missing on browse page, despite solution images existing on disk and `solution_image` field being set correctly in JSON. Frontend rendering issue — investigate the solution button display logic in `server.py` browse page HTML.
 
 ## Future Improvements
 - [ ] Set up automated SSL renewal check (Certbot should handle this automatically)

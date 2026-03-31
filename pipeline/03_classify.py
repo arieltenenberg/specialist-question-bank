@@ -677,8 +677,8 @@ def main():
 
         out = {k: v for k, v in q.items() if k not in ("extracted_text", "source_pdf")}
 
-        if preserve_enabled and (pub, year) in MANUALLY_REVIEWED and qid in manual:
-            # Preserve the manually reviewed classification
+        if preserve_enabled and qid in manual and manual[qid]["aos"] != 0:
+            # Preserve any existing non-zero classification (auto or manual)
             out["aos"] = manual[qid]["aos"]
             out["aos_name"] = manual[qid]["aos_name"]
             if "tags" in manual[qid]:

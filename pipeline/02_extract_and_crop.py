@@ -67,6 +67,9 @@ def is_solution_file(fname):
     # But skip "answer sheet" (handled by is_skip_file)
     if "answer" in fl and "answer sheet" not in fl:
         return True
+    # Single "S" suffix: e.g. "2022_SM1S.pdf", "Exam2S.pdf" → solutions
+    if re.search(r'\ds\.pdf$', fl):
+        return True
     return False
 
 
