@@ -152,7 +152,7 @@ if os.path.exists(METHODS_QUESTIONS_JSON):
 
 
 # AOS maps per subject
-SPECIALIST_AOS = {0: "Unsorted", 1: "Logic and Proof", 2: "Functions, Relations and Graphs", 3: "Complex Numbers", 4: "Calculus", 5: "Vectors, Lines and Planes", 6: "Probability and Statistics", 7: "Pseudocode"}
+SPECIALIST_AOS = {0: "Unsorted", 1: "Logic and Proof", 2: "Functions, Relations and Graphs", 3: "Complex Numbers", 4: "Calculus", 5: "Vectors, Lines and Planes", 6: "Probability and Statistics", 7: "Pseudocode", 8: "Mechanics"}
 METHODS_AOS = {
     0: "Unsorted",
     1: "Algebra and Functions",
@@ -1380,9 +1380,10 @@ def api_questions():
     if admin_required():
         return jsonify(data)
     hidden = get_hidden_publishers(subject)
-    if not hidden:
-        return jsonify(data)
-    return jsonify([q for q in data if q["publisher"] not in hidden])
+    filtered = [q for q in data if q["publisher"] not in hidden]
+    if subject == "specialist":
+        filtered = [q for q in filtered if q.get("aos") != 8]
+    return jsonify(filtered)
 
 @app.route("/api/classify", methods=["POST"])
 def api_classify():

@@ -5,6 +5,7 @@ Reads raw_questions_{subject}.json, outputs specialist_questions.json or methods
 
 Priority order (first match wins):
   1. Probability and Statistics
+  1.5 Mechanics (Old Study Design — AOS 8, hidden from students)
   2. Complex Numbers
   3. Vectors (strong signals checked BEFORE calculus to prevent particle/i/j/k misclassification)
   4. Sketch/graph → Functions (only if no real calculus operations)
@@ -54,6 +55,7 @@ SPECIALIST_AOS = {
     5: "Vectors, Lines and Planes",
     6: "Probability and Statistics",
     7: "Pseudocode",
+    8: "Mechanics",
 }
 
 METHODS_AOS = {
@@ -103,6 +105,25 @@ PROB_STATS_KW = [
     r"e\s*\(\s*x\s*\)", r"var\s*\(",
     r"\bprobability\b",
     # removed: proportion, survey (too broad — fire on DE/modelling questions)
+]
+
+MECHANICS_KW = [
+    r"inclined\s+plane",
+    r"\bpulley\b",
+    r"coefficient\s+of\s+friction",
+    r"friction\s+coefficient",
+    r"frictional\s+force",
+    r"normal\s+reaction",
+    r"normal\s+force",
+    r"connected\s+particles?",
+    r"newton's\s+(first|second|third)\s+law",
+    r"newton's\s+law\s+of\s+motion",
+    r"\blaws?\s+of\s+motion\b",
+    r"\bnet\s+force\b",
+    r"resultant\s+force",
+    r"\bmomentum\b",
+    r"\bimpulse\b",
+    r"tension\s+in\s+the\s+(?:string|rope|cable|chain)",
 ]
 
 LOGIC_PROOF_KW = [
@@ -320,6 +341,10 @@ def classify_question(text):
     # 1. Probability and Statistics
     if has_match(t, PROB_STATS_KW):
         return 6, AOS[6]
+
+    # 1.5 Mechanics (Old Study Design — hidden from students)
+    if has_match(t, MECHANICS_KW):
+        return 8, AOS[8]
 
     # 2. Complex Numbers
     #    Strong signals always win; weak signals (numeric i, standalone z) only win
@@ -680,10 +705,10 @@ def main():
         aos_counts[f"{out['aos']}. {out['aos_name']}"] += 1
         output.append(out)
 
-    # For Methods: merge with existing questions so previous batches are never lost.
+    # For both subjects: merge with existing questions so previous batches are never lost.
     # Questions in the current raw batch are freshly classified (or preserved above).
     # Questions from previous batches that aren't in this raw file are kept as-is.
-    if args.subject == "methods" and manual:
+    if manual:
         new_ids = {q["id"] for q in output}
         carried = [q for q in existing if q["id"] not in new_ids]
         if carried:

@@ -50,6 +50,7 @@ Questions are classified into Areas of Study (AOS) per subject.
 | 5 | Vectors, Lines and Planes |
 | 6 | Probability and Statistics |
 | 7 | Pseudocode |
+| 8 | Mechanics (old study design only — hidden from students) |
 | 0 | Unsorted (flagged for manual review) |
 
 ## Mathematical Methods — Areas of Study (AOS)
@@ -67,7 +68,7 @@ Questions are classified into Areas of Study (AOS) per subject.
 
 ## Specialist Publishers in the Dataset
 Heffernan, Insight, Kilbaha, MAV, NEAP, QATs-Janison, Sequoia, TSSM
-Years: 2023, 2024, 2025
+Years: pre-2023 (old study design), 2023, 2024, 2025
 
 ## Methods Publishers in the Dataset
 Being imported batch by batch. All pipeline work is done locally.
