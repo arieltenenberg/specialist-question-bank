@@ -197,7 +197,7 @@ pip install pymupdf Pillow
 ---
 
 ## Known Issues
-- Kilbaha 2022 Exam 1: "Show Solution" button missing on browse page, despite solution images existing on disk and `solution_image` field being set correctly in JSON. Frontend rendering issue — investigate the solution button display logic in `server.py` browse page HTML.
+_(none)_
 
 ## Future Improvements
 - [ ] Set up automated SSL renewal check (Certbot should handle this automatically)
