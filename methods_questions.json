@@ -678,13 +678,15 @@
     "marks": 4,
     "question_image": "/qimg/methods_insight_2022_exam1_s_q2_question.png",
     "solution_image": "/qimg/methods_insight_2022_exam1_s_q2_solution.png",
-    "aos": 1,
-    "aos_name": "Algebra and Functions",
+    "aos": 2,
+    "aos_name": "Differentiation",
     "tags": [
-      1
+      2,
+      3
     ],
     "tag_names": [
-      "Algebra and Functions"
+      "Differentiation",
+      "Integration"
     ]
   },
   {
