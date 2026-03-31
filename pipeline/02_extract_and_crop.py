@@ -412,13 +412,15 @@ def process_pdf(doc, markers, exam_info):
         subject_prefix = f"{args.subject}_" if args.subject != "specialist" else ""
         qid = f"{subject_prefix}{pub_slug}_{exam_info['year']}_exam{exam_info['exam_num']}_{section_code}_q{marker['num']}"
 
-        # Crop question image
-        q_img = crop_region(doc, page_start, y_start, page_end, y_end)
-        q_img_path = None
-        if q_img:
-            q_img_file = f"{qid}_question.png"
-            q_img_path = os.path.join(OUT_DIR, q_img_file)
-            q_img.save(q_img_path, "PNG", optimize=True)
+        # Crop question image (skip if already exists)
+        q_img_file = f"{qid}_question.png"
+        q_img_path = os.path.join(OUT_DIR, q_img_file)
+        if not os.path.exists(q_img_path):
+            q_img = crop_region(doc, page_start, y_start, page_end, y_end)
+            if q_img:
+                q_img.save(q_img_path, "PNG", optimize=True)
+            else:
+                q_img_path = None
 
         # Extract text
         q_text = extract_text_in_region(doc, page_start, y_start, page_end, y_end)
@@ -514,12 +516,15 @@ def process_solutions(sol_pdf_path, questions, exam_info):
                         y_end = max_y + 10
                     break
 
-        sol_img = crop_region(doc, page_start, y_start, page_end, y_end)
-        if sol_img:
-            sol_img_file = f"{q['id']}_solution.png"
-            sol_img_path = os.path.join(OUT_DIR, sol_img_file)
-            sol_img.save(sol_img_path, "PNG", optimize=True)
+        sol_img_file = f"{q['id']}_solution.png"
+        sol_img_path = os.path.join(OUT_DIR, sol_img_file)
+        if os.path.exists(sol_img_path):
             q["solution_image"] = f"/qimg/{sol_img_file}"
+        else:
+            sol_img = crop_region(doc, page_start, y_start, page_end, y_end)
+            if sol_img:
+                sol_img.save(sol_img_path, "PNG", optimize=True)
+                q["solution_image"] = f"/qimg/{sol_img_file}"
 
     doc.close()
 
