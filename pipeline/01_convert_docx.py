@@ -20,15 +20,34 @@ docx_files = [f for f in docx_files if "__MACOSX" not in f]
 print(f"Subject: {args.subject}")
 print(f"Found {len(docx_files)} DOCX files to convert")
 
+LIBREOFFICE_CANDIDATES = [
+    "libreoffice",
+    "/Applications/LibreOffice.app/Contents/MacOS/soffice",
+    "/usr/bin/libreoffice",
+    "/usr/local/bin/libreoffice",
+]
+
+def find_libreoffice():
+    import shutil
+    for candidate in LIBREOFFICE_CANDIDATES:
+        if shutil.which(candidate) or os.path.exists(candidate):
+            return candidate
+    return None
+
+LIBREOFFICE = find_libreoffice()
+
 for docx in sorted(docx_files):
     pdf_path = os.path.splitext(docx)[0] + ".pdf"
     if os.path.exists(pdf_path):
         print(f"  SKIP (PDF exists): {os.path.basename(docx)}")
         continue
+    if not LIBREOFFICE:
+        print(f"  ERROR: LibreOffice not found, cannot convert {os.path.basename(docx)}")
+        continue
     print(f"  Converting: {docx}")
     outdir = os.path.dirname(docx)
     result = subprocess.run(
-        ["libreoffice", "--headless", "--convert-to", "pdf", "--outdir", outdir, docx],
+        [LIBREOFFICE, "--headless", "--convert-to", "pdf", "--outdir", outdir, docx],
         capture_output=True, text=True, timeout=120
     )
     if result.returncode != 0:

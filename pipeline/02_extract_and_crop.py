@@ -533,6 +533,13 @@ def process_solutions(sol_pdf_path, questions, exam_info):
 # 5. Main orchestration
 # ---------------------------------------------------------------------------
 
+def exam_id_prefix(pair, subject):
+    """Return the ID prefix used for all questions in this exam."""
+    pub_slug = pair["publisher"].lower().replace(" ", "_").replace("-", "_")
+    subject_prefix = f"{subject}_" if subject != "specialist" else ""
+    return f"{subject_prefix}{pub_slug}_{pair['year']}_exam{pair['exam_num']}_"
+
+
 def main():
     print(f"Subject: {args.subject}")
     print(f"Uploads dir: {UPLOADS}")
@@ -543,9 +550,23 @@ def main():
         print(f"  {p['publisher']} {p['year']} Exam {p['exam_num']}: "
               f"{os.path.basename(p['questions_pdf'])} | Sol: {sol}")
 
+    # Load existing raw JSON so we can skip already-processed exams
+    existing_questions = []
+    if os.path.exists(RAW_JSON):
+        with open(RAW_JSON) as f:
+            existing_questions = json.load(f)
+
     all_questions = []
 
     for pair in pairs:
+        prefix = exam_id_prefix(pair, args.subject)
+        cached = [q for q in existing_questions if q["id"].startswith(prefix)]
+        if cached:
+            print(f"\n{'='*60}")
+            print(f"SKIP (already processed): {pair['publisher']} {pair['year']} Exam {pair['exam_num']} — {len(cached)} questions reused")
+            all_questions.extend(cached)
+            continue
+
         print(f"\n{'='*60}")
         print(f"Processing: {pair['publisher']} {pair['year']} Exam {pair['exam_num']}")
         print(f"  Q: {pair['questions_pdf']}")
