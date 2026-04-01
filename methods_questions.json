@@ -3352,14 +3352,14 @@
     "marks": 4,
     "question_image": "/qimg/methods_heffernan_2021_exam1_s_q4_question.png",
     "solution_image": "/qimg/methods_heffernan_2021_exam1_s_q4_solution.png",
-    "aos": 3,
-    "aos_name": "Integration",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
     "tags": [
-      3,
+      1,
       2
     ],
     "tag_names": [
-      "Integration",
+      "Algebra and Functions",
       "Differentiation"
     ]
   },
