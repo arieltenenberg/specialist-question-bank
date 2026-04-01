@@ -111,7 +111,7 @@ def find_exam_pairs():
     pairs = []
 
     for year_dir in sorted(glob.glob(os.path.join(UPLOADS, "[0-9]*"))):
-        year = os.path.basename(year_dir)
+        year = os.path.basename(year_dir).strip()
         if not year.isdigit():
             continue
 
