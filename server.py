@@ -1473,12 +1473,6 @@ function updateProgress() {
     document.getElementById('done-banner').style.display = 'block';
   }
 }
-{% if highlight_qid %}
-window.addEventListener('load', function() {
-  const el = document.getElementById('block-{{ highlight_qid }}');
-  if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 1500);
-});
-{% endif %}
 </script>
 </body>
 </html>"""
@@ -2248,7 +2242,8 @@ a { color:var(--primary); text-decoration:none; }
   display:block;
   margin-bottom:12px;
 }
-.flag-actions { display:flex; gap:8px; }
+.flag-actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.flag-reclassify { font-family:inherit; font-size:.82rem; padding:6px 8px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text); cursor:pointer; }
 .flag-classify-link {
   font-family:inherit;
   font-size:.82rem;
@@ -2475,7 +2470,12 @@ function loadFlags() {
         </div>
         ${imgHtml}
         <div class="flag-actions">
-          <button class="flag-classify-link" onclick="dismissAndClassify('${f.id}', '${f.subject}', '${encodeURIComponent(f.publisher)}', ${f.year}, '${f.question_id}')">Go to Classify</button>
+          <select class="flag-reclassify" onchange="flagReclassify('${f.id}', '${f.question_id}', '${f.subject}', this)">
+            <option value="">Reclassify…</option>
+            {% for num, name in aos_map.items() %}{% if num not in (0, 9) %}<option value="{{ num }}|{{ name }}">{{ name }}</option>{% endif %}{% endfor %}
+            <option value="0|Unsorted">Unsorted</option>
+          </select>
+          <button class="flag-classify-link" onclick="flagHide('${f.id}', '${f.question_id}', '${f.subject}')">Hide</button>
           <button class="flag-dismiss-btn" onclick="dismissFlag('${f.id}')">Dismiss</button>
         </div>
       </div>`;
@@ -2501,9 +2501,30 @@ function dismissFlag(id) {
     });
 }
 
-function dismissAndClassify(id, subject, publisher, year, qid) {
-  fetch('/api/admin/flags/' + id, { method: 'DELETE' })
-    .then(() => { window.location.href = `/classify?subject=${subject}&publisher=${decodeURIComponent(publisher)}&year=${year}&qid=${qid}`; });
+function flagReclassify(flagId, qid, subject, sel) {
+  const [aos, aosName] = sel.value.split('|');
+  if (!aos && aos !== '0') return;
+  const aosNum = Number(aos);
+  fetch('/api/classify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: qid, aos: aosNum, aos_name: aosName, subject,
+                           tags: [aosNum], tag_names: [aosName] })
+  }).then(r => r.json()).then(data => {
+    if (data.ok) dismissFlag(flagId);
+    else sel.value = '';
+  });
+}
+
+function flagHide(flagId, qid, subject) {
+  fetch('/api/classify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: qid, aos: 9, aos_name: 'Hidden', subject,
+                           tags: [9], tag_names: ['Hidden'] })
+  }).then(r => r.json()).then(data => {
+    if (data.ok) dismissFlag(flagId);
+  });
 }
 
 loadFlags();
@@ -2618,7 +2639,8 @@ def admin_page():
     return render_template_string(ADMIN_HTML, publishers=publishers, hidden_publishers=hidden,
                                   subject=subject, subject_name=cfg["name"],
                                   css_primary=cp, css_primary_dark=cpd,
-                                  css_primary_light=cpl, css_primary_hover=cph)
+                                  css_primary_light=cpl, css_primary_hover=cph,
+                                  aos_map=cfg["aos_map"])
 
 @app.route("/admin/upload", methods=["POST"])
 def admin_upload():
