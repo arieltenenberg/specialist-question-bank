@@ -1476,7 +1476,7 @@ function updateProgress() {
 {% if highlight_qid %}
 window.addEventListener('load', function() {
   const el = document.getElementById('block-{{ highlight_qid }}');
-  if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 400);
+  if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 1500);
 });
 {% endif %}
 </script>
