@@ -20,6 +20,7 @@ QUESTIONS_JSON = os.path.join(BASE, "specialist_questions.json")
 METHODS_QUESTIONS_JSON = os.path.join(BASE, "methods_questions.json")
 FLAGS_JSON = os.path.join(BASE, "flags.json")
 SETTINGS_JSON = os.path.join(BASE, "settings.json")
+OVERRIDES_JSON = os.path.join(BASE, "overrides.json")
 
 def _read_flags():
     if not os.path.exists(FLAGS_JSON):
@@ -153,6 +154,22 @@ def save_settings(settings):
 def get_hidden_publishers(subject="specialist"):
     return set(load_settings().get(subject, {}).get("hidden_publishers", []))
 
+def load_overrides():
+    if not os.path.exists(OVERRIDES_JSON):
+        return {"specialist": {}, "methods": {}}
+    with open(OVERRIDES_JSON) as f:
+        return json.load(f)
+
+def save_overrides(overrides):
+    with open(OVERRIDES_JSON, "w") as f:
+        json.dump(overrides, f, indent=2)
+
+def apply_overrides(questions, subject):
+    overrides = load_overrides().get(subject, {})
+    if not overrides:
+        return questions
+    return [{**q, **overrides[q["id"]]} if q["id"] in overrides else q for q in questions]
+
 # Load questions once at startup
 questions_data = []
 if os.path.exists(QUESTIONS_JSON):
@@ -166,7 +183,7 @@ if os.path.exists(METHODS_QUESTIONS_JSON):
 
 
 # AOS maps per subject
-SPECIALIST_AOS = {0: "Unsorted", 1: "Logic and Proof", 2: "Functions, Relations and Graphs", 3: "Complex Numbers", 4: "Calculus", 5: "Vectors, Lines and Planes", 6: "Probability and Statistics", 7: "Pseudocode", 8: "Mechanics"}
+SPECIALIST_AOS = {0: "Unsorted", 1: "Logic and Proof", 2: "Functions, Relations and Graphs", 3: "Complex Numbers", 4: "Calculus", 5: "Vectors, Lines and Planes", 6: "Probability and Statistics", 7: "Pseudocode", 8: "Mechanics", 9: "Hidden"}
 METHODS_AOS = {
     0: "Unsorted",
     1: "Algebra and Functions",
@@ -177,6 +194,7 @@ METHODS_AOS = {
     6: "Core Content",                # Exam 2 only
     7: "Probability and Statistics",  # Exam 2 only
     8: "Pseudocode",                  # Exam 1 only
+    9: "Hidden",
 }
 
 SUBJECT_CONFIG = {
@@ -532,18 +550,25 @@ a { color:var(--primary); text-decoration:none; }
   flex:1;
   max-width:280px;
 }
-.admin-delete-btn {
-  font-size:1.1rem;
+.admin-hide-btn {
+  font-size:.8rem;
   background:none;
   border:1px solid #c53030;
   border-radius:6px;
-  padding:4px 8px;
+  padding:4px 10px;
   cursor:pointer;
   color:#c53030;
-  line-height:1;
   transition:background .15s;
 }
-.admin-delete-btn:hover { background:#fff0f0; }
+.admin-hide-btn:hover { background:#fff0f0; }
+.hidden-badge {
+  font-size:.75rem;
+  color:#9ca3af;
+  font-weight:600;
+  padding:2px 6px;
+  background:#f3f4f6;
+  border-radius:4px;
+}
 
 /* ----- Flag controls ----- */
 .flag-btn {
@@ -660,6 +685,7 @@ const METHODS_TAG_STYLES = {
   6: { bg:'#e5e7eb', color:'#374151' },
   7: { bg:'#e5e7eb', color:'#374151' },
   8: { bg:'#ede9fe', color:'#5b21b6' },
+  9: { bg:'#f3f4f6', color:'#9ca3af' },
 };
 
 fetch('/api/questions?subject={{ subject }}').then(r => r.json()).then(data => {
@@ -841,10 +867,11 @@ function renderCards() {
       <div class="admin-bar" onclick="event.stopPropagation()">
         <select class="admin-reclassify" onchange="adminReclassify('${q.id}', this)">
           <option value="">Reclassify…</option>
-          {% for num, name in aos_map.items() %}{% if num != 0 %}<option value="{{ num }}|{{ name }}">{{ num }} — {{ name }}</option>{% endif %}{% endfor %}
+          {% for num, name in aos_map.items() %}{% if num != 0 and num != 9 %}<option value="{{ num }}|{{ name }}">{{ num }} — {{ name }}</option>{% endif %}{% endfor %}
           <option value="0|Unsorted">Unsorted</option>
         </select>
-        <button class="admin-delete-btn" onclick="adminDelete('${q.id}', this)" title="Delete question">&#128465;</button>
+        <button class="admin-hide-btn" onclick="adminHide('${q.id}', ${q.aos === 9 ? 0 : 9}, this)">${q.aos === 9 ? 'Unhide' : 'Hide'}</button>
+        ${q.aos === 9 ? '<span class="hidden-badge">HIDDEN</span>' : ''}
       </div>` : '';
 
     const cardActions = !IS_ADMIN ? `
@@ -934,16 +961,20 @@ function adminReclassify(id, sel) {
   });
 }
 
-function adminDelete(id, btn) {
-  if (!confirm('Delete this question?')) return;
-  fetch('/api/questions/' + id, { method: 'DELETE' })
-    .then(r => r.json()).then(data => {
-      if (data.ok) {
-        allQ = allQ.filter(q => q.id !== id);
-        filtered = filtered.filter(q => q.id !== id);
-        document.getElementById('qcard-' + id)?.remove();
-      }
-    });
+function adminHide(id, newAos, btn) {
+  const aosName = newAos === 9 ? 'Hidden' : 'Unsorted';
+  fetch('/api/classify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id, aos: newAos, aos_name: aosName, subject: '{{ subject }}',
+                           tags: [newAos], tag_names: [aosName] })
+  }).then(r => r.json()).then(data => {
+    if (data.ok) {
+      const q = allQ.find(q => q.id === id);
+      if (q) { q.aos = newAos; q.aos_name = aosName; q.tags = [newAos]; q.tag_names = [aosName]; }
+      renderCards();
+    }
+  });
 }
 
 function goPage(p) {
@@ -1475,12 +1506,14 @@ def api_questions():
     subject = request.args.get("subject", "specialist")
     cfg = get_subject_config(subject)
     data = cfg["data"]()
+    data = apply_overrides(data, subject)
     if admin_required():
         return jsonify(data)
     hidden = get_hidden_publishers(subject)
     filtered = [q for q in data if q["publisher"] not in hidden]
     if subject == "specialist":
         filtered = [q for q in filtered if q.get("aos") != 8]
+    filtered = [q for q in filtered if q.get("aos") != 9]
     return jsonify(filtered)
 
 @app.route("/api/classify", methods=["POST"])
@@ -1497,21 +1530,36 @@ def api_classify():
     if not qid or aos is None:
         return jsonify(error="missing fields"), 400
     cfg = get_subject_config(subject)
-    # Always read from file (not memory) to avoid multi-worker data loss
-    with open(cfg["file"]) as f:
-        subject_data = json.load(f)
-    for q in subject_data:
-        if q["id"] == qid:
-            q["aos"] = aos
-            q["aos_name"] = aos_name
-            if subject == "methods":
-                q["tags"] = tags if tags is not None else [aos]
-                q["tag_names"] = tag_names if tag_names is not None else [aos_name]
-            break
+    if DEV_MODE:
+        # Local: write directly to base JSON and update in-memory cache
+        global questions_data, methods_data
+        with open(cfg["file"]) as f:
+            subject_data = json.load(f)
+        for q in subject_data:
+            if q["id"] == qid:
+                q["aos"] = aos
+                q["aos_name"] = aos_name
+                if subject == "methods":
+                    q["tags"] = tags if tags is not None else [aos]
+                    q["tag_names"] = tag_names if tag_names is not None else [aos_name]
+                break
+        else:
+            return jsonify(error="question not found"), 404
+        with open(cfg["file"], "w") as f:
+            json.dump(subject_data, f, indent=2)
+        if subject == "specialist":
+            questions_data = subject_data
+        else:
+            methods_data = subject_data
     else:
-        return jsonify(error="question not found"), 404
-    with open(cfg["file"], "w") as f:
-        json.dump(subject_data, f, indent=2)
+        # Server: write to overrides.json (survives git pull)
+        override_entry = {"aos": aos, "aos_name": aos_name}
+        if subject == "methods":
+            override_entry["tags"] = tags if tags is not None else [aos]
+            override_entry["tag_names"] = tag_names if tag_names is not None else [aos_name]
+        overrides = load_overrides()
+        overrides.setdefault(subject, {})[qid] = override_entry
+        save_overrides(overrides)
     return jsonify(ok=True)
 
 @app.route("/api/classify/batch", methods=["POST"])
@@ -1524,21 +1572,41 @@ def api_classify_batch():
     if not updates:
         return jsonify(ok=True, saved=0)
     cfg = get_subject_config(subject)
-    with open(cfg["file"]) as f:
-        subject_data = json.load(f)
-    update_map = {u["id"]: u for u in updates}
-    saved = 0
-    for q in subject_data:
-        if q["id"] in update_map:
-            u = update_map[q["id"]]
-            q["aos"] = u["aos"]
-            q["aos_name"] = u["aos_name"]
+    if DEV_MODE:
+        # Local: write directly to base JSON and update in-memory cache
+        global questions_data, methods_data
+        with open(cfg["file"]) as f:
+            subject_data = json.load(f)
+        update_map = {u["id"]: u for u in updates}
+        saved = 0
+        for q in subject_data:
+            if q["id"] in update_map:
+                u = update_map[q["id"]]
+                q["aos"] = u["aos"]
+                q["aos_name"] = u["aos_name"]
+                if subject == "methods":
+                    q["tags"] = u.get("tags", [u["aos"]])
+                    q["tag_names"] = u.get("tag_names", [u["aos_name"]])
+                saved += 1
+        with open(cfg["file"], "w") as f:
+            json.dump(subject_data, f, indent=2)
+        if subject == "specialist":
+            questions_data = subject_data
+        else:
+            methods_data = subject_data
+    else:
+        # Server: write to overrides.json
+        overrides = load_overrides()
+        overrides.setdefault(subject, {})
+        saved = 0
+        for u in updates:
+            entry = {"aos": u["aos"], "aos_name": u["aos_name"]}
             if subject == "methods":
-                q["tags"] = u.get("tags", [u["aos"]])
-                q["tag_names"] = u.get("tag_names", [u["aos_name"]])
+                entry["tags"] = u.get("tags", [u["aos"]])
+                entry["tag_names"] = u.get("tag_names", [u["aos_name"]])
+            overrides[subject][u["id"]] = entry
             saved += 1
-    with open(cfg["file"], "w") as f:
-        json.dump(subject_data, f, indent=2)
+        save_overrides(overrides)
     return jsonify(ok=True, saved=saved)
 
 
@@ -2611,19 +2679,6 @@ def api_admin_delete_flag(flag_id):
     flags = _read_flags()
     flags = [f for f in flags if f["id"] != flag_id]
     _write_flags(flags)
-    return jsonify(ok=True)
-
-@app.route("/api/questions/<qid>", methods=["DELETE"])
-def api_delete_question(qid):
-    if not admin_required():
-        return jsonify(error="forbidden"), 403
-    global questions_data
-    q = next((q for q in questions_data if q["id"] == qid), None)
-    if not q:
-        return jsonify(error="not found"), 404
-    questions_data = [x for x in questions_data if x["id"] != qid]
-    with open(QUESTIONS_JSON, "w") as f:
-        json.dump(questions_data, f, indent=2)
     return jsonify(ok=True)
 
 

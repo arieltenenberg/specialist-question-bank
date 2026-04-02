@@ -9,4 +9,5 @@ pipeline_log_*.txt
 users.db
 flags.json
 settings.json
+overrides.json
 .DS_Store
