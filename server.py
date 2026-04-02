@@ -639,28 +639,6 @@ a { color:var(--primary); text-decoration:none; }
 }
 .card-actions-left { display:flex; gap:8px; align-items:flex-start; }
 
-/* ----- Admin FAB (mobile only) ----- */
-.admin-fab {
-  display:none;
-  position:fixed;
-  bottom:24px;
-  right:20px;
-  z-index:200;
-  background:var(--primary-dark);
-  color:#fff;
-  font-family:inherit;
-  font-size:.85rem;
-  font-weight:600;
-  padding:12px 20px;
-  border-radius:99px;
-  text-decoration:none;
-  box-shadow:0 4px 16px rgba(0,0,0,.25);
-  transition:background .15s;
-}
-.admin-fab:hover { background:var(--primary); color:#fff; }
-@media (max-width: 768px) {
-  .admin-fab { display:block; }
-}
 </style>
 </head>
 <body>
@@ -676,8 +654,6 @@ a { color:var(--primary); text-decoration:none; }
   <span class="count">{{ user_name }}</span>
   <a class="admin-mode-btn {% if is_admin %}exit{% endif %}" href="/logout">Sign out</a>
 </div>
-
-{% if is_admin %}<a class="admin-fab" href="/admin?subject={{ subject }}">⚙ Admin</a>{% endif %}
 
 <div class="layout">
   <div class="sidebar" id="sidebar">
