@@ -1268,9 +1268,9 @@ body { font-family:'Poppins',system-ui,sans-serif; background:#0f1117; color:#e2
   <div class="qblock-img">
     <img src="{{ q.question_image }}" loading="lazy"/>
   </div>
-  {% if flags_by_qid.get(q.id) %}
+  {% if flags_by_qid.get(q.id) or q.id == highlight_qid %}
   <div class="flag-hints">
-    <span class="flag-hint">⚑ Flagged as misclassified ({{ flags_by_qid[q.id]|length }}×)</span>
+    <span class="flag-hint">⚑ Flagged as misclassified{% if flags_by_qid.get(q.id) %} ({{ flags_by_qid[q.id]|length }}×){% endif %}</span>
   </div>
   {% endif %}
   {% if is_methods and q.section != 'extended_response' %}
@@ -1473,6 +1473,12 @@ function updateProgress() {
     document.getElementById('done-banner').style.display = 'block';
   }
 }
+{% if highlight_qid %}
+window.addEventListener('load', function() {
+  const el = document.getElementById('block-{{ highlight_qid }}');
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+{% endif %}
 </script>
 </body>
 </html>"""
@@ -1715,12 +1721,14 @@ def classify_page():
     # For Methods classify page: split AOS map into exam-1 (1–5) and exam-2 (6–7) groups
     methods_aos_exam1 = {k: v for k, v in aos_map.items() if 1 <= k <= 5 or k == 8} if is_methods else {}
     methods_aos_exam2 = {k: v for k, v in aos_map.items() if k in (6, 7)} if is_methods else {}
+    highlight_qid = request.args.get("qid", "")
 
     return render_template_string(CLASSIFY_HTML, questions=questions, publisher=publisher, year=year,
                                   exam_sets=exam_sets, unsorted_mode=unsorted_mode, unsorted_count=unsorted_count,
                                   flagged_mode=flagged_mode, flagged_count=flagged_count, flags_by_qid=flags_by_qid,
                                   subject=subject, aos_map=aos_map, is_methods=is_methods,
-                                  methods_aos_exam1=methods_aos_exam1, methods_aos_exam2=methods_aos_exam2)
+                                  methods_aos_exam1=methods_aos_exam1, methods_aos_exam2=methods_aos_exam2,
+                                  highlight_qid=highlight_qid)
 
 @app.route("/qimg/<path:filename>")
 def serve_qimg(filename):
@@ -2467,7 +2475,7 @@ function loadFlags() {
         </div>
         ${imgHtml}
         <div class="flag-actions">
-          <button class="flag-classify-link" onclick="dismissAndClassify('${f.id}', '${f.subject}', '${encodeURIComponent(f.publisher)}', ${f.year})">Go to Classify</button>
+          <button class="flag-classify-link" onclick="dismissAndClassify('${f.id}', '${f.subject}', '${encodeURIComponent(f.publisher)}', ${f.year}, '${f.question_id}')">Go to Classify</button>
           <button class="flag-dismiss-btn" onclick="dismissFlag('${f.id}')">Dismiss</button>
         </div>
       </div>`;
@@ -2493,9 +2501,9 @@ function dismissFlag(id) {
     });
 }
 
-function dismissAndClassify(id, subject, publisher, year) {
+function dismissAndClassify(id, subject, publisher, year, qid) {
   fetch('/api/admin/flags/' + id, { method: 'DELETE' })
-    .then(() => { window.location.href = `/classify?subject=${subject}&publisher=${decodeURIComponent(publisher)}&year=${year}`; });
+    .then(() => { window.location.href = `/classify?subject=${subject}&publisher=${decodeURIComponent(publisher)}&year=${year}&qid=${qid}`; });
 }
 
 loadFlags();
