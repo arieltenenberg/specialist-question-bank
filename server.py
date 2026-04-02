@@ -480,12 +480,6 @@ a { color:var(--primary); text-decoration:none; }
 .page-btn:disabled { opacity:.35; cursor:default; }
 
 /* ----- Mobile ----- */
-@media (max-width: 768px) {
-  .sidebar { display:none; }
-  .layout { flex-direction:column; }
-  .main { padding:16px; }
-  .topbar { padding:0 16px; }
-}
 .show-sidebar-btn {
   display:none;
   font-family:inherit;
@@ -498,17 +492,50 @@ a { color:var(--primary); text-decoration:none; }
   font-size:.85rem;
   font-weight:500;
 }
+.sidebar-backdrop {
+  display:none;
+  position:fixed;
+  inset:60px 0 0 0;
+  background:rgba(0,0,0,.35);
+  z-index:98;
+}
+.sidebar-backdrop.visible { display:block; }
 @media (max-width: 768px) {
+  .topbar { padding:0 12px; gap:8px; }
+  .topbar h1 { font-size:.9rem; min-width:0; overflow:hidden; text-overflow:ellipsis; }
+  .topbar .tabs { margin-left:8px; gap:2px; }
+  .topbar .tab { padding:6px 10px; font-size:.78rem; }
+  .topbar .count { display:none; }
+  .topbar .admin-mode-btn { margin-left:auto; font-size:.75rem; padding:5px 10px; }
+  .layout { flex-direction:column; }
+  .main { padding:16px; }
+  .sidebar { display:none; }
   .show-sidebar-btn { display:block; }
   .sidebar.mobile-open {
     display:block;
     position:fixed;
     top:60px;
     left:0;
+    width:280px;
+    max-width:calc(100vw - 40px);
     z-index:99;
     height:calc(100vh - 60px);
-    box-shadow:4px 0 24px rgba(0,0,0,.12);
+    box-shadow:4px 0 24px rgba(0,0,0,.2);
   }
+  .qcard-header { padding:12px 14px; gap:8px; }
+  .qcard-header .marks { font-size:.75rem; }
+  .qcard-body { padding:0 12px 16px; }
+  .qimages { flex-direction:column; }
+  .qimg-wrap { min-width:0; width:100%; }
+  .card-actions { flex-wrap:wrap; }
+  .pagination { flex-wrap:wrap; }
+  .page-btn { padding:9px 12px; }
+  .show-sol-btn { padding:10px 20px; }
+  .save-btn { padding:10px 20px; }
+}
+@media (max-width: 480px) {
+  .topbar h1 { display:none; }
+  .topbar .tabs { margin-left:0; }
 }
 
 .no-results { text-align:center; padding:60px 20px; color:var(--muted); }
@@ -611,6 +638,29 @@ a { color:var(--primary); text-decoration:none; }
   margin-top:4px;
 }
 .card-actions-left { display:flex; gap:8px; align-items:flex-start; }
+
+/* ----- Admin FAB (mobile only) ----- */
+.admin-fab {
+  display:none;
+  position:fixed;
+  bottom:24px;
+  right:20px;
+  z-index:200;
+  background:var(--primary-dark);
+  color:#fff;
+  font-family:inherit;
+  font-size:.85rem;
+  font-weight:600;
+  padding:12px 20px;
+  border-radius:99px;
+  text-decoration:none;
+  box-shadow:0 4px 16px rgba(0,0,0,.25);
+  transition:background .15s;
+}
+.admin-fab:hover { background:var(--primary); color:#fff; }
+@media (max-width: 768px) {
+  .admin-fab { display:block; }
+}
 </style>
 </head>
 <body>
@@ -626,6 +676,8 @@ a { color:var(--primary); text-decoration:none; }
   <span class="count">{{ user_name }}</span>
   <a class="admin-mode-btn {% if is_admin %}exit{% endif %}" href="/logout">Sign out</a>
 </div>
+
+{% if is_admin %}<a class="admin-fab" href="/admin?subject={{ subject }}">⚙ Admin</a>{% endif %}
 
 <div class="layout">
   <div class="sidebar" id="sidebar">
@@ -651,9 +703,10 @@ a { color:var(--primary); text-decoration:none; }
     <div class="filter-group" id="fg-section"></div>
   </div>
 
+  <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleSidebar()"></div>
   <div class="main">
     <div class="toolbar">
-      <button class="show-sidebar-btn" onclick="document.getElementById('sidebar').classList.toggle('mobile-open')">Filters</button>
+      <button class="show-sidebar-btn" onclick="toggleSidebar()">☰ Filters</button>
       <div class="active-filters" id="active-filters"></div>
       <button class="clear-btn" id="clear-btn" style="display:none" onclick="clearAll()">Clear all</button>
     </div>
@@ -666,6 +719,13 @@ a { color:var(--primary); text-decoration:none; }
 const IS_ADMIN = {{ is_admin|tojson }};
 const IS_METHODS = {{ is_methods|tojson }};
 const PER_PAGE = 20;
+
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  const open = sidebar.classList.toggle('mobile-open');
+  backdrop.classList.toggle('visible', open);
+}
 let allQ = [];
 let filtered = [];
 let page = 0;
