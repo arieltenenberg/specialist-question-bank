@@ -1889,17 +1889,18 @@ HOME_HTML = r"""<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Poppins',system-ui,sans-serif; background:#f0f0f0; color:#1a202c; min-height:100vh; }
+body { font-family:'Poppins',system-ui,sans-serif; background:linear-gradient(150deg,#eef2ff 0%,#f5f5f7 60%,#f0faf5 100%); color:#1a202c; min-height:100vh; }
 .topbar {
-  background:#2d2d2d; padding:0 32px; display:flex; align-items:center;
+  background:#111827; padding:0 32px; display:flex; align-items:center;
   gap:20px; position:sticky; top:0; z-index:100; height:60px;
+  box-shadow:0 2px 12px rgba(0,0,0,.2);
 }
-.topbar h1 { font-size:1.05rem; font-weight:600; color:#fff; letter-spacing:-.01em; }
+.topbar h1 { font-size:1rem; font-weight:600; color:#fff; letter-spacing:-.01em; }
 .spacer { flex:1; }
-.topbar .user-name { color:rgba(255,255,255,.55); font-size:.82rem; }
+.topbar .user-name { color:rgba(255,255,255,.45); font-size:.8rem; }
 .signout-btn {
   font-family:inherit; font-size:.78rem; font-weight:500; padding:5px 12px;
-  border-radius:6px; border:1px solid rgba(255,255,255,.2);
+  border-radius:6px; border:1px solid rgba(255,255,255,.18);
   background:transparent; color:rgba(255,255,255,.7); cursor:pointer;
   text-decoration:none; transition:all .15s; white-space:nowrap;
 }
@@ -1908,22 +1909,37 @@ body { font-family:'Poppins',system-ui,sans-serif; background:#f0f0f0; color:#1a
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   min-height:calc(100vh - 60px); padding:40px 24px;
 }
-.label { font-size:.75rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:#999; margin-bottom:32px; }
-.subject-grid { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; }
+.hero { text-align:center; margin-bottom:44px; }
+.hero h2 { font-size:1.65rem; font-weight:700; color:#111827; margin-bottom:10px; letter-spacing:-.02em; }
+.hero p { color:#6b7280; font-size:.9rem; }
+.subject-grid { display:flex; gap:20px; flex-wrap:wrap; justify-content:center; }
 .subject-card {
-  background:#fff; border:1px solid #e4e4e4; border-radius:14px;
-  padding:40px 44px; width:260px; text-align:center; cursor:pointer;
+  background:#fff; border:1px solid #e5e7eb; border-radius:18px;
+  padding:36px 40px; width:260px; text-align:center; cursor:pointer;
   text-decoration:none; color:#1a202c;
-  box-shadow:0 1px 4px rgba(0,0,0,.06);
-  transition:box-shadow .2s, transform .2s, border-color .2s;
-  display:block;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+  transition:box-shadow .22s, transform .22s, border-color .22s;
+  display:block; position:relative; overflow:hidden;
 }
-.subject-card.specialist:hover { border-color:#196061; box-shadow:0 4px 20px rgba(25,96,97,.15); transform:translateY(-2px); }
-.subject-card.methods:hover { border-color:#2563eb; box-shadow:0 4px 20px rgba(37,99,235,.15); transform:translateY(-2px); }
-.subject-card .icon { font-size:2rem; margin-bottom:20px; color:#555; }
-.subject-card h2 { font-size:.95rem; font-weight:600; color:#1a202c; }
+.subject-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:4px;
+}
+.subject-card.specialist::before { background:linear-gradient(90deg,#196061,#2a9d8f); }
+.subject-card.methods::before { background:linear-gradient(90deg,#2563eb,#60a5fa); }
+.subject-card:hover { box-shadow:0 10px 30px rgba(0,0,0,.1); transform:translateY(-3px); }
+.subject-card.specialist:hover { border-color:#196061; }
+.subject-card.methods:hover { border-color:#2563eb; }
+.subject-card .icon { font-size:2.4rem; margin-bottom:18px; line-height:1; }
+.subject-card.specialist .icon { color:#196061; }
+.subject-card.methods .icon { color:#2563eb; }
+.subject-card h2 { font-size:.95rem; font-weight:600; color:#111827; margin-bottom:8px; }
+.subject-card p { font-size:.78rem; color:#6b7280; line-height:1.55; }
 @media (max-width:600px) {
-  .subject-card { width:100%; max-width:300px; }
+  .topbar { padding:0 16px; gap:12px; }
+  .topbar h1 { font-size:.88rem; }
+  .topbar .user-name { display:none; }
+  .hero h2 { font-size:1.3rem; }
+  .subject-card { width:100%; max-width:320px; padding:28px 32px; }
 }
 </style>
 </head>
@@ -1936,15 +1952,20 @@ body { font-family:'Poppins',system-ui,sans-serif; background:#f0f0f0; color:#1a
   <a class="signout-btn" href="/logout">Sign out</a>
 </div>
 <div class="main">
-  <div class="label">Select a subject to practice</div>
+  <div class="hero">
+    <h2>Choose a subject</h2>
+    <p>Browse and practise past trial exam questions</p>
+  </div>
   <div class="subject-grid">
     <a class="subject-card specialist" href="/specialist">
       <div class="icon">&#x221E;</div>
       <h2>Specialist Mathematics</h2>
+      <p>Units 3 &amp; 4 — Trial exam questions</p>
     </a>
     <a class="subject-card methods" href="/methods">
       <div class="icon">&#x222B;</div>
       <h2>Mathematical Methods</h2>
+      <p>Units 3 &amp; 4 — Trial exam questions</p>
     </a>
   </div>
 </div>
