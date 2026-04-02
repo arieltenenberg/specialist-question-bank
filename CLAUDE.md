@@ -28,7 +28,8 @@ Questions are classified into Areas of Study (AOS) per subject.
 | `/admin/users` | User approval — shared, linked from landing page only |
 | `/classify?subject=specialist\|methods` | Admin classification tool |
 | `/api/questions?subject=specialist\|methods` | Questions API |
-| `/api/classify` | Classify a question (subject in POST body) |
+| `/api/classify` | Classify a question — DEV_MODE writes base JSON, production writes `overrides.json` |
+| `/api/classify/restore` | Unhide a question — removes override so it reverts to base JSON AOS |
 | `/api/flag` | Flag a question (subject in POST body) |
 | `GET /api/saved?subject=specialist\|methods` | Get current user's saved question IDs |
 | `POST /api/saved` | Toggle a question saved/unsaved (subject in POST body) |
@@ -39,6 +40,7 @@ Questions are classified into Areas of Study (AOS) per subject.
 - `raw_questions_methods.json` — Methods raw extracted text (in git — needed for classifier analysis)
 - `raw_questions_specialist.json` — Specialist raw extracted text (gitignored — local only)
 - `settings.json` — Per-subject publisher visibility (gitignored)
+- `overrides.json` — Server-side AOS overrides (gitignored — see below)
 - `get_subject_config(subject)` helper returns data, file path, AOS map, and subject name
 - Colour themes: Specialist = teal (`#196061`, `#042f3a`), Methods = blue (`#2563eb`, `#1e3a5f`)
 - `users.db` — SQLite database for user accounts and saved questions (server-only, not in git)
@@ -54,6 +56,7 @@ Questions are classified into Areas of Study (AOS) per subject.
 | 6 | Probability and Statistics |
 | 7 | Pseudocode |
 | 8 | Mechanics (old study design only — hidden from students) |
+| 9 | Hidden (admin-only — invisible to students) |
 | 0 | Unsorted (flagged for manual review) |
 
 ## Mathematical Methods — Areas of Study (AOS)
@@ -67,6 +70,7 @@ Questions are classified into Areas of Study (AOS) per subject.
 | 6 | Core Content (Exam 2 only) |
 | 7 | Probability and Statistics (Exam 2 only) |
 | 8 | Pseudocode (Exam 1 only) |
+| 9 | Hidden (admin-only — invisible to students) |
 | 0 | Unsorted (flagged for manual review) |
 
 ## Specialist Publishers in the Dataset
@@ -118,9 +122,9 @@ Still to import: 2021 and earlier
 All pipeline work (importing exams, classification, reclassification) is done locally. The server is never used for classification.
 
 ### Workflow rules
-- **All classification and reclassification is done locally** — commit and deploy. Never reclassify on the server; a `git pull` would overwrite any server-side changes.
-- **Flagged questions**: students flag via the browse UI; flags are stored in `flags.json` (gitignored, server-only). Use flags as a reminder list only — dismiss on the server, fix locally in the next session.
-- Fixing a flag means reclassifying the question → always do this locally.
+- **New exam imports and batch classification** are always done locally — commit and deploy.
+- **Quick fixes on existing questions** (reclassify or hide) can be done directly on the server via the browse page admin bar — these write to `overrides.json` and are never touched by `git pull`.
+- **Flagged questions**: students flag via the browse UI; flags are stored in `flags.json` (gitignored, server-only). Use flags as a reminder list only — dismiss on the server, fix locally or via the server admin bar.
 
 ### Per-batch workflow
 1. Upload exam zip via `http://localhost:8080/admin?subject=specialist|methods` (with `DEV_MODE=1` server running)
@@ -165,6 +169,32 @@ The admin upload UI triggers all three automatically.
 brew install --cask libreoffice
 pip install pymupdf Pillow
 ```
+
+---
+
+## Server-Side Overrides (`overrides.json`)
+
+Quick reclassification and hiding can be done directly on the production server via the browse page admin bar. These changes are stored in `overrides.json` (gitignored, server-only) and applied on top of the base JSON at serve time.
+
+### How it works
+- **Hide button** — sets AOS 9 on a question; invisible to students immediately
+- **Unhide button** — removes the override; question reverts to its original base JSON classification as if nothing happened
+- **Reclassify dropdown** — sets any AOS; also writes to overrides on the server
+- `git pull` (from local deploys) never touches `overrides.json` — server-side changes are permanent until explicitly changed again
+
+### Two workflows, never conflict
+| Workflow | Where | Storage | Survives deploy? |
+|----------|-------|---------|-----------------|
+| New exam import + batch sort | Local → commit → deploy | Base JSON (git) | Yes (it's the source) |
+| Quick fix on existing question | Server browse page | `overrides.json` (gitignored) | Yes (untouched by git) |
+
+### Overrides are the final word
+Overrides always take priority over the base JSON. The only ways to change them are:
+1. Use the browse page admin bar on the server
+2. Ask Claude Code to edit `overrides.json` directly via SSH
+
+### Periodic cleanup of Hidden questions
+When asked, Claude Code will delete all AOS 9 questions from both base JSON files and clear them from `overrides.json`, then commit and deploy.
 
 ---
 
