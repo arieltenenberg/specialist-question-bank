@@ -119,12 +119,10 @@ Still to import: 2021 and earlier
 
 ## Local Pipeline Workflow
 
-All pipeline work (importing exams, classification, reclassification) is done locally. The server is never used for classification.
-
 ### Workflow rules
-- **New exam imports and batch classification** are always done locally — commit and deploy.
-- **Quick fixes on existing questions** (reclassify or hide) can be done directly on the server via the browse page admin bar — these write to `overrides.json` and are never touched by `git pull`.
-- **Flagged questions**: students flag via the browse UI; flags are stored in `flags.json` (gitignored, server-only). Use flags as a reminder list only — dismiss on the server, fix locally or via the server admin bar.
+- **Local only:** uploading new exam batches, sorting unsorted questions, classifier improvement sessions
+- **Server only (on the go):** reclassify, hide, manage flagged questions, hide/show publishers, approve/reject users
+- Server-side changes write to `overrides.json` (gitignored) and are never touched by `git pull` — completely safe to deploy local work at any time
 
 ### Per-batch workflow
 1. Upload exam zip via `http://localhost:8080/admin?subject=specialist|methods` (with `DEV_MODE=1` server running)
