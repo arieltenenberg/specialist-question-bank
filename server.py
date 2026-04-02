@@ -962,19 +962,33 @@ function adminReclassify(id, sel) {
 }
 
 function adminHide(id, newAos, btn) {
-  const aosName = newAos === 9 ? 'Hidden' : 'Unsorted';
-  fetch('/api/classify', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id, aos: newAos, aos_name: aosName, subject: '{{ subject }}',
-                           tags: [newAos], tag_names: [aosName] })
-  }).then(r => r.json()).then(data => {
-    if (data.ok) {
-      const q = allQ.find(q => q.id === id);
-      if (q) { q.aos = newAos; q.aos_name = aosName; q.tags = [newAos]; q.tag_names = [aosName]; }
-      renderCards();
-    }
-  });
+  if (newAos !== 9) {
+    // Unhide: restore to original classification
+    fetch('/api/classify/restore', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, subject: '{{ subject }}' })
+    }).then(r => r.json()).then(data => {
+      if (data.ok) {
+        const q = allQ.find(q => q.id === id);
+        if (q) { q.aos = data.aos; q.aos_name = data.aos_name; q.tags = data.tags; q.tag_names = data.tag_names; }
+        renderCards();
+      }
+    });
+  } else {
+    fetch('/api/classify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, aos: 9, aos_name: 'Hidden', subject: '{{ subject }}',
+                             tags: [9], tag_names: ['Hidden'] })
+    }).then(r => r.json()).then(data => {
+      if (data.ok) {
+        const q = allQ.find(q => q.id === id);
+        if (q) { q.aos = 9; q.aos_name = 'Hidden'; q.tags = [9]; q.tag_names = ['Hidden']; }
+        renderCards();
+      }
+    });
+  }
 }
 
 function goPage(p) {
@@ -1561,6 +1575,52 @@ def api_classify():
         overrides.setdefault(subject, {})[qid] = override_entry
         save_overrides(overrides)
     return jsonify(ok=True)
+
+@app.route("/api/classify/restore", methods=["POST"])
+def api_classify_restore():
+    if not admin_required():
+        return jsonify(error="forbidden"), 403
+    data = request.get_json()
+    qid = data.get("id")
+    subject = data.get("subject", "specialist")
+    if not qid:
+        return jsonify(error="missing fields"), 400
+    cfg = get_subject_config(subject)
+    if DEV_MODE:
+        # Locally, no overrides — just send to Unsorted
+        with open(cfg["file"]) as f:
+            subject_data = json.load(f)
+        global questions_data, methods_data
+        for q in subject_data:
+            if q["id"] == qid:
+                q["aos"] = 0
+                q["aos_name"] = "Unsorted"
+                if subject == "methods":
+                    q["tags"] = [0]
+                    q["tag_names"] = ["Unsorted"]
+                break
+        else:
+            return jsonify(error="question not found"), 404
+        with open(cfg["file"], "w") as f:
+            json.dump(subject_data, f, indent=2)
+        if subject == "specialist":
+            questions_data = subject_data
+        else:
+            methods_data = subject_data
+        return jsonify(ok=True, aos=0, aos_name="Unsorted", tags=[0], tag_names=["Unsorted"])
+    else:
+        # Server: remove override entry — question reverts to base JSON classification
+        overrides = load_overrides()
+        overrides.get(subject, {}).pop(qid, None)
+        save_overrides(overrides)
+        # Read original AOS from base JSON
+        with open(cfg["file"]) as f:
+            subject_data = json.load(f)
+        q = next((q for q in subject_data if q["id"] == qid), None)
+        if not q:
+            return jsonify(error="question not found"), 404
+        return jsonify(ok=True, aos=q["aos"], aos_name=q["aos_name"],
+                       tags=q.get("tags", [q["aos"]]), tag_names=q.get("tag_names", [q["aos_name"]]))
 
 @app.route("/api/classify/batch", methods=["POST"])
 def api_classify_batch():
