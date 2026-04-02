@@ -2678,7 +2678,7 @@ def api_flag():
     qid = data.get("question_id")
     subject = data.get("subject", "specialist")
     cfg = get_subject_config(subject)
-    q = next((q for q in cfg["data"]() if q["id"] == qid), None)
+    q = next((q for q in apply_overrides(cfg["data"](), subject) if q["id"] == qid), None)
     if not q:
         return jsonify(error="question not found"), 404
     flag = {
