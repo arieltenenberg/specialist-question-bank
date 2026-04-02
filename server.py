@@ -2467,7 +2467,7 @@ function loadFlags() {
         </div>
         ${imgHtml}
         <div class="flag-actions">
-          <a class="flag-classify-link" href="/classify?subject=${f.subject}&publisher=${encodeURIComponent(f.publisher)}&year=${f.year}">Go to Classify</a>
+          <button class="flag-classify-link" onclick="dismissAndClassify('${f.id}', '${f.subject}', '${encodeURIComponent(f.publisher)}', ${f.year})">Go to Classify</button>
           <button class="flag-dismiss-btn" onclick="dismissFlag('${f.id}')">Dismiss</button>
         </div>
       </div>`;
@@ -2491,6 +2491,11 @@ function dismissFlag(id) {
         if (el) { el.style.opacity = ''; el.style.pointerEvents = ''; }
       }
     });
+}
+
+function dismissAndClassify(id, subject, publisher, year) {
+  fetch('/api/admin/flags/' + id, { method: 'DELETE' })
+    .then(() => { window.location.href = `/classify?subject=${subject}&publisher=${decodeURIComponent(publisher)}&year=${year}`; });
 }
 
 loadFlags();
