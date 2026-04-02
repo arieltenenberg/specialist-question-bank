@@ -2665,19 +2665,6 @@
     "source_pdf": "/Users/arieltenenberg/Desktop/Specialist Question Bank/uploads/methods/2021 /Heffernan/Methods 3&4 Exam 2.pdf"
   },
   {
-    "id": "methods_heffernan_2021_exam2_e_q25",
-    "year": 2021,
-    "publisher": "Heffernan",
-    "exam_type": 2,
-    "section": "extended_response",
-    "question_number": 25,
-    "marks": null,
-    "question_image": "/qimg/methods_heffernan_2021_exam2_e_q25_question.png",
-    "solution_image": null,
-    "extracted_text": "\u00a9THE HEFFERNAN GROUP 2021                                              Maths Methods 3 & 4 Trial Exam 2\ndon t have a fishing licence.\nOne particular day, Fisheries officers randomly select and question 25 anglers in this state.\nd.\ni.\nFind the probability that at least two of these anglers don\u2019t have a licence, correct to \nfour decimal places.\n1 mark\nii.\nFor random samples of 25 anglers, \n is the random variable that represents the \nproportion of anglers who don\u2019t have a license. Find the probability that \n is less \nthan 10%, correct to four decimal places. Do not use a normal approximation.\n2 marks\nFishing authorities in another state randomly select a very large sample of recreational anglers. \nThey calculate an approximate 95% confidence interval of \n for the proportion of \nanglers in that state who don\u2019t have a fishing license.\ne.\ni.\nFind the sample proportion used in the calculation of this confidence interval.\n1 mark\nii.\nExplain why this confidence interval suggests that the proportion of anglers who \ndon\u2019t have a licence could be different in the two states.\n1 mark\n25",
-    "source_pdf": "/Users/arieltenenberg/Desktop/Specialist Question Bank/uploads/methods/2021 /Heffernan/Methods 3&4 Exam 2.pdf"
-  },
-  {
     "id": "methods_heffernan_2021_exam2_e_q5",
     "year": 2021,
     "publisher": "Heffernan",

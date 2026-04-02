@@ -3923,25 +3923,6 @@
     ]
   },
   {
-    "id": "methods_heffernan_2021_exam2_e_q25",
-    "year": 2021,
-    "publisher": "Heffernan",
-    "exam_type": 2,
-    "section": "extended_response",
-    "question_number": 25,
-    "marks": null,
-    "question_image": "/qimg/methods_heffernan_2021_exam2_e_q25_question.png",
-    "solution_image": null,
-    "aos": 7,
-    "aos_name": "Probability and Statistics",
-    "tags": [
-      7
-    ],
-    "tag_names": [
-      "Probability and Statistics"
-    ]
-  },
-  {
     "id": "methods_heffernan_2021_exam2_e_q5",
     "year": 2021,
     "publisher": "Heffernan",
