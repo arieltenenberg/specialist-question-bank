@@ -2018,13 +2018,13 @@
     "marks": 2,
     "question_image": "/qimg/methods_mav_2020_exam1_s_q2_question.png",
     "solution_image": "/qimg/methods_mav_2020_exam1_s_q2_solution.png",
-    "aos": 1,
-    "aos_name": "Algebra and Functions",
+    "aos": 2,
+    "aos_name": "Differentiation",
     "tags": [
-      1
+      2
     ],
     "tag_names": [
-      "Algebra and Functions"
+      "Differentiation"
     ]
   },
   {
@@ -2056,12 +2056,14 @@
     "marks": 4,
     "question_image": "/qimg/methods_mav_2020_exam1_s_q4_question.png",
     "solution_image": "/qimg/methods_mav_2020_exam1_s_q4_solution.png",
-    "aos": 3,
-    "aos_name": "Integration",
+    "aos": 2,
+    "aos_name": "Differentiation",
     "tags": [
+      2,
       3
     ],
     "tag_names": [
+      "Differentiation",
       "Integration"
     ]
   },
@@ -2075,13 +2077,13 @@
     "marks": 5,
     "question_image": "/qimg/methods_mav_2020_exam1_s_q5_question.png",
     "solution_image": "/qimg/methods_mav_2020_exam1_s_q5_solution.png",
-    "aos": 3,
-    "aos_name": "Integration",
+    "aos": 1,
+    "aos_name": "Algebra and Functions",
     "tags": [
-      3
+      1
     ],
     "tag_names": [
-      "Integration"
+      "Algebra and Functions"
     ]
   },
   {
@@ -3352,15 +3354,15 @@
     "marks": 4,
     "question_image": "/qimg/methods_heffernan_2021_exam1_s_q4_question.png",
     "solution_image": "/qimg/methods_heffernan_2021_exam1_s_q4_solution.png",
-    "aos": 1,
-    "aos_name": "Algebra and Functions",
+    "aos": 2,
+    "aos_name": "Differentiation",
     "tags": [
-      1,
-      2
+      2,
+      1
     ],
     "tag_names": [
-      "Algebra and Functions",
-      "Differentiation"
+      "Differentiation",
+      "Algebra and Functions"
     ]
   },
   {
