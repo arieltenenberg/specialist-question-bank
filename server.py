@@ -2205,6 +2205,16 @@ a { color:var(--primary); text-decoration:none; }
 }
 .topbar .tab:hover { color:#fff; background:rgba(255,255,255,.1); }
 .topbar .tab.active { color:#fff; background:rgba(255,255,255,.15); }
+@media (max-width: 768px) {
+  .topbar { padding:0 12px; gap:8px; }
+  .topbar h1 { font-size:.9rem; min-width:0; overflow:hidden; text-overflow:ellipsis; }
+  .topbar .tabs { margin-left:8px; gap:2px; }
+  .topbar .tab { padding:6px 10px; font-size:.78rem; }
+}
+@media (max-width: 480px) {
+  .topbar h1 { display:none; }
+  .topbar .tabs { margin-left:0; }
+}
 
 .container { max-width:700px; margin:0 auto; padding:40px 24px; }
 
