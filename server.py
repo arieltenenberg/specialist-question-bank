@@ -1939,7 +1939,7 @@ body { font-family:'Poppins',system-ui,sans-serif; background:#f0f0f0; color:#1a
   <a class="signout-btn" href="/logout">Sign out</a>
 </div>
 <div class="main">
-  <div class="label">Select a subject to practise</div>
+  <div class="label">Select a subject</div>
   <div class="subject-grid">
     <a class="subject-card specialist" href="/specialist">
       <div class="icon">&#x221E;</div>
