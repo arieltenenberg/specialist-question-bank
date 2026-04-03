@@ -14,11 +14,14 @@ args = parser.parse_args()
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 UPLOADS = os.path.join(BASE, "uploads", args.subject)
 
-docx_files = glob.glob(os.path.join(UPLOADS, "**/*.docx"), recursive=True)
+docx_files = (
+    glob.glob(os.path.join(UPLOADS, "**/*.docx"), recursive=True) +
+    glob.glob(os.path.join(UPLOADS, "**/*.doc"), recursive=True)
+)
 docx_files = [f for f in docx_files if "__MACOSX" not in f]
 
 print(f"Subject: {args.subject}")
-print(f"Found {len(docx_files)} DOCX files to convert")
+print(f"Found {len(docx_files)} DOC/DOCX files to convert")
 
 LIBREOFFICE_CANDIDATES = [
     "libreoffice",

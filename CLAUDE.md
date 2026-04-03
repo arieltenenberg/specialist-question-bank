@@ -75,12 +75,12 @@ Questions are classified into Areas of Study (AOS) per subject.
 
 ## Specialist Publishers in the Dataset
 Heffernan, Insight, Kilbaha, MAV, NEAP, QATs-Janison, Sequoia, TSSM
-Years: pre-2023 (old study design), 2023, 2024, 2025
+Years: 2016–2022 (old study design), 2023, 2024, 2025
 
 ## Methods Publishers in the Dataset
 Imported batch by batch. All pipeline work is done locally.
-Years imported so far: 2022 (Heffernan, MAV, NEAP, TSSM), 2023, 2024, 2025
-Still to import: 2021 and earlier
+Years imported so far: 2016, 2017 (Heffernan, Insight, Kilbaha, MAV, NEAP), 2022 (Heffernan, MAV, NEAP, TSSM), 2023, 2024, 2025
+Still to import: 2018–2021
 
 ## Classification Approach
 - Text is extracted from PDFs using PyMuPDF (text layer, not OCR)
@@ -142,7 +142,7 @@ Still to import: 2021 and earlier
 - `DEV_MODE=1 python3 server.py` bypasses Google OAuth for all auth-protected routes
 - Only use locally — never set on the server
 - Kill any existing process first: `kill $(lsof -ti:8080)`
-- To refresh local data (e.g. after a reset or git pull), always restart the server — Flask loads data files at startup, so stale data will show until restarted:
+- To refresh local data (e.g. after a reset or git pull), always restart the server — Flask loads data files at startup, so stale data will show until restarted (note: the admin upload endpoint triggers a reload automatically, so a manual restart is not needed after uploading a new batch):
   ```bash
   kill $(lsof -ti:8080) && DEV_MODE=1 python3 server.py
   ```

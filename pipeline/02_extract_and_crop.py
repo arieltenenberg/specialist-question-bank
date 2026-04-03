@@ -87,8 +87,8 @@ def is_skip_file(fname):
 
 def detect_exam_number(fname):
     fl = fname.lower()
-    # "exam 1" / "exam 2" / "exam1"
-    m = re.search(r"exam\s*(\d)", fl)
+    # "exam 1" / "exam 2" / "exam1" / "exam-1"
+    m = re.search(r"exam[\s-]*(\d)", fl)
     if m:
         return int(m.group(1))
     # "sm1" / "sm2" (Insight 2023)
