@@ -79,8 +79,7 @@ Years: 2016–2022 (old study design), 2023, 2024, 2025
 
 ## Methods Publishers in the Dataset
 Imported batch by batch. All pipeline work is done locally.
-Years imported so far: 2016, 2017 (Heffernan, Insight, Kilbaha, MAV, NEAP), 2022 (Heffernan, MAV, NEAP, TSSM), 2023, 2024, 2025
-Still to import: 2018–2021
+Years imported so far: 2016–2025 (all years complete)
 
 ## Classification Approach
 - Text is extracted from PDFs using PyMuPDF (text layer, not OCR)
