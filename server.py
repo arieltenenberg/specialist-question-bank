@@ -867,9 +867,9 @@ const METHODS_TAG_STYLES = {
   3: { bg:'#bfdbfe', color:'#1e3a5f' },
   4: { bg:'#bfdbfe', color:'#1e3a5f' },
   5: { bg:'#bfdbfe', color:'#1e3a5f' },
-  6: { bg:'#e5e7eb', color:'#374151' },
-  7: { bg:'#e5e7eb', color:'#374151' },
-  8: { bg:'#ede9fe', color:'#5b21b6' },
+  6: { bg:'#bfdbfe', color:'#1e3a5f' },
+  7: { bg:'#bfdbfe', color:'#1e3a5f' },
+  8: { bg:'#bfdbfe', color:'#1e3a5f' },
   9: { bg:'#f3f4f6', color:'#9ca3af' },
 };
 
