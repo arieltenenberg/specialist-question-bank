@@ -2089,42 +2089,58 @@ HOME_HTML = r"""<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Poppins',system-ui,sans-serif; background:#f0f0f0; color:#1a202c; min-height:100vh; }
+body { font-family:'Poppins',system-ui,sans-serif; background:#f5f7fa; color:#1a202c; min-height:100vh; }
 .topbar {
-  background:#2d2d2d; padding:0 32px; display:flex; align-items:center;
-  gap:20px; position:sticky; top:0; z-index:100; height:60px;
+  background:#1a202c;
+  position:sticky; top:0; z-index:100;
+  box-shadow:0 2px 8px rgba(0,0,0,.15);
 }
-.topbar h1 { font-size:1.05rem; font-weight:600; color:#fff; letter-spacing:-.01em; }
-.spacer { flex:1; }
-.topbar .user-name { color:rgba(255,255,255,.55); font-size:.82rem; }
-.signout-btn {
-  font-family:inherit; font-size:.78rem; font-weight:500; padding:5px 12px;
-  border-radius:6px; border:1px solid rgba(255,255,255,.2);
-  background:transparent; color:rgba(255,255,255,.7); cursor:pointer;
-  text-decoration:none; transition:all .15s; white-space:nowrap;
+.topbar-inner {
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  padding:0 28px;
+  height:56px;
 }
-.signout-btn:hover { background:rgba(255,255,255,.1); color:#fff; }
+.topbar h1 { font-size:1.05rem; font-weight:600; color:#fff; letter-spacing:-.01em; text-align:center; white-space:nowrap; }
+.user-avatar-wrap { position:relative; justify-self:end; }
+.user-avatar {
+  width:34px; height:34px; border-radius:50%;
+  background:rgba(255,255,255,.15); border:1.5px solid rgba(255,255,255,.3);
+  color:#fff; font-size:.78rem; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:background .15s; user-select:none;
+}
+.user-avatar:hover { background:rgba(255,255,255,.25); }
+.user-dropdown {
+  display:none; position:absolute; top:calc(100% + 10px); right:0;
+  background:#fff; border:1px solid #e2e8f0; border-radius:10px;
+  box-shadow:0 4px 12px rgba(0,0,0,.08); min-width:190px; z-index:200; overflow:hidden;
+}
+.user-dropdown.open { display:block; }
+.user-dropdown-header { padding:11px 16px; font-size:.78rem; color:#718096; border-bottom:1px solid #e2e8f0; }
+.user-dropdown a { display:block; padding:10px 16px; font-size:.84rem; color:#1a202c; text-decoration:none; transition:background .15s; }
+.user-dropdown a:hover { background:#f5f7fa; }
 .main {
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  min-height:calc(100vh - 60px); padding:40px 24px;
+  min-height:calc(100vh - 56px); padding:40px 24px;
 }
-.label { font-size:.75rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:#999; margin-bottom:32px; }
+.label { font-size:.72rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:#a0aec0; margin-bottom:28px; }
 .subject-grid { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; }
 .subject-card {
-  background:#fff; border:1px solid #e4e4e4; border-radius:14px;
+  background:#fff; border:1px solid #e2e8f0; border-radius:14px;
   padding:40px 44px; width:260px; text-align:center; cursor:pointer;
   text-decoration:none; color:#1a202c;
-  box-shadow:0 1px 4px rgba(0,0,0,.06);
+  box-shadow:0 1px 3px rgba(0,0,0,.06);
   transition:box-shadow .2s, transform .2s, border-color .2s;
   display:block;
 }
 .subject-card.specialist:hover { border-color:#196061; box-shadow:0 4px 20px rgba(25,96,97,.15); transform:translateY(-2px); }
 .subject-card.methods:hover { border-color:#2563eb; box-shadow:0 4px 20px rgba(37,99,235,.15); transform:translateY(-2px); }
-.subject-card .icon { font-size:2rem; margin-bottom:20px; color:#555; }
+.subject-card .icon { font-size:2rem; margin-bottom:20px; color:#718096; }
 .subject-card h2 { font-size:.95rem; font-weight:600; color:#1a202c; }
 @media (max-width:600px) {
-  .topbar { padding:0 16px; }
-  .topbar .user-name { display:none; }
+  .topbar-inner { padding:0 16px; }
   .subject-grid { flex-direction:column; align-items:center; width:100%; }
   .subject-card { width:100%; max-width:340px; padding:28px 32px; }
 }
@@ -2132,11 +2148,18 @@ body { font-family:'Poppins',system-ui,sans-serif; background:#f0f0f0; color:#1a
 </head>
 <body>
 <div class="topbar">
-  <h1>VCE Mathematics Question Bank</h1>
-  <div class="spacer"></div>
-  <span class="user-name">{{ user_name }}</span>
-  {% if is_admin %}<a class="signout-btn" href="/admin/users">Users</a>{% endif %}
-  <a class="signout-btn" href="/logout">Sign out</a>
+  <div class="topbar-inner">
+    <div></div>
+    <h1>VCE Mathematics</h1>
+    <div class="user-avatar-wrap" id="user-avatar-btn" onclick="toggleUserDropdown()">
+      <div class="user-avatar" id="user-avatar-initials"></div>
+      <div class="user-dropdown" id="user-dropdown">
+        <div class="user-dropdown-header">Signed in as {{ user_name }}</div>
+        {% if is_admin %}<a href="/admin/users">User management</a>{% endif %}
+        <a href="/logout">Sign out</a>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="main">
   <div class="label">Select a subject</div>
@@ -2151,6 +2174,20 @@ body { font-family:'Poppins',system-ui,sans-serif; background:#f0f0f0; color:#1a
     </a>
   </div>
 </div>
+<script>
+(function() {
+  const name = {{ user_name | tojson }};
+  const initials = name.split(' ').map(w => w[0]).filter(Boolean).join('').slice(0,2).toUpperCase();
+  document.getElementById('user-avatar-initials').textContent = initials;
+})();
+function toggleUserDropdown() {
+  document.getElementById('user-dropdown').classList.toggle('open');
+}
+document.addEventListener('click', e => {
+  const wrap = document.getElementById('user-avatar-btn');
+  if (wrap && !wrap.contains(e.target)) document.getElementById('user-dropdown').classList.remove('open');
+});
+</script>
 </body>
 </html>"""
 
