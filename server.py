@@ -261,81 +261,157 @@ a { color:var(--primary); text-decoration:none; }
 /* ----- Top bar ----- */
 .topbar {
   background:var(--primary-dark);
-  padding:0 32px;
-  display:flex;
-  align-items:center;
-  gap:20px;
   position:sticky;
   top:0;
   z-index:100;
-  height:60px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  box-shadow:0 2px 8px rgba(0,0,0,.15);
 }
-.topbar h1 {
-  font-size:1.15rem;
-  font-weight:700;
-  color:#ffffff;
+.topbar-top {
+  display:flex;
+  align-items:center;
+  padding:0 28px;
+  height:52px;
+  gap:16px;
+  border-bottom:1px solid rgba(255,255,255,.1);
+}
+.topbar-bottom {
+  display:flex;
+  align-items:center;
+  padding:0 20px;
+  height:44px;
+  gap:2px;
+  background:rgba(0,0,0,.12);
+}
+.back-link {
+  color:rgba(255,255,255,.65);
+  font-size:.82rem;
+  font-weight:500;
+  text-decoration:none;
   white-space:nowrap;
-  letter-spacing:-.01em;
+  transition:color .15s;
+  flex-shrink:0;
 }
-.topbar .tabs { display:flex; gap:4px; margin-left:28px; }
+.back-link:hover { color:#fff; }
+.topbar h1 {
+  font-size:1.05rem;
+  font-weight:700;
+  color:#fff;
+  letter-spacing:-.01em;
+  flex:1;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.user-avatar-wrap {
+  position:relative;
+  flex-shrink:0;
+  margin-left:auto;
+}
+.user-avatar {
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  background:rgba(255,255,255,.18);
+  border:1.5px solid rgba(255,255,255,.35);
+  color:#fff;
+  font-size:.78rem;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:background .15s;
+  user-select:none;
+}
+.user-avatar:hover { background:rgba(255,255,255,.28); }
+.user-dropdown {
+  display:none;
+  position:absolute;
+  top:calc(100% + 10px);
+  right:0;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:10px;
+  box-shadow:var(--shadow-md);
+  min-width:190px;
+  z-index:200;
+  overflow:hidden;
+}
+.user-dropdown.open { display:block; }
+.user-dropdown-header {
+  padding:11px 16px;
+  font-size:.78rem;
+  color:var(--muted);
+  border-bottom:1px solid var(--border);
+}
+.user-dropdown a {
+  display:block;
+  padding:10px 16px;
+  font-size:.84rem;
+  color:var(--text);
+  text-decoration:none;
+  transition:background .15s;
+}
+.user-dropdown a:hover { background:var(--bg); }
 .topbar .tab {
   background:none;
   border:none;
   color:rgba(255,255,255,.6);
   font-family:inherit;
-  font-size:.875rem;
+  font-size:.83rem;
   font-weight:500;
-  padding:8px 18px;
-  border-radius:8px;
+  padding:6px 16px;
+  border-radius:7px;
   cursor:pointer;
   text-decoration:none;
   transition:all .15s;
+  white-space:nowrap;
 }
 .topbar .tab:hover { color:#fff; background:rgba(255,255,255,.1); }
 .topbar .tab.active { color:#fff; background:rgba(255,255,255,.15); }
-.hide-completed-btn {
-  background:none;
-  border:1px solid rgba(255,255,255,.25);
-  color:rgba(255,255,255,.6);
-  font-family:inherit;
-  font-size:.8rem;
-  font-weight:500;
-  padding:6px 14px;
-  border-radius:20px;
-  cursor:pointer;
-  transition:all .15s;
-  white-space:nowrap;
-}
-.hide-completed-btn:hover { color:#fff; border-color:rgba(255,255,255,.5); }
-.hide-completed-btn.active { color:#fff; border-color:rgba(255,255,255,.7); background:rgba(255,255,255,.12); }
-.topbar .count {
-  color:rgba(255,255,255,.7);
-  font-size:.85rem;
-  margin-left:auto;
-  font-weight:500;
-}
-.admin-mode-btn {
-  font-family:inherit;
-  font-size:.8rem;
-  font-weight:600;
-  padding:6px 14px;
+
+/* ----- Sidebar toggle switch ----- */
+.sidebar-toggle {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:9px 12px;
   border-radius:8px;
-  border:1px solid rgba(255,255,255,.25);
-  background:rgba(255,255,255,.1);
-  color:#fff;
+  background:var(--bg);
+  border:1px solid var(--border);
+  margin-bottom:16px;
   cursor:pointer;
-  text-decoration:none;
-  transition:background .15s;
-  flex-shrink:0;
-  white-space:nowrap;
+  transition:border-color .15s;
+  user-select:none;
 }
-.admin-mode-btn:hover { background:rgba(255,255,255,.22); color:#fff; }
-.admin-mode-btn.exit { border-color:rgba(252,129,129,.5); background:rgba(197,48,48,.25); }
-.admin-mode-btn.exit:hover { background:rgba(197,48,48,.45); }
+.sidebar-toggle:hover { border-color:var(--primary); }
+.sidebar-toggle span { font-size:.83rem; color:var(--text-secondary); font-weight:500; }
+.toggle-switch {
+  width:34px;
+  height:19px;
+  background:#cbd5e0;
+  border-radius:10px;
+  position:relative;
+  transition:background .2s;
+  flex-shrink:0;
+}
+.toggle-switch::after {
+  content:'';
+  position:absolute;
+  width:15px;
+  height:15px;
+  background:#fff;
+  border-radius:50%;
+  top:2px;
+  left:2px;
+  transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.sidebar-toggle.active .toggle-switch { background:var(--primary); }
+.sidebar-toggle.active .toggle-switch::after { transform:translateX(15px); }
 
 /* ----- Layout ----- */
-.layout { display:flex; min-height:calc(100vh - 60px); }
+.layout { display:flex; min-height:calc(100vh - 96px); }
 
 /* ----- Sidebar ----- */
 .sidebar {
@@ -346,8 +422,8 @@ a { color:var(--primary); text-decoration:none; }
   padding:20px 16px;
   overflow-y:auto;
   position:sticky;
-  top:60px;
-  height:calc(100vh - 60px);
+  top:96px;
+  height:calc(100vh - 96px);
 }
 .sidebar h3 {
   font-size:.7rem;
@@ -519,18 +595,16 @@ a { color:var(--primary); text-decoration:none; }
 .sidebar-backdrop {
   display:none;
   position:fixed;
-  inset:60px 0 0 0;
+  inset:96px 0 0 0;
   background:rgba(0,0,0,.35);
   z-index:98;
 }
 .sidebar-backdrop.visible { display:block; }
 @media (max-width: 768px) {
-  .topbar { padding:0 12px; gap:8px; }
-  .topbar h1 { font-size:.9rem; min-width:0; overflow:hidden; text-overflow:ellipsis; }
-  .topbar .tabs { margin-left:8px; gap:2px; }
-  .topbar .tab { padding:6px 10px; font-size:.78rem; }
-  .topbar .count { display:none; }
-  .topbar .admin-mode-btn { margin-left:auto; font-size:.75rem; padding:5px 10px; }
+  .topbar-top { padding:0 12px; height:46px; gap:10px; }
+  .topbar-bottom { padding:0 8px; height:38px; }
+  .topbar h1 { font-size:.88rem; }
+  .topbar .tab { padding:5px 10px; font-size:.76rem; }
   .layout { flex-direction:column; }
   .main { padding:16px; }
   .sidebar { display:none; }
@@ -538,12 +612,12 @@ a { color:var(--primary); text-decoration:none; }
   .sidebar.mobile-open {
     display:block;
     position:fixed;
-    top:60px;
+    top:84px;
     left:0;
     width:280px;
     max-width:calc(100vw - 40px);
     z-index:99;
-    height:calc(100vh - 60px);
+    height:calc(100vh - 84px);
     box-shadow:4px 0 24px rgba(0,0,0,.2);
   }
   .qcard-header { padding:12px 14px; gap:8px; }
@@ -559,7 +633,6 @@ a { color:var(--primary); text-decoration:none; }
 }
 @media (max-width: 480px) {
   .topbar h1 { display:none; }
-  .topbar .tabs { margin-left:0; }
 }
 
 .no-results { text-align:center; padding:60px 20px; color:var(--muted); }
@@ -690,21 +763,31 @@ body.methods .qcard.completed { background:#f0f7ff; border-color:#c9dff7; }
 <body class="{{ subject }}">
 
 <div class="topbar">
-  <h1>{{ subject_name }} Question Bank</h1>
-  <div class="tabs">
-    <a class="tab" href="/">← Subjects</a>
+  <div class="topbar-top">
+    <a class="back-link" href="/">← Subjects</a>
+    <h1>{{ subject_name }} Question Bank</h1>
+    <div class="user-avatar-wrap" id="user-avatar-btn" onclick="toggleUserDropdown()">
+      <div class="user-avatar" id="user-avatar-initials"></div>
+      <div class="user-dropdown" id="user-dropdown">
+        <div class="user-dropdown-header">Signed in as {{ user_name }}</div>
+        <a href="/logout">Sign out</a>
+      </div>
+    </div>
+  </div>
+  <div class="topbar-bottom">
     <a class="tab active" id="tab-questions" href="/{{ subject }}">Questions</a>
     <button class="tab" id="tab-saved" onclick="toggleSavedFilter()">Saved (<span id="saved-count">0</span>)</button>
     <button class="tab" id="tab-completed" onclick="toggleCompletedFilter()">Completed (<span id="completed-count">0</span>)</button>
     {% if is_admin %}<a class="tab" href="/admin?subject={{ subject }}">Admin</a>{% endif %}
   </div>
-  <button class="hide-completed-btn" id="hide-completed-btn" onclick="toggleHideCompleted()">Hide Completed</button>
-  <span class="count">{{ user_name }}</span>
-  <a class="admin-mode-btn {% if is_admin %}exit{% endif %}" href="/logout">Sign out</a>
 </div>
 
 <div class="layout">
   <div class="sidebar" id="sidebar">
+    <div class="sidebar-toggle" id="hide-completed-btn" onclick="toggleHideCompleted()">
+      <span>Hide Completed</span>
+      <div class="toggle-switch"></div>
+    </div>
     {% if is_admin %}
     <a class="sort-unsorted-btn" id="sort-unsorted-btn" href="/classify?subject={{ subject }}&unsorted=1">Sort Unsorted (<span id="unsorted-count">…</span>)</a>
     {% endif %}
@@ -759,6 +842,19 @@ let savedOnly = false;
 let completedIds = new Set();
 let completedOnly = false;
 let hideCompleted = localStorage.getItem('hideCompleted') === 'true';
+
+(function() {
+  const name = {{ user_name | tojson }};
+  const initials = name.split(' ').map(w => w[0]).filter(Boolean).join('').slice(0,2).toUpperCase();
+  document.getElementById('user-avatar-initials').textContent = initials;
+})();
+function toggleUserDropdown() {
+  document.getElementById('user-dropdown').classList.toggle('open');
+}
+document.addEventListener('click', e => {
+  const wrap = document.getElementById('user-avatar-btn');
+  if (wrap && !wrap.contains(e.target)) document.getElementById('user-dropdown').classList.remove('open');
+});
 
 const sectionLabels = { short_answer: 'Short Answer', multiple_choice: 'Multiple Choice', extended_response: 'Extended Response' };
 
