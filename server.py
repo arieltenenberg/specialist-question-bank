@@ -294,6 +294,21 @@ a { color:var(--primary); text-decoration:none; }
 }
 .topbar .tab:hover { color:#fff; background:rgba(255,255,255,.1); }
 .topbar .tab.active { color:#fff; background:rgba(255,255,255,.15); }
+.hide-completed-btn {
+  background:none;
+  border:1px solid rgba(255,255,255,.25);
+  color:rgba(255,255,255,.6);
+  font-family:inherit;
+  font-size:.8rem;
+  font-weight:500;
+  padding:6px 14px;
+  border-radius:20px;
+  cursor:pointer;
+  transition:all .15s;
+  white-space:nowrap;
+}
+.hide-completed-btn:hover { color:#fff; border-color:rgba(255,255,255,.5); }
+.hide-completed-btn.active { color:#fff; border-color:rgba(255,255,255,.7); background:rgba(255,255,255,.12); }
 .topbar .count {
   color:rgba(255,255,255,.7);
   font-size:.85rem;
@@ -683,6 +698,7 @@ body.methods .qcard.completed { background:#f0f7ff; border-color:#c9dff7; }
     <button class="tab" id="tab-completed" onclick="toggleCompletedFilter()">Completed (<span id="completed-count">0</span>)</button>
     {% if is_admin %}<a class="tab" href="/admin?subject={{ subject }}">Admin</a>{% endif %}
   </div>
+  <button class="hide-completed-btn" id="hide-completed-btn" onclick="toggleHideCompleted()">Hide completed</button>
   <span class="count">{{ user_name }}</span>
   <a class="admin-mode-btn {% if is_admin %}exit{% endif %}" href="/logout">Sign out</a>
 </div>
@@ -742,6 +758,7 @@ let savedIds = new Set();
 let savedOnly = false;
 let completedIds = new Set();
 let completedOnly = false;
+let hideCompleted = false;
 
 const sectionLabels = { short_answer: 'Short Answer', multiple_choice: 'Multiple Choice', extended_response: 'Extended Response' };
 
@@ -872,6 +889,7 @@ function applyFilters() {
     }
     if (savedOnly && !savedIds.has(q.id)) return false;
     if (completedOnly && !completedIds.has(q.id)) return false;
+    if (hideCompleted && !completedOnly && completedIds.has(q.id)) return false;
     return true;
   });
 
@@ -1177,6 +1195,13 @@ function toggleCompletedFilter() {
   document.getElementById('tab-completed').classList.toggle('active', completedOnly);
   document.getElementById('tab-saved').classList.toggle('active', false);
   document.getElementById('tab-questions').classList.toggle('active', !completedOnly);
+  page = 0;
+  applyFilters();
+}
+
+function toggleHideCompleted() {
+  hideCompleted = !hideCompleted;
+  document.getElementById('hide-completed-btn').classList.toggle('active', hideCompleted);
   page = 0;
   applyFilters();
 }
