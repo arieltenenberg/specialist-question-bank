@@ -1291,7 +1291,7 @@ function toggleCompleted(id, btn) {
 }
 
 function markCompleteBtn(btn, completed) {
-  btn.textContent = completed ? 'Unmark Done' : 'Mark as Done';
+  btn.textContent = completed ? 'Unmark as Done' : 'Mark as Done';
   btn.classList.toggle('completed', completed);
 }
 
@@ -2155,7 +2155,7 @@ body { font-family:'Poppins',system-ui,sans-serif; background:#f5f7fa; color:#1a
       <div class="user-avatar" id="user-avatar-initials"></div>
       <div class="user-dropdown" id="user-dropdown">
         <div class="user-dropdown-header">Signed in as {{ user_name }}</div>
-        {% if is_admin %}<a href="/admin/users">User management</a>{% endif %}
+        {% if is_admin %}<a href="/admin/users">User Management</a>{% endif %}
         <a href="/logout">Sign out</a>
       </div>
     </div>
