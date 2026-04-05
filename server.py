@@ -655,9 +655,12 @@ a { color:var(--primary); text-decoration:none; }
   align-self:flex-start;
   margin-top:4px;
 }
-.complete-btn:hover { background:#d1fae5; color:#065f46; border-color:#a7f3d0; }
-.complete-btn.completed { background:#d1fae5; color:#065f46; border-color:#a7f3d0; }
-.qcard.completed { background:#f0fdf4; border-color:#bbf7d0; }
+.complete-btn:hover { background:#e8f5ea; color:#2d6a4f; border-color:#c3ddc7; }
+.complete-btn.completed { background:#e8f5ea; color:#2d6a4f; border-color:#c3ddc7; }
+.qcard.completed { background:#f6fdf7; border-color:#d1e8d5; }
+body.methods .complete-btn:hover { background:#eff6ff; color:#1e40af; border-color:#c9dff7; }
+body.methods .complete-btn.completed { background:#eff6ff; color:#1e40af; border-color:#c9dff7; }
+body.methods .qcard.completed { background:#f0f7ff; border-color:#c9dff7; }
 .card-actions {
   display:flex;
   align-items:flex-start;
@@ -669,7 +672,7 @@ a { color:var(--primary); text-decoration:none; }
 
 </style>
 </head>
-<body>
+<body class="{{ subject }}">
 
 <div class="topbar">
   <h1>{{ subject_name }} Question Bank</h1>
@@ -948,7 +951,7 @@ function renderCards() {
         <div class="card-actions-left">
           ${solBtn}
           <button class="save-btn" id="save-btn-${q.id}" onclick="toggleSaved('${q.id}', this)">Save</button>
-          <button class="complete-btn" id="complete-btn-${q.id}" onclick="toggleCompleted('${q.id}', this)">Mark as done</button>
+          <button class="complete-btn" id="complete-btn-${q.id}" onclick="toggleCompleted('${q.id}', this)">Mark as Done</button>
         </div>
         <button class="flag-btn" id="flag-btn-${q.id}" onclick="submitFlag('${q.id}', this)">⚑ Flag as misclassified</button>
       </div>` : solBtn;
@@ -1164,7 +1167,7 @@ function toggleCompleted(id, btn) {
 }
 
 function markCompleteBtn(btn, completed) {
-  btn.textContent = completed ? 'Unmark done' : 'Mark as done';
+  btn.textContent = completed ? 'Unmark Done' : 'Mark as Done';
   btn.classList.toggle('completed', completed);
 }
 
