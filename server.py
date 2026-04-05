@@ -1157,6 +1157,7 @@ function loadCompletedIds() {
   fetch('/api/completed?subject={{ subject }}').then(r => r.json()).then(data => {
     completedIds = new Set(data.ids);
     document.getElementById('completed-count').textContent = completedIds.size;
+    if (hideCompleted) { applyFilters(); return; }
     completedIds.forEach(id => {
       const btn = document.getElementById('complete-btn-' + id);
       if (btn) markCompleteBtn(btn, true);
