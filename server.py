@@ -698,7 +698,7 @@ body.methods .qcard.completed { background:#f0f7ff; border-color:#c9dff7; }
     <button class="tab" id="tab-completed" onclick="toggleCompletedFilter()">Completed (<span id="completed-count">0</span>)</button>
     {% if is_admin %}<a class="tab" href="/admin?subject={{ subject }}">Admin</a>{% endif %}
   </div>
-  <button class="hide-completed-btn" id="hide-completed-btn" onclick="toggleHideCompleted()">Hide completed</button>
+  <button class="hide-completed-btn" id="hide-completed-btn" onclick="toggleHideCompleted()">Hide Completed</button>
   <span class="count">{{ user_name }}</span>
   <a class="admin-mode-btn {% if is_admin %}exit{% endif %}" href="/logout">Sign out</a>
 </div>
@@ -758,7 +758,7 @@ let savedIds = new Set();
 let savedOnly = false;
 let completedIds = new Set();
 let completedOnly = false;
-let hideCompleted = false;
+let hideCompleted = localStorage.getItem('hideCompleted') === 'true';
 
 const sectionLabels = { short_answer: 'Short Answer', multiple_choice: 'Multiple Choice', extended_response: 'Extended Response' };
 
@@ -785,6 +785,7 @@ fetch('/api/questions?subject={{ subject }}').then(r => r.json()).then(data => {
   applyFilters();
   loadSavedIds();
   loadCompletedIds();
+  document.getElementById('hide-completed-btn').classList.toggle('active', hideCompleted);
 });
 
 function buildFilters() {
@@ -1180,7 +1181,7 @@ function toggleCompleted(id, btn) {
     const card = document.getElementById('qcard-' + id);
     if (card) card.classList.toggle('completed', data.marked);
     document.getElementById('completed-count').textContent = completedIds.size;
-    if (completedOnly) applyFilters();
+    if (completedOnly || (hideCompleted && data.marked)) applyFilters();
   });
 }
 
@@ -1201,6 +1202,7 @@ function toggleCompletedFilter() {
 
 function toggleHideCompleted() {
   hideCompleted = !hideCompleted;
+  localStorage.setItem('hideCompleted', hideCompleted);
   document.getElementById('hide-completed-btn').classList.toggle('active', hideCompleted);
   page = 0;
   applyFilters();
