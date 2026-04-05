@@ -2150,7 +2150,7 @@ body { font-family:'Poppins',system-ui,sans-serif; background:#f5f7fa; color:#1a
 <div class="topbar">
   <div class="topbar-inner">
     <div></div>
-    <h1>VCE Mathematics</h1>
+    <h1>VCE Mathematics Question Bank</h1>
     <div class="user-avatar-wrap" id="user-avatar-btn" onclick="toggleUserDropdown()">
       <div class="user-avatar" id="user-avatar-initials"></div>
       <div class="user-dropdown" id="user-dropdown">
