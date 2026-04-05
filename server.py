@@ -74,6 +74,15 @@ def init_db():
                 PRIMARY KEY (user_id, question_id, subject)
             )
         """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS completed_questions (
+                user_id      TEXT NOT NULL,
+                question_id  TEXT NOT NULL,
+                subject      TEXT NOT NULL,
+                completed_at TEXT NOT NULL,
+                PRIMARY KEY (user_id, question_id, subject)
+            )
+        """)
         conn.commit()
 
 init_db()
@@ -630,6 +639,25 @@ a { color:var(--primary); text-decoration:none; }
 }
 .save-btn:hover { background:var(--primary); color:#fff; }
 .save-btn.saved { background:var(--primary); color:#fff; }
+
+/* ----- Complete controls ----- */
+.complete-btn {
+  font-family:inherit;
+  background:var(--primary-light);
+  color:var(--primary);
+  border:1px solid rgba(25,96,97,.2);
+  font-size:.85rem;
+  font-weight:500;
+  padding:8px 20px;
+  border-radius:8px;
+  cursor:pointer;
+  transition:all .15s;
+  align-self:flex-start;
+  margin-top:4px;
+}
+.complete-btn:hover { background:#d1fae5; color:#065f46; border-color:#a7f3d0; }
+.complete-btn.completed { background:#d1fae5; color:#065f46; border-color:#a7f3d0; }
+.qcard.completed { background:#f0fdf4; border-color:#bbf7d0; }
 .card-actions {
   display:flex;
   align-items:flex-start;
@@ -649,6 +677,7 @@ a { color:var(--primary); text-decoration:none; }
     <a class="tab" href="/">← Subjects</a>
     <a class="tab active" id="tab-questions" href="/{{ subject }}">Questions</a>
     <button class="tab" id="tab-saved" onclick="toggleSavedFilter()">Saved (<span id="saved-count">0</span>)</button>
+    <button class="tab" id="tab-completed" onclick="toggleCompletedFilter()">Completed (<span id="completed-count">0</span>)</button>
     {% if is_admin %}<a class="tab" href="/admin?subject={{ subject }}">Admin</a>{% endif %}
   </div>
   <span class="count">{{ user_name }}</span>
@@ -708,6 +737,8 @@ let page = 0;
 let filters = { aos: null, tag: null, extended: null, year: null, publisher: null, exam_type: null, section: null };
 let savedIds = new Set();
 let savedOnly = false;
+let completedIds = new Set();
+let completedOnly = false;
 
 const sectionLabels = { short_answer: 'Short Answer', multiple_choice: 'Multiple Choice', extended_response: 'Extended Response' };
 
@@ -733,6 +764,7 @@ fetch('/api/questions?subject={{ subject }}').then(r => r.json()).then(data => {
   buildFilters();
   applyFilters();
   loadSavedIds();
+  loadCompletedIds();
 });
 
 function buildFilters() {
@@ -836,6 +868,7 @@ function applyFilters() {
       if (sl && q.section !== sl[0]) return false;
     }
     if (savedOnly && !savedIds.has(q.id)) return false;
+    if (completedOnly && !completedIds.has(q.id)) return false;
     return true;
   });
 
@@ -915,6 +948,7 @@ function renderCards() {
         <div class="card-actions-left">
           ${solBtn}
           <button class="save-btn" id="save-btn-${q.id}" onclick="toggleSaved('${q.id}', this)">Save</button>
+          <button class="complete-btn" id="complete-btn-${q.id}" onclick="toggleCompleted('${q.id}', this)">Mark as done</button>
         </div>
         <button class="flag-btn" id="flag-btn-${q.id}" onclick="submitFlag('${q.id}', this)">⚑ Flag as misclassified</button>
       </div>` : solBtn;
@@ -937,6 +971,12 @@ function renderCards() {
   savedIds.forEach(id => {
     const btn = document.getElementById('save-btn-' + id);
     if (btn) markSaveBtn(btn, true);
+  });
+  completedIds.forEach(id => {
+    const btn = document.getElementById('complete-btn-' + id);
+    if (btn) markCompleteBtn(btn, true);
+    const card = document.getElementById('qcard-' + id);
+    if (card) card.classList.add('completed');
   });
 }
 
@@ -1083,8 +1123,57 @@ function markSaveBtn(btn, saved) {
 
 function toggleSavedFilter() {
   savedOnly = !savedOnly;
+  completedOnly = false;
   document.getElementById('tab-saved').classList.toggle('active', savedOnly);
+  document.getElementById('tab-completed').classList.toggle('active', false);
   document.getElementById('tab-questions').classList.toggle('active', !savedOnly);
+  page = 0;
+  applyFilters();
+}
+
+function loadCompletedIds() {
+  fetch('/api/completed?subject={{ subject }}').then(r => r.json()).then(data => {
+    completedIds = new Set(data.ids);
+    document.getElementById('completed-count').textContent = completedIds.size;
+    completedIds.forEach(id => {
+      const btn = document.getElementById('complete-btn-' + id);
+      if (btn) markCompleteBtn(btn, true);
+      const card = document.getElementById('qcard-' + id);
+      if (card) card.classList.add('completed');
+    });
+  });
+}
+
+function toggleCompleted(id, btn) {
+  fetch('/api/completed', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question_id: id, subject: '{{ subject }}' })
+  }).then(r => r.json()).then(data => {
+    if (data.marked) {
+      completedIds.add(id);
+    } else {
+      completedIds.delete(id);
+    }
+    markCompleteBtn(btn, data.marked);
+    const card = document.getElementById('qcard-' + id);
+    if (card) card.classList.toggle('completed', data.marked);
+    document.getElementById('completed-count').textContent = completedIds.size;
+    if (completedOnly) applyFilters();
+  });
+}
+
+function markCompleteBtn(btn, completed) {
+  btn.textContent = completed ? 'Unmark done' : 'Mark as done';
+  btn.classList.toggle('completed', completed);
+}
+
+function toggleCompletedFilter() {
+  completedOnly = !completedOnly;
+  savedOnly = false;
+  document.getElementById('tab-completed').classList.toggle('active', completedOnly);
+  document.getElementById('tab-saved').classList.toggle('active', false);
+  document.getElementById('tab-questions').classList.toggle('active', !completedOnly);
   page = 0;
   applyFilters();
 }
@@ -2781,6 +2870,43 @@ def api_toggle_saved():
         else:
             conn.execute(
                 "INSERT INTO difficult_questions (user_id, question_id, subject, created_at) VALUES (?,?,?,?)",
+                (user_id, question_id, subject, datetime.datetime.utcnow().isoformat())
+            )
+            marked = True
+        conn.commit()
+    return jsonify({"ok": True, "marked": marked})
+
+@app.route("/api/completed")
+def api_get_completed():
+    user_id = get_current_user_id()
+    subject = request.args.get("subject", "specialist")
+    with get_db() as conn:
+        rows = conn.execute(
+            "SELECT question_id FROM completed_questions WHERE user_id=? AND subject=?",
+            (user_id, subject)
+        ).fetchall()
+    return jsonify({"ids": [r["question_id"] for r in rows]})
+
+@app.route("/api/completed", methods=["POST"])
+def api_toggle_completed():
+    user_id = get_current_user_id()
+    data = request.get_json()
+    question_id = data["question_id"]
+    subject = data.get("subject", "specialist")
+    with get_db() as conn:
+        existing = conn.execute(
+            "SELECT 1 FROM completed_questions WHERE user_id=? AND question_id=? AND subject=?",
+            (user_id, question_id, subject)
+        ).fetchone()
+        if existing:
+            conn.execute(
+                "DELETE FROM completed_questions WHERE user_id=? AND question_id=? AND subject=?",
+                (user_id, question_id, subject)
+            )
+            marked = False
+        else:
+            conn.execute(
+                "INSERT INTO completed_questions (user_id, question_id, subject, completed_at) VALUES (?,?,?,?)",
                 (user_id, question_id, subject, datetime.datetime.utcnow().isoformat())
             )
             marked = True
