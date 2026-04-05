@@ -2091,7 +2091,7 @@ HOME_HTML = r"""<!DOCTYPE html>
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:'Poppins',system-ui,sans-serif; background:#f5f7fa; color:#1a202c; min-height:100vh; }
 .topbar {
-  background:#1a202c;
+  background:#2d2d2d;
   position:sticky; top:0; z-index:100;
   box-shadow:0 2px 8px rgba(0,0,0,.15);
 }
