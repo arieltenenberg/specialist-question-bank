@@ -267,16 +267,17 @@ a { color:var(--primary); text-decoration:none; }
   box-shadow:0 2px 8px rgba(0,0,0,.15);
 }
 .topbar-top {
-  display:flex;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
   align-items:center;
   padding:0 28px;
   height:52px;
-  gap:16px;
   border-bottom:1px solid rgba(255,255,255,.1);
 }
 .topbar-bottom {
   display:flex;
-  align-items:center;
+  align-items:stretch;
+  justify-content:center;
   padding:0 20px;
   height:44px;
   gap:2px;
@@ -297,15 +298,14 @@ a { color:var(--primary); text-decoration:none; }
   font-weight:700;
   color:#fff;
   letter-spacing:-.01em;
-  flex:1;
+  text-align:center;
+  white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  white-space:nowrap;
 }
 .user-avatar-wrap {
   position:relative;
-  flex-shrink:0;
-  margin-left:auto;
+  justify-self:end;
 }
 .user-avatar {
   width:34px;
@@ -356,19 +356,21 @@ a { color:var(--primary); text-decoration:none; }
 .topbar .tab {
   background:none;
   border:none;
+  border-bottom:2px solid transparent;
   color:rgba(255,255,255,.6);
   font-family:inherit;
   font-size:.83rem;
   font-weight:500;
-  padding:6px 16px;
-  border-radius:7px;
+  padding:0 18px;
   cursor:pointer;
   text-decoration:none;
   transition:all .15s;
   white-space:nowrap;
+  display:flex;
+  align-items:center;
 }
-.topbar .tab:hover { color:#fff; background:rgba(255,255,255,.1); }
-.topbar .tab.active { color:#fff; background:rgba(255,255,255,.15); }
+.topbar .tab:hover { color:#fff; border-bottom-color:rgba(255,255,255,.4); }
+.topbar .tab.active { color:#fff; border-bottom-color:#fff; font-weight:600; }
 
 /* ----- Sidebar toggle switch ----- */
 .sidebar-toggle {
@@ -601,10 +603,10 @@ a { color:var(--primary); text-decoration:none; }
 }
 .sidebar-backdrop.visible { display:block; }
 @media (max-width: 768px) {
-  .topbar-top { padding:0 12px; height:46px; gap:10px; }
+  .topbar-top { padding:0 14px; height:46px; }
   .topbar-bottom { padding:0 8px; height:38px; }
   .topbar h1 { font-size:.88rem; }
-  .topbar .tab { padding:5px 10px; font-size:.76rem; }
+  .topbar .tab { padding:0 12px; font-size:.76rem; }
   .layout { flex-direction:column; }
   .main { padding:16px; }
   .sidebar { display:none; }
@@ -765,7 +767,7 @@ body.methods .qcard.completed { background:#f0f7ff; border-color:#c9dff7; }
 <div class="topbar">
   <div class="topbar-top">
     <a class="back-link" href="/">← Subjects</a>
-    <h1>{{ subject_name }} Question Bank</h1>
+    <h1>{{ subject_name }}</h1>
     <div class="user-avatar-wrap" id="user-avatar-btn" onclick="toggleUserDropdown()">
       <div class="user-avatar" id="user-avatar-initials"></div>
       <div class="user-dropdown" id="user-dropdown">
@@ -776,8 +778,8 @@ body.methods .qcard.completed { background:#f0f7ff; border-color:#c9dff7; }
   </div>
   <div class="topbar-bottom">
     <a class="tab active" id="tab-questions" href="/{{ subject }}">Questions</a>
-    <button class="tab" id="tab-saved" onclick="toggleSavedFilter()">Saved (<span id="saved-count">0</span>)</button>
-    <button class="tab" id="tab-completed" onclick="toggleCompletedFilter()">Completed (<span id="completed-count">0</span>)</button>
+    <button class="tab" id="tab-saved" onclick="toggleSavedFilter()">Saved</button>
+    <button class="tab" id="tab-completed" onclick="toggleCompletedFilter()">Completed</button>
     {% if is_admin %}<a class="tab" href="/admin?subject={{ subject }}">Admin</a>{% endif %}
   </div>
 </div>
@@ -1209,7 +1211,6 @@ function submitFlag(id, btn) {
 function loadSavedIds() {
   fetch('/api/saved?subject={{ subject }}').then(r => r.json()).then(data => {
     savedIds = new Set(data.ids);
-    document.getElementById('saved-count').textContent = savedIds.size;
     savedIds.forEach(id => {
       const btn = document.getElementById('save-btn-' + id);
       if (btn) markSaveBtn(btn, true);
@@ -1229,7 +1230,6 @@ function toggleSaved(id, btn) {
       savedIds.delete(id);
     }
     markSaveBtn(btn, data.marked);
-    document.getElementById('saved-count').textContent = savedIds.size;
     if (savedOnly) applyFilters();
   });
 }
@@ -1252,7 +1252,6 @@ function toggleSavedFilter() {
 function loadCompletedIds() {
   fetch('/api/completed?subject={{ subject }}').then(r => r.json()).then(data => {
     completedIds = new Set(data.ids);
-    document.getElementById('completed-count').textContent = completedIds.size;
     if (hideCompleted) { applyFilters(); return; }
     completedIds.forEach(id => {
       const btn = document.getElementById('complete-btn-' + id);
@@ -1277,7 +1276,6 @@ function toggleCompleted(id, btn) {
     markCompleteBtn(btn, data.marked);
     const card = document.getElementById('qcard-' + id);
     if (card) card.classList.toggle('completed', data.marked);
-    document.getElementById('completed-count').textContent = completedIds.size;
     if (completedOnly || (hideCompleted && data.marked)) applyFilters();
   });
 }
