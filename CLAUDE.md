@@ -33,6 +33,8 @@ Questions are classified into Areas of Study (AOS) per subject.
 | `/api/flag` | Flag a question (subject in POST body) |
 | `GET /api/saved?subject=specialist\|methods` | Get current user's saved question IDs |
 | `POST /api/saved` | Toggle a question saved/unsaved (subject in POST body) |
+| `GET /api/completed?subject=specialist\|methods` | Get current user's completed question IDs |
+| `POST /api/completed` | Toggle a question completed/uncompleted (subject in POST body) |
 
 ### Data & Config
 - `specialist_questions.json` — Specialist questions
@@ -43,7 +45,7 @@ Questions are classified into Areas of Study (AOS) per subject.
 - `overrides.json` — Server-side AOS overrides (gitignored — see below)
 - `get_subject_config(subject)` helper returns data, file path, AOS map, and subject name
 - Colour themes: Specialist = teal (`#196061`, `#042f3a`), Methods = blue (`#2563eb`, `#1e3a5f`)
-- `users.db` — SQLite database for user accounts and saved questions (server-only, not in git)
+- `users.db` — SQLite database for user accounts, saved questions, and completed questions (server-only, not in git)
 
 ## Specialist Mathematics — Areas of Study (AOS)
 | # | Name |
@@ -232,11 +234,27 @@ When asked, Claude Code will delete all AOS 9 questions from both base JSON file
 
 ## Saved Questions Feature
 Students can save questions from the browse page for easy access later.
-- **UI:** "Save" / "Unsave" button on each question card (next to "Show Solution"); "Saved (N)" tab in the topbar toggles a saved-only filter
+- **UI:** "Save" / "Unsave" button on each question card; "Saved" tab in the topbar toggles a saved-only filter
 - **Storage:** `difficult_questions` table in `users.db` (column name is historical; feature is called "Saved Questions" in the UI)
 - **Schema:** `user_id TEXT, question_id TEXT, subject TEXT, created_at TEXT, PRIMARY KEY (user_id, question_id, subject)`
 - **Isolation:** Specialist and Methods saved collections are completely separate (scoped by `subject` column)
 - **DEV_MODE:** Uses `"dev_user"` as the user ID when no session exists
+
+## Completed Questions Feature
+Students can mark questions as done. Completed questions are highlighted light green (Specialist) or light blue (Methods).
+- **UI:** "Mark as Done" / "Unmark Done" button on each question card; "Completed" tab filters to completed-only; "Hide Completed" toggle switch at top of sidebar (persists via `localStorage`)
+- **Storage:** `completed_questions` table in `users.db`
+- **Schema:** `user_id TEXT, question_id TEXT, subject TEXT, completed_at TEXT, PRIMARY KEY (user_id, question_id, subject)`
+- **Colour:** `.qcard.completed` — green (`#f6fdf7` / `#d1e8d5`) for Specialist, blue (`#f0f7ff` / `#c9dff7`) for Methods via `body.methods .qcard.completed`
+- **Hide Completed:** `hideCompleted` boolean stored in `localStorage`; re-applies after `loadCompletedIds()` resolves on page load
+
+## Topbar Architecture
+Two-row topbar (96px total):
+- **Row 1 — brand row (52px):** CSS grid (`1fr auto 1fr`) with "← Subjects" back link left, subject name centred, avatar circle right
+- **Row 2 — tabs row (44px, darker):** centred tabs (Questions, Saved, Completed, Admin) with underline active indicator
+- **Avatar:** initials derived from `{{ user_name }}`; click opens dropdown with "Signed in as X" + Sign out; closes on outside click
+- **All tabs are buttons** (no `<a>` links) — switching tabs is instant with no page reload
+- **Height references:** sidebar `top: 96px`, `height: calc(100vh - 96px)`; backdrop `inset: 96px 0 0 0`; mobile sidebar `top: 84px`
 
 ## Known Issues
 _(none)_
