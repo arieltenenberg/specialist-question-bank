@@ -777,7 +777,7 @@ body.methods .qcard.completed { background:#f0f7ff; border-color:#c9dff7; }
     </div>
   </div>
   <div class="topbar-bottom">
-    <a class="tab active" id="tab-questions" href="/{{ subject }}">Questions</a>
+    <button class="tab active" id="tab-questions" onclick="showAllQuestions()">Questions</button>
     <button class="tab" id="tab-saved" onclick="toggleSavedFilter()">Saved</button>
     <button class="tab" id="tab-completed" onclick="toggleCompletedFilter()">Completed</button>
     {% if is_admin %}<a class="tab" href="/admin?subject={{ subject }}">Admin</a>{% endif %}
@@ -1237,6 +1237,16 @@ function toggleSaved(id, btn) {
 function markSaveBtn(btn, saved) {
   btn.textContent = saved ? 'Unsave' : 'Save';
   btn.classList.toggle('saved', saved);
+}
+
+function showAllQuestions() {
+  savedOnly = false;
+  completedOnly = false;
+  document.getElementById('tab-questions').classList.add('active');
+  document.getElementById('tab-saved').classList.remove('active');
+  document.getElementById('tab-completed').classList.remove('active');
+  page = 0;
+  applyFilters();
 }
 
 function toggleSavedFilter() {
