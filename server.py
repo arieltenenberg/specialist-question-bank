@@ -2426,34 +2426,70 @@ a { color:var(--primary); text-decoration:none; }
 
 .topbar {
   background:var(--primary-dark);
-  padding:0 32px;
-  display:flex;
+  position:sticky; top:0; z-index:100;
+  box-shadow:0 2px 8px rgba(0,0,0,.15);
+}
+.topbar-top {
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
   align-items:center;
-  gap:20px;
-  position:sticky;
-  top:0;
-  z-index:100;
-  height:60px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  padding:0 28px;
+  height:52px;
+  border-bottom:1px solid rgba(255,255,255,.1);
 }
-.topbar h1 { font-size:1.15rem; font-weight:700; color:#ffffff; white-space:nowrap; }
-.topbar .tabs { display:flex; gap:4px; margin-left:28px; }
+.topbar-bottom {
+  display:flex;
+  align-items:stretch;
+  justify-content:center;
+  padding:0 20px;
+  height:44px;
+  gap:2px;
+  background:rgba(0,0,0,.12);
+}
+.back-link {
+  color:rgba(255,255,255,.65); font-size:.82rem; font-weight:500;
+  text-decoration:none; white-space:nowrap; transition:color .15s; flex-shrink:0;
+}
+.back-link:hover { color:#fff; }
+.topbar h1 {
+  font-size:1.05rem; font-weight:700; color:#fff;
+  letter-spacing:-.01em; text-align:center; white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis;
+}
+.user-avatar-wrap { position:relative; justify-self:end; }
+.user-avatar {
+  width:34px; height:34px; border-radius:50%;
+  background:rgba(255,255,255,.18); border:1.5px solid rgba(255,255,255,.35);
+  color:#fff; font-size:.78rem; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:background .15s; user-select:none;
+}
+.user-avatar:hover { background:rgba(255,255,255,.28); }
+.user-dropdown {
+  display:none; position:absolute; top:calc(100% + 10px); right:0;
+  background:#fff; border:1px solid var(--border); border-radius:10px;
+  box-shadow:var(--shadow-md); min-width:190px; z-index:200; overflow:hidden;
+}
+.user-dropdown.open { display:block; }
+.user-dropdown-header { padding:11px 16px; font-size:.78rem; color:var(--muted); border-bottom:1px solid var(--border); }
+.user-dropdown a { display:block; padding:10px 16px; font-size:.84rem; color:var(--text); text-decoration:none; transition:background .15s; }
+.user-dropdown a:hover { background:var(--bg); }
 .topbar .tab {
-  background:none; border:none; color:rgba(255,255,255,.6); font-family:inherit;
-  font-size:.875rem; font-weight:500; padding:8px 18px; border-radius:8px;
-  cursor:pointer; text-decoration:none; transition:all .15s;
+  background:none; border:none; border-bottom:2px solid transparent;
+  color:rgba(255,255,255,.6); font-family:inherit; font-size:.83rem; font-weight:500;
+  padding:0 16px; cursor:pointer; text-decoration:none; transition:all .15s;
+  white-space:nowrap; display:flex; align-items:center;
 }
-.topbar .tab:hover { color:#fff; background:rgba(255,255,255,.1); }
-.topbar .tab.active { color:#fff; background:rgba(255,255,255,.15); }
+.topbar .tab:hover { color:#fff; border-bottom-color:rgba(255,255,255,.4); }
+.topbar .tab.active { color:#fff; border-bottom-color:#fff; font-weight:600; }
 @media (max-width: 768px) {
-  .topbar { padding:0 12px; gap:8px; }
-  .topbar h1 { font-size:.9rem; min-width:0; overflow:hidden; text-overflow:ellipsis; }
-  .topbar .tabs { margin-left:8px; gap:2px; }
-  .topbar .tab { padding:6px 10px; font-size:.78rem; }
+  .topbar-top { padding:0 14px; height:46px; }
+  .topbar-bottom { padding:0 8px; height:38px; }
+  .topbar h1 { font-size:.88rem; }
+  .topbar .tab { padding:0 12px; font-size:.76rem; }
 }
 @media (max-width: 480px) {
   .topbar h1 { display:none; }
-  .topbar .tabs { margin-left:0; }
 }
 
 .container { max-width:700px; margin:0 auto; padding:40px 24px; }
@@ -2593,9 +2629,18 @@ input:checked + .slider:before { transform:translateX(20px); }
 <body>
 
 <div class="topbar">
-  <h1>{{ subject_name }} Question Bank</h1>
-  <div class="tabs">
-    <a class="tab" href="/">← Subjects</a>
+  <div class="topbar-top">
+    <a class="back-link" href="/">← Subjects</a>
+    <h1>{{ subject_name }}</h1>
+    <div class="user-avatar-wrap" id="user-avatar-btn" onclick="toggleUserDropdown()">
+      <div class="user-avatar" id="user-avatar-initials"></div>
+      <div class="user-dropdown" id="user-dropdown">
+        <div class="user-dropdown-header">Signed in as {{ user_name }}</div>
+        <a href="/logout">Sign out</a>
+      </div>
+    </div>
+  </div>
+  <div class="topbar-bottom">
     <a class="tab" href="/{{ subject }}">Questions</a>
     <a class="tab active" href="/admin?subject={{ subject }}">Admin</a>
   </div>
@@ -2856,6 +2901,18 @@ function togglePublisher(publisher, checkbox) {
     }
   });
 }
+(function() {
+  const name = {{ user_name | tojson }};
+  const initials = name.split(' ').map(w => w[0]).filter(Boolean).join('').slice(0,2).toUpperCase();
+  document.getElementById('user-avatar-initials').textContent = initials;
+})();
+function toggleUserDropdown() {
+  document.getElementById('user-dropdown').classList.toggle('open');
+}
+document.addEventListener('click', e => {
+  const wrap = document.getElementById('user-avatar-btn');
+  if (wrap && !wrap.contains(e.target)) document.getElementById('user-dropdown').classList.remove('open');
+});
 </script>
 </body>
 </html>"""
@@ -2946,11 +3003,13 @@ def admin_page():
     colors = {"specialist": ("#196061", "#042f3a", "#e6f2f2", "#1a7a7b"),
               "methods":    ("#2563eb", "#1e3a5f", "#eff6ff", "#1d4ed8")}
     cp, cpd, cpl, cph = colors.get(subject, colors["specialist"])
+    user = current_user()
     return render_template_string(ADMIN_HTML, publishers=publishers, hidden_publishers=hidden,
                                   subject=subject, subject_name=cfg["name"],
                                   css_primary=cp, css_primary_dark=cpd,
                                   css_primary_light=cpl, css_primary_hover=cph,
-                                  aos_map=cfg["aos_map"])
+                                  aos_map=cfg["aos_map"],
+                                  user_name=user["name"] if user else "")
 
 @app.route("/admin/upload", methods=["POST"])
 def admin_upload():
