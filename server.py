@@ -234,6 +234,8 @@ BROWSE_HTML = r"""<!DOCTYPE html>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>{{ subject_name }} Question Bank</title>
+<link rel="icon" type="image/x-icon" href="/static/favicon.ico"/>
+<link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -1328,6 +1330,8 @@ CLASSIFY_HTML = r"""<!DOCTYPE html>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>{% if flagged_mode %}Classify — Flagged{% elif unsorted_mode %}Classify — Unsorted{% else %}Classify — {{ publisher }} {{ year }}{% endif %}</title>
+<link rel="icon" type="image/x-icon" href="/static/favicon.ico"/>
+<link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -1993,7 +1997,7 @@ def serve_qimg(filename):
 # Keep upload functionality at /upload-page
 UPLOAD_HTML = """<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Upload</title>
+<title>Upload</title><link rel="icon" type="image/x-icon" href="/static/favicon.ico"/><link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png"/>
 <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f0f1a;color:#e0e0f0;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:48px 16px}h1{font-size:1.8rem;font-weight:700;background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:32px}#drop{width:100%;max-width:600px;border:2px dashed #3a3a5a;border-radius:16px;padding:48px 24px;text-align:center;cursor:pointer;transition:all .2s;background:#1a1a2e}#drop.over{border-color:#a78bfa;background:#1e1e35}#drop p{color:#8888aa;font-size:.95rem}#drop span{color:#a78bfa;text-decoration:underline;cursor:pointer}#file-input{display:none}.progress-wrap{width:100%;max-width:600px;display:none;flex-direction:column;gap:10px;margin:24px 0}.file-row{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:10px;padding:12px 16px}.file-row .name{font-size:.85rem;color:#c0c0e0;margin-bottom:6px}.bar-bg{background:#12122a;border-radius:99px;height:6px;overflow:hidden}.bar{height:6px;border-radius:99px;width:0%;background:linear-gradient(90deg,#a78bfa,#60a5fa);transition:width .15s}.status{font-size:.75rem;color:#666688;margin-top:4px}.done .bar{background:#4ade80}.error .bar{background:#f87171}</style></head><body>
 <h1>File Upload</h1>
 <div id="drop"><p>Drop files here or <span onclick="document.getElementById('file-input').click()">browse</span></p><input type="file" id="file-input" multiple/></div>
@@ -2085,6 +2089,8 @@ HOME_HTML = r"""<!DOCTYPE html>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>VCE Mathematics Question Bank</title>
+<link rel="icon" type="image/x-icon" href="/static/favicon.ico"/>
+<link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -2197,6 +2203,8 @@ LOGIN_HTML = """<!DOCTYPE html>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Sign In — VCE Mathematics Question Bank</title>
+<link rel="icon" type="image/x-icon" href="/static/favicon.ico"/>
+<link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -2243,6 +2251,8 @@ PENDING_HTML = """<!DOCTYPE html>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Awaiting Approval — VCE Mathematics Question Bank</title>
+<link rel="icon" type="image/x-icon" href="/static/favicon.ico"/>
+<link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -2273,6 +2283,8 @@ USERS_HTML = r"""<!DOCTYPE html>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Users — VCE Mathematics Question Bank</title>
+<link rel="icon" type="image/x-icon" href="/static/favicon.ico"/>
+<link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -2400,6 +2412,8 @@ ADMIN_HTML = r"""<!DOCTYPE html>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Admin — {{ subject_name }} Question Bank</title>
+<link rel="icon" type="image/x-icon" href="/static/favicon.ico"/>
+<link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
 <style>
