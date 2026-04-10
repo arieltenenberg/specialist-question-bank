@@ -142,11 +142,22 @@ def find_exam_pairs():
             for exam_num, files in sorted(by_exam.items()):
                 q_file = None
                 s_file = None
+                ambiguous = []
                 for f in files:
                     bn = os.path.basename(f)
                     if is_solution_file(bn):
                         s_file = f
+                    elif any(k in bn.lower() for k in QUESTION_KEYWORDS):
+                        q_file = f
                     else:
+                        ambiguous.append(f)
+                # If q_file was identified via a question keyword, any leftover
+                # ambiguous file (e.g. "Spec Maths 2.pdf") is the solutions file.
+                # Otherwise treat ambiguous files as questions.
+                for f in ambiguous:
+                    if q_file is not None and s_file is None:
+                        s_file = f
+                    elif q_file is None:
                         q_file = f
 
                 if q_file:
