@@ -304,6 +304,10 @@ def crop_region(doc, page_idx, y_start, page_idx_end, y_end, scale=2.0):
             clip = fitz.Rect(rect.x0, y_start, rect.x1, rect.y1 - 5)
         elif pidx == page_idx_end:
             # Last page of multi-page
+            # If y_end is very close to the top, this is just a page header strip
+            # (next question starts immediately at the top) — skip it
+            if y_end - (rect.y0 + 5) < 60:
+                continue
             clip = fitz.Rect(rect.x0, rect.y0 + 5, rect.x1, y_end)
         else:
             # Full middle page
