@@ -1295,7 +1295,6 @@ function toggleCompleted(id, btn) {
     const card = document.getElementById('qcard-' + id);
     if (card) card.classList.toggle('completed', data.marked);
     if (completedOnly || (hideCompleted && data.marked)) applyFilters();
-    console.log('toggleCompleted: marked=', data.marked, 'funnyPopup=', funnyPopup);
     if (data.marked && funnyPopup) showJacarandaModal();
   });
 }
@@ -1323,6 +1322,22 @@ function toggleHideCompleted() {
   applyFilters();
 }
 
+</script>
+
+<!-- Jacaranda motivational modal -->
+<div id="jacaranda-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+    <img src="/static/jacaranda_moses.jpeg" alt="Motivation" style="width:100%;border-radius:10px;margin-bottom:18px;">
+    <p style="font-family:'Poppins',system-ui,sans-serif;font-size:.9rem;font-weight:500;color:#1a202c;line-height:1.6;margin-bottom:20px;">
+      Be like a Jacaranda in exam season — bloom unexpectedly and confuse everyone, including yourself
+    </p>
+    <button onclick="document.getElementById('jacaranda-modal').style.display='none'" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-family:'Poppins',system-ui,sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;">Got it</button>
+  </div>
+</div>
+<script>
+function showJacarandaModal() {
+  document.getElementById('jacaranda-modal').style.display = 'flex';
+}
 </script>
 </body>
 </html>"""
@@ -1744,25 +1759,6 @@ function updateProgress() {
   if (classified === total) {
     document.getElementById('done-banner').style.display = 'block';
   }
-}
-</script>
-
-<!-- Jacaranda motivational modal -->
-<div id="jacaranda-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);align-items:center;justify-content:center;">
-  <div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);">
-    <img src="/static/jacaranda_moses.jpeg" alt="Motivation" style="width:100%;border-radius:10px;margin-bottom:18px;">
-    <p style="font-family:'Poppins',system-ui,sans-serif;font-size:.9rem;font-weight:500;color:#1a202c;line-height:1.6;margin-bottom:20px;">
-      Be like a Jacaranda in exam season — bloom unexpectedly and confuse everyone, including yourself
-    </p>
-    <button onclick="document.getElementById('jacaranda-modal').style.display='none'" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-family:'Poppins',system-ui,sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;">Got it</button>
-  </div>
-</div>
-<script>
-function showJacarandaModal() {
-  console.log('showJacarandaModal called');
-  const m = document.getElementById('jacaranda-modal');
-  console.log('modal element:', m);
-  m.style.display = 'flex';
 }
 </script>
 </body>
@@ -3298,14 +3294,6 @@ def admin_toggle_funny_popup(google_id):
         conn.commit()
     return jsonify(ok=True, enabled=bool(new_val))
 
-
-@app.route("/debug/funny_popup")
-def debug_funny_popup():
-    user = current_user()
-    if not user:
-        return jsonify(user=None, funny_popup=False)
-    fp = get_funny_popup(user)
-    return jsonify(user_id=user["id"], email=user.get("email"), funny_popup=fp)
 
 
 if __name__ == "__main__":
