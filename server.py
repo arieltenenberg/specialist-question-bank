@@ -1295,7 +1295,7 @@ function toggleCompleted(id, btn) {
     const card = document.getElementById('qcard-' + id);
     if (card) card.classList.toggle('completed', data.marked);
     if (completedOnly || (hideCompleted && data.marked)) applyFilters();
-    if (data.marked && funnyPopup && Math.random() < 0.2) showJacarandaModal();
+    if (data.marked && funnyPopup && Math.random() < 0.1) showJacarandaModal();
   });
 }
 
