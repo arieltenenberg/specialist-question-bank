@@ -1309,7 +1309,7 @@ function toggleCompleted(id, btn) {
     const card = document.getElementById('qcard-' + id);
     if (card) card.classList.toggle('completed', data.marked);
     if (completedOnly || (hideCompleted && data.marked)) applyFilters();
-    if (data.marked && funnyPopup && Math.random() < 0.1) showJacarandaModal();
+    if (data.marked && funnyPopup === 'jacaranda_moses' && Math.random() < 0.1) showJacarandaModal();
   });
 }
 
@@ -1800,10 +1800,10 @@ def index():
 
 def get_funny_popup(user):
     if not user:
-        return False
+        return ""
     with get_db() as conn:
         row = conn.execute("SELECT funny_popup FROM users WHERE google_id=?", (user["id"],)).fetchone()
-        return bool(row["funny_popup"]) if row else False
+        return str(row["funny_popup"] or "") if row else ""
 
 @app.route("/specialist")
 def browse_specialist():
@@ -2377,9 +2377,8 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
 .btn-reject:hover { border-color:var(--red); color:var(--red); }
 .btn-revoke { background:none; border:1px solid var(--border); color:var(--muted); font-size:.75rem; padding:5px 12px; }
 .btn-revoke:hover { border-color:var(--red); color:var(--red); }
-.btn-popup { background:none; border:1px solid var(--border); color:var(--muted); font-size:.75rem; padding:5px 12px; }
-.btn-popup:hover { border-color:#d97706; color:#d97706; }
-.btn-popup.on { background:#fef3c7; border-color:#d97706; color:#92400e; }
+.popup-select { font-family:inherit; font-size:.75rem; padding:5px 8px; border:1px solid var(--border); border-radius:8px; color:var(--muted); background:var(--surface); cursor:pointer; }
+.popup-select.on { border-color:#d97706; color:#92400e; background:#fef3c7; }
 .empty { color:var(--muted); font-size:.85rem; padding:20px; text-align:center; background:var(--surface); border:1px solid var(--border); border-radius:10px; }
 </style>
 </head>
@@ -2427,7 +2426,10 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
         </div>
         <div class="udate">{{ u['approved_at'][:10] if u['approved_at'] else '' }}</div>
         <div class="actions">
-          <button class="btn btn-popup {% if u['funny_popup'] %}on{% endif %}" id="popup-btn-{{ u['google_id'] }}" onclick="togglePopup('{{ u['google_id'] }}', this)">🎭 Popup: {% if u['funny_popup'] %}ON{% else %}OFF{% endif %}</button>
+          <select class="popup-select {% if u['funny_popup'] %}on{% endif %}" onchange="setPopup('{{ u['google_id'] }}', this)">
+            <option value="" {% if not u['funny_popup'] %}selected{% endif %}>Off</option>
+            <option value="jacaranda_moses" {% if u['funny_popup'] == 'jacaranda_moses' or u['funny_popup'] == 1 %}selected{% endif %}>Jacaranda Moses</option>
+          </select>
           <button class="btn btn-revoke" onclick="act('{{ u['google_id'] }}','reject')">Revoke</button>
         </div>
       </div>
@@ -2460,14 +2462,14 @@ function act(id, action) {
   fetch('/admin/users/' + id + '/' + action, {method:'POST'})
     .then(r => r.json()).then(d => { if (d.ok) location.reload(); });
 }
-function togglePopup(id, btn) {
-  fetch('/admin/users/' + id + '/funny_popup', {method:'POST'})
-    .then(r => r.json()).then(d => {
-      if (d.ok) {
-        btn.classList.toggle('on', d.enabled);
-        btn.textContent = '🎭 Popup: ' + (d.enabled ? 'ON' : 'OFF');
-      }
-    });
+function setPopup(id, sel) {
+  fetch('/admin/users/' + id + '/funny_popup', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({value: sel.value})
+  }).then(r => r.json()).then(d => {
+    if (d.ok) sel.classList.toggle('on', !!d.value);
+  });
 }
 </script>
 </body>
@@ -3308,13 +3310,10 @@ def admin_toggle_funny_popup(google_id):
     if not admin_required():
         return jsonify(error="forbidden"), 403
     with get_db() as conn:
-        row = conn.execute("SELECT funny_popup FROM users WHERE google_id=?", (google_id,)).fetchone()
-        if not row:
-            return jsonify(error="not found"), 404
-        new_val = 0 if row["funny_popup"] else 1
+        new_val = request.json.get("value", "")
         conn.execute("UPDATE users SET funny_popup=? WHERE google_id=?", (new_val, google_id))
         conn.commit()
-    return jsonify(ok=True, enabled=bool(new_val))
+    return jsonify(ok=True, value=new_val)
 
 
 
