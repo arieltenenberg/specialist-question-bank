@@ -380,20 +380,24 @@ a { color:var(--primary); text-decoration:none; }
 .topbar .tab.active { color:#fff; border-bottom-color:#fff; font-weight:600; }
 
 /* ----- Sidebar toggle switch ----- */
+.sidebar-toggles {
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:var(--bg);
+  margin-bottom:16px;
+  overflow:hidden;
+}
 .sidebar-toggle {
   display:flex;
   align-items:center;
   justify-content:space-between;
   padding:9px 12px;
-  border-radius:8px;
-  background:var(--bg);
-  border:1px solid var(--border);
-  margin-bottom:16px;
   cursor:pointer;
-  transition:border-color .15s;
+  transition:background .15s;
   user-select:none;
 }
-.sidebar-toggle:hover { border-color:var(--primary); }
+.sidebar-toggle + .sidebar-toggle { border-top:1px solid var(--border); }
+.sidebar-toggle:hover { background:var(--bg-hover, #f3f4f6); }
 .sidebar-toggle span { font-size:.83rem; color:var(--text-secondary); font-weight:500; }
 .toggle-switch {
   width:34px;
@@ -793,13 +797,15 @@ body.methods .qcard.completed { background:#f0f7ff; border-color:#c9dff7; }
 
 <div class="layout">
   <div class="sidebar" id="sidebar">
-    <div class="sidebar-toggle" id="hide-completed-btn" onclick="toggleHideCompleted()">
-      <span>Hide Completed</span>
-      <div class="toggle-switch"></div>
-    </div>
-    <div class="sidebar-toggle" id="hide-saved-btn" onclick="toggleHideSaved()">
-      <span>Hide Saved</span>
-      <div class="toggle-switch"></div>
+    <div class="sidebar-toggles">
+      <div class="sidebar-toggle" id="hide-completed-btn" onclick="toggleHideCompleted()">
+        <span>Hide Completed</span>
+        <div class="toggle-switch"></div>
+      </div>
+      <div class="sidebar-toggle" id="hide-saved-btn" onclick="toggleHideSaved()">
+        <span>Hide Saved</span>
+        <div class="toggle-switch"></div>
+      </div>
     </div>
     {% if is_admin %}
     <a class="sort-unsorted-btn" id="sort-unsorted-btn" href="/classify?subject={{ subject }}&unsorted=1">Sort Unsorted (<span id="unsorted-count">…</span>)</a>
