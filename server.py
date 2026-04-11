@@ -112,7 +112,6 @@ def load_user_to_session(user_row):
     session["user_name"] = user_row["name"]
     session["user_status"] = user_row["status"]
     session["is_admin"] = (user_row["email"] == ADMIN_EMAIL)
-    session["funny_popup"] = bool(user_row["funny_popup"])
 
 def current_user():
     if "user_id" not in session:
@@ -1777,6 +1776,13 @@ def index():
     user = current_user()
     return render_template_string(HOME_HTML, user_name=user["name"] if user else "", is_admin=admin_required())
 
+def get_funny_popup(user):
+    if not user:
+        return False
+    with get_db() as conn:
+        row = conn.execute("SELECT funny_popup FROM users WHERE google_id=?", (user["id"],)).fetchone()
+        return bool(row["funny_popup"]) if row else False
+
 @app.route("/specialist")
 def browse_specialist():
     r = check_approved()
@@ -1788,7 +1794,7 @@ def browse_specialist():
                                   aos_map=cfg["aos_map"], is_methods=False,
                                   css_primary="#196061", css_primary_dark="#042f3a",
                                   css_primary_light="#e6f2f2", css_primary_hover="#1a7a7b",
-                                  funny_popup=session.get("funny_popup", False))
+                                  funny_popup=get_funny_popup(user))
 
 @app.route("/methods")
 def browse_methods():
@@ -1801,7 +1807,7 @@ def browse_methods():
                                   aos_map=cfg["aos_map"], is_methods=True,
                                   css_primary="#2563eb", css_primary_dark="#1e3a5f",
                                   css_primary_light="#eff6ff", css_primary_hover="#1d4ed8",
-                                  funny_popup=session.get("funny_popup", False))
+                                  funny_popup=get_funny_popup(user))
 
 @app.route("/api/questions")
 def api_questions():
