@@ -2378,7 +2378,7 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
 .btn-revoke { background:none; border:1px solid var(--border); color:var(--muted); font-size:.75rem; padding:5px 12px; }
 .btn-revoke:hover { border-color:var(--red); color:var(--red); }
 .popup-select { font-family:inherit; font-size:.75rem; padding:5px 8px; border:1px solid var(--border); border-radius:8px; color:var(--muted); background:var(--surface); cursor:pointer; }
-.popup-select.on { border-color:#d97706; color:#92400e; background:#fef3c7; }
+.popup-select.on { border-color:#555; color:#fff; background:#444; }
 .empty { color:var(--muted); font-size:.85rem; padding:20px; text-align:center; background:var(--surface); border:1px solid var(--border); border-radius:10px; }
 </style>
 </head>
