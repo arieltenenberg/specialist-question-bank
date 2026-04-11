@@ -1295,6 +1295,7 @@ function toggleCompleted(id, btn) {
     const card = document.getElementById('qcard-' + id);
     if (card) card.classList.toggle('completed', data.marked);
     if (completedOnly || (hideCompleted && data.marked)) applyFilters();
+    console.log('toggleCompleted: marked=', data.marked, 'funnyPopup=', funnyPopup);
     if (data.marked && funnyPopup) showJacarandaModal();
   });
 }
@@ -1758,7 +1759,10 @@ function updateProgress() {
 </div>
 <script>
 function showJacarandaModal() {
-  document.getElementById('jacaranda-modal').style.display = 'flex';
+  console.log('showJacarandaModal called');
+  const m = document.getElementById('jacaranda-modal');
+  console.log('modal element:', m);
+  m.style.display = 'flex';
 }
 </script>
 </body>
