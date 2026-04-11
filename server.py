@@ -797,6 +797,10 @@ body.methods .qcard.completed { background:#f0f7ff; border-color:#c9dff7; }
       <span>Hide Completed</span>
       <div class="toggle-switch"></div>
     </div>
+    <div class="sidebar-toggle" id="hide-saved-btn" onclick="toggleHideSaved()">
+      <span>Hide Saved</span>
+      <div class="toggle-switch"></div>
+    </div>
     {% if is_admin %}
     <a class="sort-unsorted-btn" id="sort-unsorted-btn" href="/classify?subject={{ subject }}&unsorted=1">Sort Unsorted (<span id="unsorted-count">…</span>)</a>
     {% endif %}
@@ -851,6 +855,7 @@ let savedOnly = false;
 let completedIds = new Set();
 let completedOnly = false;
 let hideCompleted = localStorage.getItem('hideCompleted') === 'true';
+let hideSaved = localStorage.getItem('hideSaved') === 'true';
 const funnyPopup = {{ funny_popup | tojson }};
 
 (function() {
@@ -892,6 +897,7 @@ fetch('/api/questions?subject={{ subject }}').then(r => r.json()).then(data => {
   loadSavedIds();
   loadCompletedIds();
   document.getElementById('hide-completed-btn').classList.toggle('active', hideCompleted);
+  document.getElementById('hide-saved-btn').classList.toggle('active', hideSaved);
 });
 
 function buildFilters() {
@@ -997,6 +1003,7 @@ function applyFilters() {
     if (savedOnly && !savedIds.has(q.id)) return false;
     if (completedOnly && !completedIds.has(q.id)) return false;
     if (hideCompleted && !completedOnly && completedIds.has(q.id)) return false;
+    if (hideSaved && !savedOnly && savedIds.has(q.id)) return false;
     return true;
   });
 
@@ -1219,6 +1226,7 @@ function submitFlag(id, btn) {
 function loadSavedIds() {
   fetch('/api/saved?subject={{ subject }}').then(r => r.json()).then(data => {
     savedIds = new Set(data.ids);
+    if (hideSaved) { applyFilters(); return; }
     savedIds.forEach(id => {
       const btn = document.getElementById('save-btn-' + id);
       if (btn) markSaveBtn(btn, true);
@@ -1238,7 +1246,7 @@ function toggleSaved(id, btn) {
       savedIds.delete(id);
     }
     markSaveBtn(btn, data.marked);
-    if (savedOnly) applyFilters();
+    if (savedOnly || (hideSaved && data.marked)) applyFilters();
   });
 }
 
@@ -1318,6 +1326,14 @@ function toggleHideCompleted() {
   hideCompleted = !hideCompleted;
   localStorage.setItem('hideCompleted', hideCompleted);
   document.getElementById('hide-completed-btn').classList.toggle('active', hideCompleted);
+  page = 0;
+  applyFilters();
+}
+
+function toggleHideSaved() {
+  hideSaved = !hideSaved;
+  localStorage.setItem('hideSaved', hideSaved);
+  document.getElementById('hide-saved-btn').classList.toggle('active', hideSaved);
   page = 0;
   applyFilters();
 }
