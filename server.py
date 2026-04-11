@@ -3295,6 +3295,15 @@ def admin_toggle_funny_popup(google_id):
     return jsonify(ok=True, enabled=bool(new_val))
 
 
+@app.route("/debug/funny_popup")
+def debug_funny_popup():
+    user = current_user()
+    if not user:
+        return jsonify(user=None, funny_popup=False)
+    fp = get_funny_popup(user)
+    return jsonify(user_id=user["id"], email=user.get("email"), funny_popup=fp)
+
+
 if __name__ == "__main__":
     import sys
     debug = "--debug" in sys.argv
