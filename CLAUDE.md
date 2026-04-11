@@ -256,6 +256,33 @@ Two-row topbar (96px total):
 - **All tabs are buttons** (no `<a>` links) — switching tabs is instant with no page reload
 - **Height references:** sidebar `top: 96px`, `height: calc(100vh - 96px)`; backdrop `inset: 96px 0 0 0`; mobile sidebar `top: 84px`
 
+## Funny Popup Feature
+
+A per-student "funny popup" that fires randomly when a student marks a question as done. Designed to be extensible — new popups can be added easily.
+
+### How it works
+- `funny_popup` column on the `users` table stores a text key: `''` = off, or a popup name like `'jacaranda_moses'`
+- Admin assigns a popup (or off) per student via a dropdown in `/admin/users` (Approved Students section)
+- On the browse page, `funnyPopup` JS variable holds the current user's popup key (read live from DB on each page load via `get_funny_popup()`)
+- In `toggleCompleted()`, if `data.marked && funnyPopup === '<key>' && Math.random() < 0.1`, the modal is shown (10% chance)
+- The modal HTML lives at the bottom of `BROWSE_HTML`, just before `</body>`
+
+### Current popups
+| Key | Description | Image |
+|-----|-------------|-------|
+| `jacaranda_moses` | Moses holding the Jacaranda Specialist Maths textbook, with motivational quote | `static/jacaranda_moses.jpeg` |
+
+### Adding a new popup
+1. **Admin dropdown** (`USERS_HTML`): add `<option value="new_key">Display Name</option>` to the `<select>` in the approved students loop
+2. **Modal HTML** (`BROWSE_HTML`): add a new `<div id="new-key-modal" ...>` with image and text, just before `</body>`
+3. **JS trigger** (`BROWSE_HTML`, inside `toggleCompleted()`): add `else if (funnyPopup === 'new_key' && Math.random() < 0.1) document.getElementById('new-key-modal').style.display = 'flex';`
+4. **Image**: add to `static/` and commit + scp to server (or just commit if small enough for git)
+5. Deploy as usual
+
+### Notes
+- The DB column was originally integer 0/1, migrated to text in April 2025 — existing `1` values were updated to `'jacaranda_moses'`
+- `funny_popup` is NOT stored in the session — it's read fresh from the DB on every browse page load, so admin changes take effect immediately without requiring the student to re-login
+
 ## Known Issues
 _(none)_
 
