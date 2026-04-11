@@ -84,6 +84,11 @@ def init_db():
             )
         """)
         conn.commit()
+        try:
+            conn.execute("ALTER TABLE users ADD COLUMN funny_popup INTEGER NOT NULL DEFAULT 0")
+            conn.commit()
+        except Exception:
+            pass  # column already exists
 
 init_db()
 
@@ -107,6 +112,7 @@ def load_user_to_session(user_row):
     session["user_name"] = user_row["name"]
     session["user_status"] = user_row["status"]
     session["is_admin"] = (user_row["email"] == ADMIN_EMAIL)
+    session["funny_popup"] = bool(user_row["funny_popup"])
 
 def current_user():
     if "user_id" not in session:
@@ -846,6 +852,7 @@ let savedOnly = false;
 let completedIds = new Set();
 let completedOnly = false;
 let hideCompleted = localStorage.getItem('hideCompleted') === 'true';
+const funnyPopup = {{ funny_popup | tojson }};
 
 (function() {
   const name = {{ user_name | tojson }};
@@ -1289,6 +1296,7 @@ function toggleCompleted(id, btn) {
     const card = document.getElementById('qcard-' + id);
     if (card) card.classList.toggle('completed', data.marked);
     if (completedOnly || (hideCompleted && data.marked)) applyFilters();
+    if (data.marked && funnyPopup) showJacarandaModal();
   });
 }
 
@@ -1738,6 +1746,22 @@ function updateProgress() {
   }
 }
 </script>
+
+<!-- Jacaranda motivational modal -->
+<div id="jacaranda-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+    <img src="/static/jacaranda_moses.jpeg" alt="Motivation" style="width:100%;border-radius:10px;margin-bottom:18px;">
+    <p style="font-family:'Poppins',system-ui,sans-serif;font-size:.9rem;font-weight:500;color:#1a202c;line-height:1.6;margin-bottom:20px;">
+      Be like a Jacaranda in exam season — bloom unexpectedly and confuse everyone, including yourself
+    </p>
+    <button onclick="document.getElementById('jacaranda-modal').style.display='none'" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-family:'Poppins',system-ui,sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;">Got it</button>
+  </div>
+</div>
+<script>
+function showJacarandaModal() {
+  document.getElementById('jacaranda-modal').style.display = 'flex';
+}
+</script>
 </body>
 </html>"""
 
@@ -1763,7 +1787,8 @@ def browse_specialist():
                                   subject="specialist", subject_name="Specialist Mathematics",
                                   aos_map=cfg["aos_map"], is_methods=False,
                                   css_primary="#196061", css_primary_dark="#042f3a",
-                                  css_primary_light="#e6f2f2", css_primary_hover="#1a7a7b")
+                                  css_primary_light="#e6f2f2", css_primary_hover="#1a7a7b",
+                                  funny_popup=session.get("funny_popup", False))
 
 @app.route("/methods")
 def browse_methods():
@@ -1775,7 +1800,8 @@ def browse_methods():
                                   subject="methods", subject_name="Mathematical Methods",
                                   aos_map=cfg["aos_map"], is_methods=True,
                                   css_primary="#2563eb", css_primary_dark="#1e3a5f",
-                                  css_primary_light="#eff6ff", css_primary_hover="#1d4ed8")
+                                  css_primary_light="#eff6ff", css_primary_hover="#1d4ed8",
+                                  funny_popup=session.get("funny_popup", False))
 
 @app.route("/api/questions")
 def api_questions():
@@ -2323,6 +2349,9 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
 .btn-reject:hover { border-color:var(--red); color:var(--red); }
 .btn-revoke { background:none; border:1px solid var(--border); color:var(--muted); font-size:.75rem; padding:5px 12px; }
 .btn-revoke:hover { border-color:var(--red); color:var(--red); }
+.btn-popup { background:none; border:1px solid var(--border); color:var(--muted); font-size:.75rem; padding:5px 12px; }
+.btn-popup:hover { border-color:#d97706; color:#d97706; }
+.btn-popup.on { background:#fef3c7; border-color:#d97706; color:#92400e; }
 .empty { color:var(--muted); font-size:.85rem; padding:20px; text-align:center; background:var(--surface); border:1px solid var(--border); border-radius:10px; }
 </style>
 </head>
@@ -2370,6 +2399,7 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
         </div>
         <div class="udate">{{ u['approved_at'][:10] if u['approved_at'] else '' }}</div>
         <div class="actions">
+          <button class="btn btn-popup {% if u['funny_popup'] %}on{% endif %}" id="popup-btn-{{ u['google_id'] }}" onclick="togglePopup('{{ u['google_id'] }}', this)">🎭 Popup: {% if u['funny_popup'] %}ON{% else %}OFF{% endif %}</button>
           <button class="btn btn-revoke" onclick="act('{{ u['google_id'] }}','reject')">Revoke</button>
         </div>
       </div>
@@ -2401,6 +2431,15 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
 function act(id, action) {
   fetch('/admin/users/' + id + '/' + action, {method:'POST'})
     .then(r => r.json()).then(d => { if (d.ok) location.reload(); });
+}
+function togglePopup(id, btn) {
+  fetch('/admin/users/' + id + '/funny_popup', {method:'POST'})
+    .then(r => r.json()).then(d => {
+      if (d.ok) {
+        btn.classList.toggle('on', d.enabled);
+        btn.textContent = '🎭 Popup: ' + (d.enabled ? 'ON' : 'OFF');
+      }
+    });
 }
 </script>
 </body>
@@ -3234,6 +3273,20 @@ def admin_delete_user(google_id):
         conn.execute("DELETE FROM users WHERE google_id=?", (google_id,))
         conn.commit()
     return jsonify(ok=True)
+
+
+@app.route("/admin/users/<google_id>/funny_popup", methods=["POST"])
+def admin_toggle_funny_popup(google_id):
+    if not admin_required():
+        return jsonify(error="forbidden"), 403
+    with get_db() as conn:
+        row = conn.execute("SELECT funny_popup FROM users WHERE google_id=?", (google_id,)).fetchone()
+        if not row:
+            return jsonify(error="not found"), 404
+        new_val = 0 if row["funny_popup"] else 1
+        conn.execute("UPDATE users SET funny_popup=? WHERE google_id=?", (new_val, google_id))
+        conn.commit()
+    return jsonify(ok=True, enabled=bool(new_val))
 
 
 if __name__ == "__main__":
