@@ -1311,6 +1311,7 @@ function toggleCompleted(id, btn) {
     if (completedOnly || (hideCompleted && data.marked)) applyFilters();
     if (data.marked && funnyPopup === 'jacaranda_moses' && Math.random() < 0.1) showJacarandaModal();
     if (data.marked && funnyPopup === 'levick' && Math.random() < 0.1) showLevickModal();
+    if (data.marked && funnyPopup === 'cordo' && Math.random() < 0.1) showCorodoModal();
   });
 }
 
@@ -1357,6 +1358,16 @@ function toggleHideSaved() {
     <button onclick="document.getElementById('jacaranda-modal').style.display='none'" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-family:'Poppins',system-ui,sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;">Got it</button>
   </div>
 </div>
+<!-- Cordo modal -->
+<div id="cordo-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+    <img src="/static/cordo.jpeg" alt="Cordo" style="width:100%;border-radius:10px;margin-bottom:18px;">
+    <p style="font-family:'Poppins',system-ui,sans-serif;font-size:.9rem;font-weight:500;color:#1a202c;line-height:1.6;margin-bottom:20px;">
+      Not Bad
+    </p>
+    <button onclick="document.getElementById('cordo-modal').style.display='none'" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-family:'Poppins',system-ui,sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;">Thanks Cordo!</button>
+  </div>
+</div>
 <!-- Mr Levick modal -->
 <div id="levick-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);">
@@ -1373,6 +1384,9 @@ function showJacarandaModal() {
 }
 function showLevickModal() {
   document.getElementById('levick-modal').style.display = 'flex';
+}
+function showCorodoModal() {
+  document.getElementById('cordo-modal').style.display = 'flex';
 }
 </script>
 </body>
@@ -2444,6 +2458,7 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
             <option value="" {% if not u['funny_popup'] %}selected{% endif %}>Off</option>
             <option value="jacaranda_moses" {% if u['funny_popup'] == 'jacaranda_moses' or u['funny_popup'] == 1 %}selected{% endif %}>Jacaranda Moses</option>
             <option value="levick" {% if u['funny_popup'] == 'levick' %}selected{% endif %}>Mr Levick</option>
+            <option value="cordo" {% if u['funny_popup'] == 'cordo' %}selected{% endif %}>Cordo</option>
           </select>
           <button class="btn btn-revoke" onclick="act('{{ u['google_id'] }}','reject')">Revoke</button>
         </div>
