@@ -1241,6 +1241,7 @@ function loadSavedIds() {
 }
 
 function toggleSaved(id, btn) {
+  const isUnsaving = savedIds.has(id);
   fetch('/api/saved', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -1252,8 +1253,50 @@ function toggleSaved(id, btn) {
       savedIds.delete(id);
     }
     markSaveBtn(btn, data.marked);
-    if (savedOnly || (hideSaved && !completedOnly && data.marked)) applyFilters();
+    if (isUnsaving && savedOnly) {
+      showMarkCompletePrompt(id);
+    } else {
+      if (savedOnly || (hideSaved && !completedOnly && data.marked)) applyFilters();
+    }
   });
+}
+
+function showMarkCompletePrompt(id) {
+  const modal = document.getElementById('mark-complete-prompt');
+  modal.dataset.questionId = id;
+  modal.style.display = 'flex';
+}
+
+function markCompletePromptYes() {
+  const modal = document.getElementById('mark-complete-prompt');
+  const id = modal.dataset.questionId;
+  modal.style.display = 'none';
+  if (!completedIds.has(id)) {
+    const btn = document.getElementById('complete-btn-' + id);
+    fetch('/api/completed', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question_id: id, subject: '{{ subject }}' })
+    }).then(r => r.json()).then(data => {
+      if (data.marked) {
+        completedIds.add(id);
+        if (btn) markCompleteBtn(btn, true);
+        const card = document.getElementById('qcard-' + id);
+        if (card) card.classList.add('completed');
+        if (data.marked && funnyPopup === 'jacaranda_moses' && Math.random() < 0.1) showJacarandaModal();
+        if (data.marked && funnyPopup === 'levick' && Math.random() < 0.1) showLevickModal();
+        if (data.marked && funnyPopup === 'cordo' && Math.random() < 0.1) showCorodoModal();
+      }
+      applyFilters();
+    });
+  } else {
+    applyFilters();
+  }
+}
+
+function markCompletePromptNo() {
+  document.getElementById('mark-complete-prompt').style.display = 'none';
+  applyFilters();
 }
 
 function markSaveBtn(btn, saved) {
@@ -1349,6 +1392,16 @@ function toggleHideSaved() {
 </script>
 
 <!-- Jacaranda motivational modal -->
+<div id="mark-complete-prompt" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:14px;padding:24px;max-width:340px;width:90%;text-align:center;box-shadow:0 16px 48px rgba(0,0,0,.25);">
+    <p style="font-family:'Poppins',system-ui,sans-serif;font-size:.95rem;font-weight:600;color:#1a202c;margin:0 0 6px;">Mark as done?</p>
+    <p style="font-family:'Poppins',system-ui,sans-serif;font-size:.83rem;color:#6b7280;margin:0 0 20px;">Would you like to mark this question as completed?</p>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button onclick="markCompletePromptYes()" style="background:var(--primary);color:#fff;border:none;border-radius:8px;padding:9px 22px;font-family:'Poppins',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Mark as Done</button>
+      <button onclick="markCompletePromptNo()" style="background:#f3f4f6;color:#374151;border:none;border-radius:8px;padding:9px 22px;font-family:'Poppins',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">No thanks</button>
+    </div>
+  </div>
+</div>
 <div id="jacaranda-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);">
     <img src="/static/jacaranda_moses.jpeg" alt="Motivation" style="width:100%;border-radius:10px;margin-bottom:18px;">
