@@ -1008,8 +1008,8 @@ function applyFilters() {
     }
     if (savedOnly && !savedIds.has(q.id)) return false;
     if (completedOnly && !completedIds.has(q.id)) return false;
-    if (hideCompleted && !completedOnly && completedIds.has(q.id)) return false;
-    if (hideSaved && !savedOnly && savedIds.has(q.id)) return false;
+    if (hideCompleted && !completedOnly && !savedOnly && completedIds.has(q.id)) return false;
+    if (hideSaved && !savedOnly && !completedOnly && savedIds.has(q.id)) return false;
     return true;
   });
 
@@ -1252,7 +1252,7 @@ function toggleSaved(id, btn) {
       savedIds.delete(id);
     }
     markSaveBtn(btn, data.marked);
-    if (savedOnly || (hideSaved && data.marked)) applyFilters();
+    if (savedOnly || (hideSaved && !completedOnly && data.marked)) applyFilters();
   });
 }
 
@@ -1308,7 +1308,7 @@ function toggleCompleted(id, btn) {
     markCompleteBtn(btn, data.marked);
     const card = document.getElementById('qcard-' + id);
     if (card) card.classList.toggle('completed', data.marked);
-    if (completedOnly || (hideCompleted && data.marked)) applyFilters();
+    if (completedOnly || (hideCompleted && !savedOnly && data.marked)) applyFilters();
     if (data.marked && funnyPopup === 'jacaranda_moses' && Math.random() < 0.1) showJacarandaModal();
     if (data.marked && funnyPopup === 'levick' && Math.random() < 0.1) showLevickModal();
     if (data.marked && funnyPopup === 'cordo' && Math.random() < 0.1) showCorodoModal();
