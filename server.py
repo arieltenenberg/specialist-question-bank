@@ -833,6 +833,7 @@ body.methods .qcard.saved { border-left:3px solid #2563eb; }
   justify-content:space-between;
   gap:8px;
   margin-top:16px;
+  margin-bottom:16px;
   padding-top:14px;
   border-top:1px solid var(--border);
 }
