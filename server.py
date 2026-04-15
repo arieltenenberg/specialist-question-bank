@@ -818,11 +818,11 @@ a { color:var(--primary); text-decoration:none; }
   align-self:flex-start;
   margin-top:4px;
 }
-.complete-btn:hover { background:#38a169; color:#fff; border-color:#38a169; }
+.complete-btn:hover { background:var(--primary); color:#fff; border-color:var(--primary); }
 .complete-btn.completed { background:#e8f5ea; color:#2d6a4f; border-color:#c3ddc7; }
+.complete-btn.completed:hover { background:var(--primary); color:#fff; border-color:var(--primary); }
 .qcard.completed { background:#f6fdf7; border-color:#d1e8d5; }
 .qcard.saved { border-left:3px solid #196061; }
-body.methods .complete-btn:hover { background:#38a169; color:#fff; border-color:#38a169; }
 body.methods .complete-btn.completed { background:#eff6ff; color:#1e40af; border-color:#c9dff7; }
 body.methods .qcard.completed { background:#f0f7ff; border-color:#c9dff7; }
 body.methods .qcard.saved { border-left:3px solid #2563eb; }
