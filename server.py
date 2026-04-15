@@ -819,7 +819,7 @@ a { color:#1f1f1f; text-decoration:none; }
   margin-top:4px;
 }
 .complete-btn:hover { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
-.qcard.completed { background:#ecfdf5; border-color:#6ee7b7; }
+.qcard.completed { background:#dde8df; border-color:#8faf96; }
 .qcard.saved { border-left:3px solid #1f1f1f; }
 .card-actions {
   display:flex;
