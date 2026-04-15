@@ -1299,6 +1299,35 @@ function markCompletePromptNo() {
   applyFilters();
 }
 
+function showUnsavePrompt(id) {
+  const modal = document.getElementById('unsave-prompt');
+  modal.dataset.questionId = id;
+  modal.style.display = 'flex';
+}
+
+function unsavePromptYes() {
+  const modal = document.getElementById('unsave-prompt');
+  const id = modal.dataset.questionId;
+  modal.style.display = 'none';
+  fetch('/api/saved', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question_id: id, subject: '{{ subject }}' })
+  }).then(r => r.json()).then(data => {
+    if (!data.marked) {
+      savedIds.delete(id);
+      const btn = document.getElementById('save-btn-' + id);
+      if (btn) markSaveBtn(btn, false);
+    }
+    applyFilters();
+  });
+}
+
+function unsavePromptNo() {
+  document.getElementById('unsave-prompt').style.display = 'none';
+  applyFilters();
+}
+
 function markSaveBtn(btn, saved) {
   btn.textContent = saved ? 'Unsave' : 'Save';
   btn.classList.toggle('saved', saved);
@@ -1351,7 +1380,11 @@ function toggleCompleted(id, btn) {
     markCompleteBtn(btn, data.marked);
     const card = document.getElementById('qcard-' + id);
     if (card) card.classList.toggle('completed', data.marked);
-    if (completedOnly || (hideCompleted && !savedOnly && data.marked)) applyFilters();
+    if (data.marked && savedIds.has(id)) {
+      showUnsavePrompt(id);
+    } else {
+      if (completedOnly || (hideCompleted && !savedOnly && data.marked)) applyFilters();
+    }
     if (data.marked && funnyPopup === 'jacaranda_moses' && Math.random() < 0.1) showJacarandaModal();
     if (data.marked && funnyPopup === 'levick' && Math.random() < 0.1) showLevickModal();
     if (data.marked && funnyPopup === 'cordo' && Math.random() < 0.1) showCorodoModal();
@@ -1399,6 +1432,16 @@ function toggleHideSaved() {
     <div style="display:flex;gap:10px;justify-content:center;">
       <button onclick="markCompletePromptYes()" style="background:var(--primary);color:#fff;border:none;border-radius:8px;padding:9px 22px;font-family:'Poppins',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Mark as Done</button>
       <button onclick="markCompletePromptNo()" style="background:#f3f4f6;color:#374151;border:none;border-radius:8px;padding:9px 22px;font-family:'Poppins',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">No thanks</button>
+    </div>
+  </div>
+</div>
+<div id="unsave-prompt" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:14px;padding:24px;max-width:340px;width:90%;text-align:center;box-shadow:0 16px 48px rgba(0,0,0,.25);">
+    <p style="font-family:'Poppins',system-ui,sans-serif;font-size:.95rem;font-weight:600;color:#1a202c;margin:0 0 6px;">Unsave this question?</p>
+    <p style="font-family:'Poppins',system-ui,sans-serif;font-size:.83rem;color:#6b7280;margin:0 0 20px;">You've marked this as done — would you like to remove it from your saved questions?</p>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button onclick="unsavePromptYes()" style="background:var(--primary);color:#fff;border:none;border-radius:8px;padding:9px 22px;font-family:'Poppins',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Unsave</button>
+      <button onclick="unsavePromptNo()" style="background:#f3f4f6;color:#374151;border:none;border-radius:8px;padding:9px 22px;font-family:'Poppins',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Keep Saved</button>
     </div>
   </div>
 </div>
