@@ -1389,7 +1389,7 @@ function toggleSaved(id, btn) {
       savedIds.delete(id);
     }
     markSaveBtn(btn, data.marked);
-    if (isUnsaving && savedOnly) {
+    if (isUnsaving) {
       showMarkCompletePrompt(id);
     } else {
       if (savedOnly || (hideSaved && !completedOnly && data.marked)) applyFilters();
@@ -1530,7 +1530,7 @@ function toggleCompleted(id, btn) {
 }
 
 function markCompleteBtn(btn, completed) {
-  btn.textContent = completed ? 'Unmark as Done' : 'Mark as Done';
+  btn.textContent = completed ? 'Done' : 'Mark as Done';
   btn.classList.toggle('completed', completed);
 }
 
