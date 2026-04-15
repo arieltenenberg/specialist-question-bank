@@ -819,9 +819,7 @@ a { color:#1f1f1f; text-decoration:none; }
   margin-top:4px;
 }
 .complete-btn:hover { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
-.complete-btn.completed { background:#e8f5ea; color:#2d6a4f; border-color:#c3ddc7; }
-.complete-btn.completed:hover { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
-.qcard.completed { background:#f6fdf7; border-color:#d1e8d5; }
+.qcard.completed { background:#ecfdf5; border-color:#6ee7b7; }
 .qcard.saved { border-left:3px solid #1f1f1f; }
 .card-actions {
   display:flex;
