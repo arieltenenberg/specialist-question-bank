@@ -1022,7 +1022,7 @@ function renderActiveFilters() {
   const clearBtn = document.getElementById('clear-btn');
   const chips = [];
   Object.entries(filters).forEach(([k, s]) => {
-    s.forEach(v => chips.push(`<span class="chip" onclick="removeFilter('${k}', ${JSON.stringify(v)})">${v} <span class="x">&times;</span></span>`));
+    s.forEach(v => chips.push(`<span class="chip" onclick="removeFilter('${k}', '${v}')">${v} <span class="x">&times;</span></span>`));
   });
   clearBtn.style.display = chips.length ? '' : 'none';
   el.innerHTML = chips.join('');
