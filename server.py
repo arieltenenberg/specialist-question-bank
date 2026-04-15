@@ -89,6 +89,11 @@ def init_db():
             conn.commit()
         except Exception:
             pass  # column already exists
+        try:
+            conn.execute("ALTER TABLE users ADD COLUMN leaderboard INTEGER NOT NULL DEFAULT 0")
+            conn.commit()
+        except Exception:
+            pass  # column already exists
 
 init_db()
 
@@ -422,6 +427,36 @@ a { color:var(--primary); text-decoration:none; }
 }
 .sidebar-toggle.active .toggle-switch { background:var(--primary); }
 .sidebar-toggle.active .toggle-switch::after { transform:translateX(15px); }
+
+/* ----- Leaderboard widget ----- */
+.leaderboard-widget {
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:var(--bg);
+  margin-bottom:16px;
+  padding:10px 12px;
+}
+.leaderboard-widget-title {
+  font-size:.7rem;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  color:var(--primary);
+  font-weight:700;
+  margin-bottom:7px;
+}
+.leaderboard-entry {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:3px 0;
+  font-size:.84rem;
+  color:var(--text-secondary);
+}
+.leaderboard-entry.you { font-weight:700; color:var(--text); }
+.leaderboard-rank { min-width:14px; font-size:.72rem; color:var(--muted); }
+.leaderboard-name { flex:1; }
+.leaderboard-count { font-weight:600; color:var(--primary); }
+.leaderboard-tick { color:#4caf50; font-size:.72rem; margin-left:1px; }
 
 /* ----- Layout ----- */
 .layout { display:flex; min-height:calc(100vh - 96px); }
@@ -797,6 +832,12 @@ body.methods .qcard.completed { background:#f0f7ff; border-color:#c9dff7; }
 
 <div class="layout">
   <div class="sidebar" id="sidebar">
+    {% if show_leaderboard %}
+    <div class="leaderboard-widget">
+      <div class="leaderboard-widget-title">🏆 Leaderboard</div>
+      <div id="leaderboard-entries"><span style="font-size:.8rem;color:var(--muted)">Loading…</span></div>
+    </div>
+    {% endif %}
     <div class="sidebar-toggles">
       <div class="sidebar-toggle" id="hide-completed-btn" onclick="toggleHideCompleted()">
         <span>Hide Completed</span>
@@ -863,6 +904,36 @@ let completedOnly = false;
 let hideCompleted = localStorage.getItem('hideCompleted') === 'true';
 let hideSaved = localStorage.getItem('hideSaved') === 'true';
 const funnyPopup = {{ funny_popup | tojson }};
+{% if show_leaderboard %}
+function loadLeaderboard() {
+  fetch('/api/leaderboard?subject={{ subject }}')
+    .then(r => r.json())
+    .then(data => {
+      const el = document.getElementById('leaderboard-entries');
+      if (!el) return;
+      if (!Array.isArray(data) || !data.length) {
+        el.innerHTML = '<span style="font-size:.8rem;color:var(--muted)">No data yet</span>';
+        return;
+      }
+      el.innerHTML = data.map((entry, i) => {
+        const crown = i === 0 ? '👑 ' : '\u00a0\u00a0\u00a0';
+        const firstName = entry.name ? entry.name.split(' ')[0] : entry.name;
+        return `<div class="leaderboard-entry${entry.is_you ? ' you' : ''}">` +
+          `<span class="leaderboard-rank">${i + 1}.</span>` +
+          `<span>${crown}</span>` +
+          `<span class="leaderboard-name">${firstName}</span>` +
+          `<span class="leaderboard-count">${entry.count}</span>` +
+          `<span class="leaderboard-tick">✓</span>` +
+          `</div>`;
+      }).join('');
+    })
+    .catch(() => {
+      const el = document.getElementById('leaderboard-entries');
+      if (el) el.innerHTML = '<span style="font-size:.8rem;color:var(--muted)">—</span>';
+    });
+}
+loadLeaderboard();
+{% endif %}
 
 (function() {
   const name = {{ user_name | tojson }};
@@ -1931,6 +2002,17 @@ def get_funny_popup(user):
         row = conn.execute("SELECT funny_popup FROM users WHERE google_id=?", (user["id"],)).fetchone()
         return str(row["funny_popup"] or "") if row else ""
 
+def get_show_leaderboard(user):
+    if DEV_MODE:
+        return True
+    if not user:
+        return False
+    if user.get("is_admin"):
+        return True
+    with get_db() as conn:
+        row = conn.execute("SELECT leaderboard FROM users WHERE google_id=?", (user["id"],)).fetchone()
+        return bool(row and row["leaderboard"])
+
 @app.route("/specialist")
 def browse_specialist():
     r = check_approved()
@@ -1942,7 +2024,8 @@ def browse_specialist():
                                   aos_map=cfg["aos_map"], is_methods=False,
                                   css_primary="#196061", css_primary_dark="#042f3a",
                                   css_primary_light="#e6f2f2", css_primary_hover="#1a7a7b",
-                                  funny_popup=get_funny_popup(user))
+                                  funny_popup=get_funny_popup(user),
+                                  show_leaderboard=get_show_leaderboard(user))
 
 @app.route("/methods")
 def browse_methods():
@@ -1955,7 +2038,8 @@ def browse_methods():
                                   aos_map=cfg["aos_map"], is_methods=True,
                                   css_primary="#2563eb", css_primary_dark="#1e3a5f",
                                   css_primary_light="#eff6ff", css_primary_hover="#1d4ed8",
-                                  funny_popup=get_funny_popup(user))
+                                  funny_popup=get_funny_popup(user),
+                                  show_leaderboard=get_show_leaderboard(user))
 
 @app.route("/api/questions")
 def api_questions():
@@ -2503,6 +2587,9 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
 .btn-reject:hover { border-color:var(--red); color:var(--red); }
 .btn-revoke { background:none; border:1px solid var(--border); color:var(--muted); font-size:.75rem; padding:5px 12px; }
 .btn-revoke:hover { border-color:var(--red); color:var(--red); }
+.btn-lb { font-size:.75rem; padding:5px 10px; border-radius:8px; border:1px solid var(--border); background:none; color:var(--muted); cursor:pointer; font-family:inherit; transition:all .15s; }
+.btn-lb.on { border-color:#b7791f; color:#b7791f; background:#fefce8; }
+.btn-lb:hover { border-color:#b7791f; color:#b7791f; }
 .popup-select { font-family:inherit; font-size:.75rem; padding:5px 8px; border:1px solid var(--border); border-radius:8px; color:var(--muted); background:var(--surface); cursor:pointer; }
 .popup-select.on { border-color:#555; color:#fff; background:#444; }
 .empty { color:var(--muted); font-size:.85rem; padding:20px; text-align:center; background:var(--surface); border:1px solid var(--border); border-radius:10px; }
@@ -2558,6 +2645,7 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
             <option value="levick" {% if u['funny_popup'] == 'levick' %}selected{% endif %}>Mr Levick</option>
             <option value="cordo" {% if u['funny_popup'] == 'cordo' %}selected{% endif %}>Cordo</option>
           </select>
+          <button class="btn-lb {% if u['leaderboard'] %}on{% endif %}" onclick="toggleLeaderboard('{{ u['google_id'] }}', this)" title="Leaderboard">🏆</button>
           <button class="btn btn-revoke" onclick="act('{{ u['google_id'] }}','reject')">Revoke</button>
         </div>
       </div>
@@ -2598,6 +2686,12 @@ function setPopup(id, sel) {
   }).then(r => r.json()).then(d => {
     if (d.ok) sel.classList.toggle('on', !!d.value);
   });
+}
+function toggleLeaderboard(id, btn) {
+  fetch('/admin/users/' + id + '/leaderboard', {method: 'POST'})
+    .then(r => r.json()).then(d => {
+      if (d.ok) btn.classList.toggle('on', !!d.leaderboard);
+    });
 }
 </script>
 </body>
@@ -3355,6 +3449,29 @@ def api_toggle_completed():
         conn.commit()
     return jsonify({"ok": True, "marked": marked})
 
+@app.route("/api/leaderboard")
+def api_leaderboard():
+    r = check_approved()
+    if r: return r
+    subject = request.args.get("subject", "specialist")
+    user_id = get_current_user_id()
+    with get_db() as conn:
+        if not admin_required():
+            row = conn.execute("SELECT leaderboard FROM users WHERE google_id=?", (user_id,)).fetchone()
+            if not row or not row["leaderboard"]:
+                return jsonify(error="forbidden"), 403
+        rows = conn.execute("""
+            SELECT u.name, u.google_id,
+                   COUNT(DISTINCT cq.question_id) AS count
+            FROM users u
+            LEFT JOIN completed_questions cq
+              ON u.google_id = cq.user_id AND cq.subject = ?
+            WHERE u.leaderboard = 1
+            GROUP BY u.google_id
+            ORDER BY count DESC
+        """, (subject,)).fetchall()
+    return jsonify([{"name": r["name"], "count": r["count"], "is_you": r["google_id"] == user_id} for r in rows])
+
 @app.route("/api/admin/publishers/toggle", methods=["POST"])
 def toggle_publisher():
     if not admin_required():
@@ -3442,6 +3559,17 @@ def admin_toggle_funny_popup(google_id):
         conn.execute("UPDATE users SET funny_popup=? WHERE google_id=?", (new_val, google_id))
         conn.commit()
     return jsonify(ok=True, value=new_val)
+
+@app.route("/admin/users/<google_id>/leaderboard", methods=["POST"])
+def admin_toggle_leaderboard(google_id):
+    if not admin_required():
+        return jsonify(error="forbidden"), 403
+    with get_db() as conn:
+        row = conn.execute("SELECT leaderboard FROM users WHERE google_id=?", (google_id,)).fetchone()
+        new_val = 0 if (row and row["leaderboard"]) else 1
+        conn.execute("UPDATE users SET leaderboard=? WHERE google_id=?", (new_val, google_id))
+        conn.commit()
+    return jsonify(ok=True, leaderboard=new_val)
 
 
 
