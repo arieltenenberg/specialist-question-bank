@@ -33,7 +33,7 @@ os.makedirs(OUT_DIR, exist_ok=True)
 # 1. Discover and pair exam files
 # ---------------------------------------------------------------------------
 
-SOLUTION_ONLY_KEYWORDS = ["solution", "solutions", "solns", "soln"]
+SOLUTION_ONLY_KEYWORDS = ["solution", "solutions", "solns", "soln", "slns"]
 SKIP_KEYWORDS = ["formula", "mcq answer sheet", "mc answer sheet", ".ds_store"]
 QUESTION_KEYWORDS = ["question", "q&a", "qa", "q&as"]
 
