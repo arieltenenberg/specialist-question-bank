@@ -966,11 +966,9 @@ function loadLeaderboard() {
         return;
       }
       el.innerHTML = data.map((entry, i) => {
-        const crown = i === 0 ? '👑 ' : '\u00a0\u00a0\u00a0';
         const firstName = entry.name ? entry.name.split(' ')[0] : entry.name;
         return `<div class="leaderboard-entry${entry.is_you ? ' you' : ''}">` +
           `<span class="leaderboard-rank">${i + 1}.</span>` +
-          `<span>${crown}</span>` +
           `<span class="leaderboard-name">${firstName}</span>` +
           `<span class="leaderboard-count">${entry.count}</span>` +
           `<span class="leaderboard-tick">✓</span>` +
