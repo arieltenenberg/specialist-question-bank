@@ -855,7 +855,7 @@ function toggleSidebar() {
 let allQ = [];
 let filtered = [];
 let page = 0;
-let filters = { aos: null, tag: null, extended: null, year: null, publisher: null, exam_type: null, section: null };
+let filters = { aos: new Set(), tag: new Set(), extended: new Set(), year: new Set(), publisher: new Set(), exam_type: new Set(), section: new Set() };
 let savedIds = new Set();
 let savedOnly = false;
 let completedIds = new Set();
@@ -957,12 +957,11 @@ function buildGroup(elId, countsObj, filterKey) {
 }
 
 function toggleFilter(key, value, btn) {
-  if (filters[key] === value) {
-    filters[key] = null;
+  if (filters[key].has(value)) {
+    filters[key].delete(value);
     btn.classList.remove('active');
   } else {
-    btn.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    filters[key] = value;
+    filters[key].add(value);
     btn.classList.add('active');
   }
   page = 0;
@@ -970,7 +969,7 @@ function toggleFilter(key, value, btn) {
 }
 
 function clearAll() {
-  filters = { aos: null, tag: null, extended: null, year: null, publisher: null, exam_type: null, section: null };
+  filters = { aos: new Set(), tag: new Set(), extended: new Set(), year: new Set(), publisher: new Set(), exam_type: new Set(), section: new Set() };
   document.querySelectorAll('.filter-btn.active').forEach(b => b.classList.remove('active'));
   savedOnly = false;
   document.getElementById('tab-saved').classList.remove('active');
@@ -983,28 +982,28 @@ function applyFilters() {
   filtered = allQ.filter(q => {
     if (IS_METHODS) {
       // Tag filter applies to non-extended questions
-      if (filters.tag) {
+      if (filters.tag.size > 0) {
         if (q.section === 'extended_response') return false;
         const names = q.tag_names || [q.aos_name];
-        if (!names.includes(filters.tag)) return false;
+        if (!names.some(n => filters.tag.has(n))) return false;
       }
       // Extended filter applies to extended response questions only
-      if (filters.extended) {
+      if (filters.extended.size > 0) {
         if (q.section !== 'extended_response') return false;
-        if (q.aos_name !== filters.extended) return false;
+        if (!filters.extended.has(q.aos_name)) return false;
       }
     } else {
-      if (filters.aos && q.aos_name !== filters.aos) return false;
+      if (filters.aos.size > 0 && !filters.aos.has(q.aos_name)) return false;
     }
-    if (filters.year && q.year !== Number(filters.year)) return false;
-    if (filters.publisher && q.publisher !== filters.publisher) return false;
-    if (filters.exam_type) {
-      const en = filters.exam_type === 'Exam 1' ? 1 : 2;
-      if (q.exam_type !== en) return false;
+    if (filters.year.size > 0 && ![...filters.year].some(y => q.year === Number(y))) return false;
+    if (filters.publisher.size > 0 && !filters.publisher.has(q.publisher)) return false;
+    if (filters.exam_type.size > 0) {
+      const examNums = [...filters.exam_type].map(e => e === 'Exam 1' ? 1 : 2);
+      if (!examNums.includes(q.exam_type)) return false;
     }
-    if (filters.section) {
-      const sl = Object.entries(sectionLabels).find(([k,v]) => v===filters.section);
-      if (sl && q.section !== sl[0]) return false;
+    if (filters.section.size > 0) {
+      const selectedSections = [...filters.section].map(s => { const sl = Object.entries(sectionLabels).find(([k,v]) => v===s); return sl ? sl[0] : null; }).filter(Boolean);
+      if (!selectedSections.includes(q.section)) return false;
     }
     if (savedOnly && !savedIds.has(q.id)) return false;
     if (completedOnly && !completedIds.has(q.id)) return false;
@@ -1021,17 +1020,20 @@ function applyFilters() {
 function renderActiveFilters() {
   const el = document.getElementById('active-filters');
   const clearBtn = document.getElementById('clear-btn');
-  const active = Object.entries(filters).filter(([k,v]) => v !== null);
-  clearBtn.style.display = active.length ? '' : 'none';
-  el.innerHTML = active.map(([k,v]) =>
-    `<span class="chip" onclick="removeFilter('${k}')">${v} <span class="x">&times;</span></span>`
-  ).join('');
+  const chips = [];
+  Object.entries(filters).forEach(([k, s]) => {
+    s.forEach(v => chips.push(`<span class="chip" onclick="removeFilter('${k}', ${JSON.stringify(v)})">${v} <span class="x">&times;</span></span>`));
+  });
+  clearBtn.style.display = chips.length ? '' : 'none';
+  el.innerHTML = chips.join('');
 }
 
-function removeFilter(key) {
-  filters[key] = null;
+function removeFilter(key, value) {
+  filters[key].delete(value);
   const groupMap = { aos:'fg-aos', tag:'fg-tag', extended:'fg-extended', year:'fg-year', publisher:'fg-pub', exam_type:'fg-exam', section:'fg-section' };
-  document.querySelectorAll(`#${groupMap[key]} .filter-btn`).forEach(b => b.classList.remove('active'));
+  document.querySelectorAll(`#${groupMap[key]} .filter-btn`).forEach(b => {
+    if (b.querySelector('span').textContent === value) b.classList.remove('active');
+  });
   page = 0;
   applyFilters();
 }
