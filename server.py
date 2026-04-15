@@ -834,9 +834,11 @@ a { color:var(--primary); text-decoration:none; }
 .complete-btn:hover { background:#e8f5ea; color:#2d6a4f; border-color:#c3ddc7; }
 .complete-btn.completed { background:#e8f5ea; color:#2d6a4f; border-color:#c3ddc7; }
 .qcard.completed { background:#f6fdf7; border-color:#d1e8d5; }
+.qcard.saved { border-left:3px solid #196061; }
 body.methods .complete-btn:hover { background:#eff6ff; color:#1e40af; border-color:#c9dff7; }
 body.methods .complete-btn.completed { background:#eff6ff; color:#1e40af; border-color:#c9dff7; }
 body.methods .qcard.completed { background:#f0f7ff; border-color:#c9dff7; }
+body.methods .qcard.saved { border-left:3px solid #2563eb; }
 .card-actions {
   display:flex;
   align-items:flex-start;
@@ -1459,6 +1461,8 @@ function unsavePromptNo() {
 function markSaveBtn(btn, saved) {
   btn.textContent = saved ? 'Unsave' : 'Save';
   btn.classList.toggle('saved', saved);
+  const card = btn.closest('.qcard');
+  if (card) card.classList.toggle('saved', saved);
 }
 
 function showAllQuestions() {
