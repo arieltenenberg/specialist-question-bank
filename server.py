@@ -839,6 +839,133 @@ body.methods .qcard.saved { border-left:3px solid #2563eb; }
 }
 .card-actions-left { display:flex; gap:8px; align-items:flex-start; }
 
+/* ----- Progress button ----- */
+.progress-btn-topbar {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: rgba(255,255,255,.75);
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  transition: color .15s, background .15s;
+  margin-right: 6px;
+}
+.progress-btn-topbar:hover {
+  color: #fff;
+  background: rgba(255,255,255,.12);
+}
+
+/* ----- Progress modal ----- */
+#progress-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 80px;
+}
+#progress-modal.open { display: flex; }
+#progress-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  z-index: -1;
+}
+#progress-modal-box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.18);
+  width: min(680px, calc(100vw - 32px));
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  padding: 28px 28px 24px;
+}
+#progress-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+#progress-modal-header h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+.progress-modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: color .15s;
+}
+.progress-modal-close:hover { color: var(--text); }
+.progress-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 12px;
+}
+.progress-card-title {
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.progress-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+.progress-bar-label {
+  font-size: .76rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  min-width: 130px;
+}
+.progress-bar-track {
+  flex: 1;
+  height: 9px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 99px;
+  transition: width .4s ease;
+}
+.progress-bar-count {
+  font-size: .76rem;
+  color: var(--muted);
+  white-space: nowrap;
+  min-width: 48px;
+  text-align: right;
+}
+.progress-sub-bars {
+  margin-top: 10px;
+  padding-left: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-left: 2px solid var(--border);
+}
+.progress-bar-track.sub { height: 5px; }
+.progress-bar-fill.sub { opacity: 0.6; }
+.progress-bar-label.sub { font-size: .71rem; color: var(--muted); min-width: 130px; }
+.progress-bar-count.sub { font-size: .71rem; }
+
 </style>
 </head>
 <body class="{{ subject }}">
@@ -864,6 +991,9 @@ body.methods .qcard.saved { border-left:3px solid #2563eb; }
           </div>
         </div>
       </div>
+      <button class="progress-btn-topbar" onclick="openProgressModal()" title="View Progress" aria-label="View Progress">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="6" width="4" height="15"/><rect x="17" y="2" width="4" height="19"/></svg>
+      </button>
       <div class="user-avatar-wrap" id="user-avatar-btn" onclick="toggleUserDropdown()">
         <div class="user-avatar" id="user-avatar-initials"></div>
         <div class="user-dropdown" id="user-dropdown">
@@ -927,6 +1057,7 @@ body.methods .qcard.saved { border-left:3px solid #2563eb; }
 <script>
 const IS_ADMIN = {{ is_admin|tojson }};
 const IS_METHODS = {{ is_methods|tojson }};
+const AOS_MAP = {{ aos_map | tojson }};
 const PER_PAGE = 20;
 
 function toggleSidebar() {
@@ -1558,6 +1689,75 @@ function toggleHideSaved() {
   applyFilters();
 }
 
+function openProgressModal() {
+  renderProgressView();
+  document.getElementById('progress-modal').classList.add('open');
+  document.addEventListener('keydown', progressModalKeyHandler);
+}
+
+function closeProgressModal() {
+  document.getElementById('progress-modal').classList.remove('open');
+  document.removeEventListener('keydown', progressModalKeyHandler);
+}
+
+function progressModalKeyHandler(e) {
+  if (e.key === 'Escape') closeProgressModal();
+}
+
+function renderProgressView() {
+  const hiddenAos = IS_METHODS ? new Set([0, 9]) : new Set([0, 8, 9]);
+  const SECTION_KEYS = ['short_answer', 'multiple_choice', 'extended_response'];
+  const SECTION_LABELS = { short_answer: 'Short Answer', multiple_choice: 'Multiple Choice', extended_response: 'Extended Response' };
+
+  const stats = {};
+  Object.keys(AOS_MAP).forEach(k => {
+    const num = parseInt(k, 10);
+    if (hiddenAos.has(num)) return;
+    stats[num] = { total: 0, done: 0, name: AOS_MAP[k], sections: {} };
+    SECTION_KEYS.forEach(sec => { stats[num].sections[sec] = { total: 0, done: 0 }; });
+  });
+
+  allQ.forEach(q => {
+    const num = q.aos;
+    if (!stats[num]) return;
+    const completed = completedIds.has(q.id);
+    stats[num].total += 1;
+    if (completed) stats[num].done += 1;
+    const sec = q.section;
+    if (stats[num].sections[sec]) {
+      stats[num].sections[sec].total += 1;
+      if (completed) stats[num].sections[sec].done += 1;
+    }
+  });
+
+  const container = document.getElementById('progress-cards');
+  const sortedNums = Object.keys(stats).map(Number).sort((a, b) => a - b);
+
+  container.innerHTML = sortedNums.map(num => {
+    const s = stats[num];
+    const mainPct = s.total === 0 ? 0 : Math.round((s.done / s.total) * 100);
+    const subBarsHtml = SECTION_KEYS.map(sec => {
+      const ss = s.sections[sec];
+      if (ss.total === 0) return '';
+      const pct = Math.round((ss.done / ss.total) * 100);
+      return `<div class="progress-bar-row">
+        <span class="progress-bar-label sub">${SECTION_LABELS[sec]}</span>
+        <div class="progress-bar-track sub"><div class="progress-bar-fill sub" style="width:${pct}%"></div></div>
+        <span class="progress-bar-count sub">${ss.done} / ${ss.total}</span>
+      </div>`;
+    }).join('');
+    return `<div class="progress-card">
+      <div class="progress-card-title">${s.name}</div>
+      <div class="progress-bar-row">
+        <span class="progress-bar-label">${mainPct}% complete</span>
+        <div class="progress-bar-track"><div class="progress-bar-fill" style="width:${mainPct}%"></div></div>
+        <span class="progress-bar-count">${s.done} / ${s.total}</span>
+      </div>
+      ${subBarsHtml ? `<div class="progress-sub-bars">${subBarsHtml}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
 </script>
 
 <!-- Jacaranda motivational modal -->
@@ -1608,6 +1808,16 @@ function toggleHideSaved() {
       He is watching...
     </p>
     <button onclick="document.getElementById('levick-modal').style.display='none'" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-family:'Poppins',system-ui,sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;">Got it</button>
+  </div>
+</div>
+<div id="progress-modal" role="dialog" aria-modal="true" aria-labelledby="progress-modal-title">
+  <div id="progress-modal-backdrop" onclick="closeProgressModal()"></div>
+  <div id="progress-modal-box">
+    <div id="progress-modal-header">
+      <h2 id="progress-modal-title">Your Progress — {{ subject_name }}</h2>
+      <button class="progress-modal-close" onclick="closeProgressModal()" aria-label="Close">✕</button>
+    </div>
+    <div id="progress-cards"></div>
   </div>
 </div>
 <script>
