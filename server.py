@@ -834,7 +834,7 @@ body.methods .qcard.completed { background:#f0f7ff; border-color:#c9dff7; }
   <div class="sidebar" id="sidebar">
     {% if show_leaderboard %}
     <div class="leaderboard-widget">
-      <div class="leaderboard-widget-title">🏆 Leaderboard</div>
+      <div class="leaderboard-widget-title">Leaderboard</div>
       <div id="leaderboard-entries"><span style="font-size:.8rem;color:var(--muted)">Loading…</span></div>
     </div>
     {% endif %}
