@@ -268,11 +268,11 @@ BROWSE_HTML = r"""<!DOCTYPE html>
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:'Poppins','Lato',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
-a { color:var(--primary); text-decoration:none; }
+a { color:#1f1f1f; text-decoration:none; }
 
 /* ----- Top bar ----- */
 .topbar {
-  background:var(--primary-dark);
+  background:#2d2d2d;
   position:sticky;
   top:0;
   z-index:100;
@@ -293,7 +293,7 @@ a { color:var(--primary); text-decoration:none; }
   padding:0 20px;
   height:44px;
   gap:2px;
-  background:rgba(0,0,0,.12);
+  background:#1f1f1f;
 }
 .back-link {
   color:rgba(255,255,255,.65);
@@ -380,7 +380,7 @@ a { color:var(--primary); text-decoration:none; }
 .settings-toggle + .settings-toggle { border-top:1px solid var(--border); }
 .settings-toggle:hover { background:var(--bg); }
 .settings-toggle span { font-size:.84rem; color:var(--text); }
-.settings-toggle.active .toggle-switch { background:var(--primary); }
+.settings-toggle.active .toggle-switch { background:#2d2d2d; }
 .settings-toggle.active .toggle-switch::after { transform:translateX(15px); }
 .user-avatar {
   width:34px;
@@ -480,7 +480,7 @@ a { color:var(--primary); text-decoration:none; }
   font-size:.75rem;
   text-transform:uppercase;
   letter-spacing:.1em;
-  color:var(--primary);
+  color:#1f1f1f;
   font-weight:700;
   margin-bottom:7px;
 }
@@ -495,7 +495,7 @@ a { color:var(--primary); text-decoration:none; }
 .leaderboard-entry.you { font-weight:700; color:var(--text); }
 .leaderboard-rank { min-width:14px; font-size:.75rem; color:var(--muted); }
 .leaderboard-name { flex:1; }
-.leaderboard-count { font-weight:600; color:var(--primary); }
+.leaderboard-count { font-weight:600; color:#1f1f1f; }
 .leaderboard-tick { color:#4caf50; font-size:.75rem; margin-left:1px; }
 
 /* ----- Layout ----- */
@@ -538,8 +538,8 @@ a { color:var(--primary); text-decoration:none; }
   align-items:center;
   transition:all .15s;
 }
-.filter-btn:hover { background:var(--primary-light); color:var(--primary); }
-.filter-btn.active { background:var(--primary); color:#fff; }
+.filter-btn:hover { background:#e5e5e5; color:#1f1f1f; }
+.filter-btn.active { background:#2d2d2d; color:#fff; }
 .filter-btn.active .badge { color:rgba(255,255,255,.75); }
 .filter-btn .badge { font-size:.75rem; color:var(--muted); min-width:24px; text-align:right; }
 
@@ -548,8 +548,8 @@ a { color:var(--primary); text-decoration:none; }
 .main .toolbar { display:flex; gap:12px; align-items:center; margin-bottom:20px; flex-wrap:wrap; }
 .main .toolbar .active-filters { display:flex; gap:6px; flex-wrap:wrap; }
 .chip {
-  background:var(--primary-light);
-  color:var(--primary);
+  background:#f0f0f0;
+  color:#2d2d2d;
   font-size:.75rem;
   font-weight:500;
   padding:4px 12px;
@@ -558,10 +558,10 @@ a { color:var(--primary); text-decoration:none; }
   align-items:center;
   gap:6px;
   cursor:pointer;
-  border:1px solid rgba(25,96,97,.15);
+  border:1px solid #d5d5d5;
   transition:background .15s;
 }
-.chip:hover { background:rgba(25,96,97,.12); }
+.chip:hover { background:#e0e0e0; }
 .chip .x { font-size:.6rem; opacity:.5; }
 .clear-btn {
   font-family:inherit;
@@ -572,7 +572,7 @@ a { color:var(--primary); text-decoration:none; }
   border:none;
   font-weight:500;
 }
-.clear-btn:hover { color:var(--primary); }
+.clear-btn:hover { color:#1f1f1f; }
 
 /* ----- Question cards ----- */
 .qgrid { display:flex; flex-direction:column; gap:12px; }
@@ -594,8 +594,8 @@ a { color:var(--primary); text-decoration:none; }
   user-select:none;
 }
 .qcard-left { display:flex; align-items:center; flex:1; min-width:0; overflow:hidden; }
-.qcard-header .qaos { font-weight:700; font-size:.88rem; color:var(--primary); white-space:nowrap; flex-shrink:0; }
-.qcard-header .qmeta { font-size:.82rem; color:var(--primary); white-space:nowrap; flex-shrink:0; font-weight:400; }
+.qcard-header .qaos { font-weight:700; font-size:.88rem; color:#1f1f1f; white-space:nowrap; flex-shrink:0; }
+.qcard-header .qmeta { font-size:.82rem; color:var(--text-secondary); white-space:nowrap; flex-shrink:0; font-weight:400; }
 .qcard-header .qsection { font-size:.82rem; color:var(--muted); white-space:nowrap; flex-shrink:0; }
 .qcard-header .toggle-icon { color:var(--muted); font-size:.8rem; transition:transform .2s; }
 .qcard.open .toggle-icon { transform:rotate(90deg); }
@@ -624,9 +624,9 @@ a { color:var(--primary); text-decoration:none; }
 .sol-hidden { display:none; }
 .show-sol-btn {
   font-family:inherit;
-  background:var(--primary-light);
-  color:var(--primary);
-  border:1px solid rgba(25,96,97,.2);
+  background:#f0f0f0;
+  color:#2d2d2d;
+  border:1px solid #d5d5d5;
   padding:8px 20px;
   border-radius:8px;
   cursor:pointer;
@@ -636,7 +636,7 @@ a { color:var(--primary); text-decoration:none; }
   align-self:flex-start;
   margin-top:4px;
 }
-.show-sol-btn:hover { background:var(--primary); color:#fff; }
+.show-sol-btn:hover { background:#2d2d2d; color:#fff; }
 
 /* ----- Load More ----- */
 .load-more-wrap { display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:28px; }
@@ -652,7 +652,7 @@ a { color:var(--primary); text-decoration:none; }
   font-weight:500;
   transition:all .15s;
 }
-.load-more-btn:hover { border-color:var(--primary); color:var(--primary); }
+.load-more-btn:hover { border-color:#2d2d2d; color:#2d2d2d; }
 .load-more-count { font-size:.78rem; color:var(--muted); }
 
 /* ----- Mobile ----- */
@@ -661,7 +661,7 @@ a { color:var(--primary); text-decoration:none; }
   font-family:inherit;
   background:var(--surface);
   border:1px solid var(--border);
-  color:var(--primary);
+  color:#2d2d2d;
   padding:8px 16px;
   border-radius:8px;
   cursor:pointer;
@@ -788,9 +788,9 @@ a { color:var(--primary); text-decoration:none; }
 /* ----- Save controls ----- */
 .save-btn {
   font-family:inherit;
-  background:var(--primary-light);
-  color:var(--primary);
-  border:1px solid rgba(25,96,97,.2);
+  background:#f0f0f0;
+  color:#2d2d2d;
+  border:1px solid #d5d5d5;
   font-size:.85rem;
   font-weight:500;
   padding:8px 20px;
@@ -800,15 +800,15 @@ a { color:var(--primary); text-decoration:none; }
   align-self:flex-start;
   margin-top:4px;
 }
-.save-btn:hover { background:var(--primary); color:#fff; }
-.save-btn.saved { background:var(--primary); color:#fff; }
+.save-btn:hover { background:#2d2d2d; color:#fff; }
+.save-btn.saved { background:#2d2d2d; color:#fff; }
 
 /* ----- Complete controls ----- */
 .complete-btn {
   font-family:inherit;
-  background:var(--primary-light);
-  color:var(--primary);
-  border:1px solid rgba(25,96,97,.2);
+  background:#f0f0f0;
+  color:#2d2d2d;
+  border:1px solid #d5d5d5;
   font-size:.85rem;
   font-weight:500;
   padding:8px 20px;
@@ -818,15 +818,11 @@ a { color:var(--primary); text-decoration:none; }
   align-self:flex-start;
   margin-top:4px;
 }
-.complete-btn:hover { background:var(--primary); color:#fff; border-color:var(--primary); }
+.complete-btn:hover { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
 .complete-btn.completed { background:#e8f5ea; color:#2d6a4f; border-color:#c3ddc7; }
-.complete-btn.completed:hover { background:var(--primary); color:#fff; border-color:var(--primary); }
+.complete-btn.completed:hover { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
 .qcard.completed { background:#f6fdf7; border-color:#d1e8d5; }
-.qcard.saved { border-left:3px solid #196061; }
-body.methods .complete-btn.completed { background:#eff6ff; color:#1e40af; border-color:#c9dff7; }
-body.methods .complete-btn.completed:hover { background:var(--primary); color:#fff; border-color:var(--primary); }
-body.methods .qcard.completed { background:#f0f7ff; border-color:#c9dff7; }
-body.methods .qcard.saved { border-left:3px solid #2563eb; }
+.qcard.saved { border-left:3px solid #1f1f1f; }
 .card-actions {
   display:flex;
   align-items:flex-start;
@@ -943,7 +939,7 @@ body.methods .qcard.saved { border-left:3px solid #2563eb; }
 }
 .progress-bar-fill {
   height: 100%;
-  background: var(--primary);
+  background: #2d2d2d;
   border-radius: 99px;
   transition: width .4s ease;
 }
@@ -1129,16 +1125,16 @@ document.addEventListener('click', e => {
 
 const sectionLabels = { short_answer: 'Short Answer', multiple_choice: 'Multiple Choice', extended_response: 'Extended Response' };
 
-// Methods tag colours: all topic tags same blue
+// Methods tag colours: neutral charcoal
 const METHODS_TAG_STYLES = {
-  1: { bg:'#bfdbfe', color:'#1e3a5f' },
-  2: { bg:'#bfdbfe', color:'#1e3a5f' },
-  3: { bg:'#bfdbfe', color:'#1e3a5f' },
-  4: { bg:'#bfdbfe', color:'#1e3a5f' },
-  5: { bg:'#bfdbfe', color:'#1e3a5f' },
-  6: { bg:'#bfdbfe', color:'#1e3a5f' },
-  7: { bg:'#bfdbfe', color:'#1e3a5f' },
-  8: { bg:'#bfdbfe', color:'#1e3a5f' },
+  1: { bg:'#e8e8e8', color:'#1f1f1f' },
+  2: { bg:'#e8e8e8', color:'#1f1f1f' },
+  3: { bg:'#e8e8e8', color:'#1f1f1f' },
+  4: { bg:'#e8e8e8', color:'#1f1f1f' },
+  5: { bg:'#e8e8e8', color:'#1f1f1f' },
+  6: { bg:'#e8e8e8', color:'#1f1f1f' },
+  7: { bg:'#e8e8e8', color:'#1f1f1f' },
+  8: { bg:'#e8e8e8', color:'#1f1f1f' },
   9: { bg:'#f3f4f6', color:'#9ca3af' },
 };
 
@@ -1767,7 +1763,7 @@ function renderProgressView() {
     <p style="font-family:'Poppins',system-ui,sans-serif;font-size:.95rem;font-weight:600;color:#1a202c;margin:0 0 6px;">Mark as done?</p>
     <p style="font-family:'Poppins',system-ui,sans-serif;font-size:.83rem;color:#6b7280;margin:0 0 20px;">Would you like to mark this question as completed?</p>
     <div style="display:flex;gap:10px;justify-content:center;">
-      <button onclick="markCompletePromptYes()" style="background:var(--primary);color:#fff;border:none;border-radius:8px;padding:9px 22px;font-family:'Poppins',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Mark as Done</button>
+      <button onclick="markCompletePromptYes()" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-family:'Poppins',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Mark as Done</button>
       <button onclick="markCompletePromptNo()" style="background:#f3f4f6;color:#374151;border:none;border-radius:8px;padding:9px 22px;font-family:'Poppins',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">No thanks</button>
     </div>
   </div>
@@ -1777,7 +1773,7 @@ function renderProgressView() {
     <p style="font-family:'Poppins',system-ui,sans-serif;font-size:.95rem;font-weight:600;color:#1a202c;margin:0 0 6px;">Unsave this question?</p>
     <p style="font-family:'Poppins',system-ui,sans-serif;font-size:.83rem;color:#6b7280;margin:0 0 20px;">You've marked this as done — would you like to remove it from your saved questions?</p>
     <div style="display:flex;gap:10px;justify-content:center;">
-      <button onclick="unsavePromptYes()" style="background:var(--primary);color:#fff;border:none;border-radius:8px;padding:9px 22px;font-family:'Poppins',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Unsave</button>
+      <button onclick="unsavePromptYes()" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-family:'Poppins',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Unsave</button>
       <button onclick="unsavePromptNo()" style="background:#f3f4f6;color:#374151;border:none;border-radius:8px;padding:9px 22px;font-family:'Poppins',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Keep Saved</button>
     </div>
   </div>
@@ -3023,7 +3019,7 @@ a { color:var(--primary); text-decoration:none; }
   padding:0 20px;
   height:44px;
   gap:2px;
-  background:rgba(0,0,0,.12);
+  background:#1f1f1f;
 }
 .back-link {
   color:rgba(255,255,255,.65); font-size:.82rem; font-weight:500;
