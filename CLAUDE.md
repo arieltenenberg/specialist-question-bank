@@ -35,6 +35,8 @@ Questions are classified into Areas of Study (AOS) per subject.
 | `POST /api/saved` | Toggle a question saved/unsaved (subject in POST body) |
 | `GET /api/completed?subject=specialist\|methods` | Get current user's completed question IDs |
 | `POST /api/completed` | Toggle a question completed/uncompleted (subject in POST body) |
+| `GET /api/leaderboard?subject=specialist\|methods` | Completion counts for all leaderboard-enabled users (leaderboard members + admin only) |
+| `POST /admin/users/<google_id>/leaderboard` | Toggle leaderboard membership for a user |
 
 ### Data & Config
 - `specialist_questions.json` — Specialist questions
@@ -309,6 +311,17 @@ A per-student "funny popup" that fires randomly when a student marks a question 
 ### Notes
 - The DB column was originally integer 0/1, migrated to text in April 2025 — existing `1` values were updated to `'jacaranda_moses'`
 - `funny_popup` is NOT stored in the session — it's read fresh from the DB on every browse page load, so admin changes take effect immediately without requiring the student to re-login
+
+## Leaderboard Feature
+
+A friendly competition widget for selected students, showing per-subject completion counts side by side.
+
+- **Visibility:** Only shown to users with `leaderboard=1` on the `users` table, plus admin. `get_show_leaderboard(user)` determines this; always `True` in DEV_MODE.
+- **UI:** Small widget at the very top of the sidebar (above "Hide Completed"), showing rank, first name, count, and ✓ per entry. Current user's row is bold.
+- **Subject scope:** Shows counts for the current subject only (Specialist on `/specialist`, Methods on `/methods`).
+- **Admin toggle:** 🏆 button per student in the Approved Students section of `/admin/users`. Clicking toggles `leaderboard` column; button turns gold when on.
+- **Storage:** `leaderboard INTEGER NOT NULL DEFAULT 0` column on `users` table (migrated via try/except in `init_db()`).
+- **Data fetch:** `loadLeaderboard()` JS function called on page load; fetches `/api/leaderboard?subject=<subject>` and renders into `#leaderboard-entries`.
 
 ## Known Issues
 _(none)_
