@@ -477,7 +477,7 @@ a { color:var(--primary); text-decoration:none; }
   padding:10px 12px;
 }
 .leaderboard-widget-title {
-  font-size:.7rem;
+  font-size:.75rem;
   text-transform:uppercase;
   letter-spacing:.1em;
   color:var(--primary);
@@ -493,10 +493,10 @@ a { color:var(--primary); text-decoration:none; }
   color:var(--text-secondary);
 }
 .leaderboard-entry.you { font-weight:700; color:var(--text); }
-.leaderboard-rank { min-width:14px; font-size:.72rem; color:var(--muted); }
+.leaderboard-rank { min-width:14px; font-size:.75rem; color:var(--muted); }
 .leaderboard-name { flex:1; }
 .leaderboard-count { font-weight:600; color:var(--primary); }
-.leaderboard-tick { color:#4caf50; font-size:.72rem; margin-left:1px; }
+.leaderboard-tick { color:#4caf50; font-size:.75rem; margin-left:1px; }
 
 /* ----- Layout ----- */
 .layout { display:flex; min-height:calc(100vh - 96px); }
@@ -514,7 +514,7 @@ a { color:var(--primary); text-decoration:none; }
   height:calc(100vh - 96px);
 }
 .sidebar h3 {
-  font-size:.7rem;
+  font-size:.75rem;
   text-transform:uppercase;
   letter-spacing:.1em;
   color:var(--muted);
@@ -593,32 +593,22 @@ a { color:var(--primary); text-decoration:none; }
   cursor:pointer;
   user-select:none;
 }
-.qcard-header .qnum {
-  font-weight:600;
-  font-size:.88rem;
-  color:var(--primary);
-  min-width:32px;
-}
-.qcard-header .qtags { display:flex; gap:6px; flex-wrap:wrap; flex:1; }
-.qtag {
-  font-size:.7rem;
-  font-weight:500;
-  padding:3px 10px;
-  border-radius:99px;
-}
-.qtag.aos { background:#e6f2f2; color:var(--primary); }
-.qtag.pub { background:#f7fafc; color:var(--text-secondary); border:1px solid var(--border); }
-.qcard-header .marks { color:var(--muted); font-size:.8rem; white-space:nowrap; }
+.qcard-left { display:flex; align-items:center; flex:1; min-width:0; overflow:hidden; }
+.qcard-header .qaos { font-weight:700; font-size:.88rem; color:var(--primary); white-space:nowrap; flex-shrink:0; }
+.qcard-header .qmeta { font-size:.82rem; color:var(--primary); white-space:nowrap; flex-shrink:0; font-weight:400; }
+.qcard-header .qsection { font-size:.82rem; color:var(--muted); white-space:nowrap; flex-shrink:0; }
 .qcard-header .toggle-icon { color:var(--muted); font-size:.8rem; transition:transform .2s; }
 .qcard.open .toggle-icon { transform:rotate(90deg); }
 
-.qcard-body { display:none; padding:0 20px 20px; }
-.qcard.open .qcard-body { display:block; }
+.qcard-body-outer { display:grid; grid-template-rows:0fr; transition:grid-template-rows .22s ease; }
+.qcard.open .qcard-body-outer { grid-template-rows:1fr; }
+.qcard-body { overflow:hidden; padding:0 20px; }
+.qcard.open .qcard-body { padding-bottom:20px; }
 
 .qimages { display:flex; gap:20px; flex-wrap:wrap; }
 .qimg-wrap { flex:1; min-width:280px; }
 .qimg-wrap h4 {
-  font-size:.72rem;
+  font-size:.75rem;
   color:var(--muted);
   margin-bottom:8px;
   text-transform:uppercase;
@@ -649,23 +639,22 @@ a { color:var(--primary); text-decoration:none; }
 }
 .show-sol-btn:hover { background:var(--primary); color:#fff; }
 
-/* ----- Pagination ----- */
-.pagination { display:flex; justify-content:center; gap:6px; margin-top:28px; }
-.page-btn {
+/* ----- Load More ----- */
+.load-more-wrap { display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:28px; }
+.load-more-btn {
   font-family:inherit;
   background:var(--surface);
   border:1px solid var(--border);
   color:var(--text-secondary);
-  padding:7px 14px;
+  padding:10px 36px;
   border-radius:8px;
   cursor:pointer;
   font-size:.84rem;
   font-weight:500;
   transition:all .15s;
 }
-.page-btn:hover { border-color:var(--primary); color:var(--primary); }
-.page-btn.active { background:var(--primary); border-color:var(--primary); color:#fff; }
-.page-btn:disabled { opacity:.35; cursor:default; }
+.load-more-btn:hover { border-color:var(--primary); color:var(--primary); }
+.load-more-count { font-size:.78rem; color:var(--muted); }
 
 /* ----- Mobile ----- */
 .show-sidebar-btn {
@@ -714,8 +703,6 @@ a { color:var(--primary); text-decoration:none; }
   .qimages { flex-direction:column; }
   .qimg-wrap { min-width:0; width:100%; }
   .card-actions { flex-wrap:wrap; }
-  .pagination { flex-wrap:wrap; }
-  .page-btn { padding:9px 12px; }
   .show-sol-btn { padding:10px 20px; }
   .save-btn { padding:10px 20px; }
 }
@@ -844,7 +831,9 @@ body.methods .qcard.saved { border-left:3px solid #2563eb; }
   align-items:flex-start;
   justify-content:space-between;
   gap:8px;
-  margin-top:4px;
+  margin-top:16px;
+  padding-top:14px;
+  border-top:1px solid var(--border);
 }
 .card-actions-left { display:flex; gap:8px; align-items:flex-start; }
 
@@ -926,9 +915,10 @@ body.methods .qcard.saved { border-left:3px solid #2563eb; }
       <button class="show-sidebar-btn" onclick="toggleSidebar()">☰ Filters</button>
       <div class="active-filters" id="active-filters"></div>
       <button class="clear-btn" id="clear-btn" style="display:none" onclick="clearAll()">Clear all</button>
+      <span class="question-count" id="question-count" style="font-size:.78rem;color:var(--muted);margin-left:auto;white-space:nowrap;"></span>
     </div>
     <div class="qgrid" id="qgrid"></div>
-    <div class="pagination" id="pagination"></div>
+    <div class="load-more-wrap" id="load-more-wrap"></div>
   </div>
 </div>
 
@@ -1105,6 +1095,7 @@ function clearAll() {
 }
 
 function applyFilters() {
+  page = 0;
   filtered = allQ.filter(q => {
     if (IS_METHODS) {
       // Tag filter applies to non-extended questions
@@ -1140,7 +1131,7 @@ function applyFilters() {
 
   renderActiveFilters();
   renderCards();
-  renderPagination();
+  renderLoadMore();
 }
 
 function renderActiveFilters() {
@@ -1164,6 +1155,12 @@ function removeFilter(key, value) {
   applyFilters();
 }
 
+function getAosText(q) {
+  if (!IS_METHODS) return q.aos_name;
+  if (q.section === 'extended_response') return q.aos_name;
+  return (q.tag_names || [q.aos_name]).join(', ');
+}
+
 function renderMethodsTagPills(q) {
   if (q.section === 'extended_response') {
     const s = METHODS_TAG_STYLES[q.aos] || METHODS_TAG_STYLES[6];
@@ -1179,21 +1176,27 @@ function renderMethodsTagPills(q) {
 
 function renderCards() {
   const grid = document.getElementById('qgrid');
-  const start = page * PER_PAGE;
-  const pageQ = filtered.slice(start, start + PER_PAGE);
+  const countEl = document.getElementById('question-count');
+  const visible = filtered.slice(0, (page + 1) * PER_PAGE);
 
-  if (!pageQ.length) {
-    grid.innerHTML = '<div class="no-results"><p>No questions match your filters</p><button class="clear-btn" onclick="clearAll()">Clear all filters</button></div>';
+  if (countEl) countEl.textContent = filtered.length === 1 ? '1 question' : `${filtered.length} questions`;
+
+  if (!visible.length) {
+    if (savedOnly) {
+      grid.innerHTML = '<div class="no-results"><p style="font-size:2rem;margin-bottom:12px">★</p><p>No saved questions yet</p><p style="font-size:.88rem;margin-top:6px">Hit <strong>Save</strong> on any question to find it here later</p></div>';
+    } else if (completedOnly) {
+      grid.innerHTML = '<div class="no-results"><p style="font-size:2rem;margin-bottom:12px">✓</p><p>No completed questions yet</p><p style="font-size:.88rem;margin-top:6px">Mark questions as done to track your progress</p></div>';
+    } else {
+      grid.innerHTML = '<div class="no-results"><p>No questions match your filters</p><button class="clear-btn" onclick="clearAll()">Clear all filters</button></div>';
+    }
     return;
   }
+  const pageQ = visible;
 
   grid.innerHTML = pageQ.map(q => {
-    const aosPills = IS_METHODS
-      ? renderMethodsTagPills(q)
-      : `<span class="qtag aos">${q.aos_name}</span>`;
-    const tagHtml = aosPills + `<span class="qtag pub">${q.publisher} ${q.year}</span>`;
-    const sLabel = sectionLabels[q.section] || q.section;
-    const marksStr = q.marks ? `${q.marks} marks` : '';
+    const aosText = getAosText(q);
+    const sLabel = sectionLabels[q.section] || '';
+
     const solInner = q.solution_image
       ? `<div class="qimg-wrap"><h4>Solution</h4><img src="${q.solution_image}" loading="lazy"/></div>`
       : '<div class="qimg-wrap"><h4>Solution</h4><p style="color:var(--muted);font-size:.85rem">Not available</p></div>';
@@ -1224,16 +1227,20 @@ function renderCards() {
 
     return `<div class="qcard" id="qcard-${q.id}" onclick="this.classList.toggle('open')">
       <div class="qcard-header">
-        <span class="qnum">Q${q.question_number}</span>
-        <div class="qtags">${tagHtml}</div>
-        <span class="marks">${sLabel}${marksStr ? ' &middot; '+marksStr : ''}</span>
+        <div class="qcard-left">
+          <span class="qaos">${aosText}</span>
+          <span class="qmeta">&nbsp;·&nbsp;${sLabel}</span>
+        </div>
+        <span class="qsection">${q.publisher} ${q.year} · Q${q.question_number}</span>
         <span class="toggle-icon">&#9656;</span>
       </div>
-      <div class="qcard-body" onclick="event.stopPropagation()">
-        <div class="qimg-wrap"><h4>Question</h4><img src="${q.question_image}" loading="lazy"/></div>
-        ${cardActions}
-        <div class="sol-wrap sol-hidden">${solInner}</div>
-        ${adminControls}
+      <div class="qcard-body-outer">
+        <div class="qcard-body" onclick="event.stopPropagation()">
+          <div class="qimg-wrap"><h4>Question</h4><img src="${q.question_image}" loading="lazy"/></div>
+          ${cardActions}
+          <div class="sol-wrap sol-hidden">${solInner}</div>
+          ${adminControls}
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -1249,20 +1256,18 @@ function renderCards() {
   });
 }
 
-function renderPagination() {
-  const el = document.getElementById('pagination');
-  const total = Math.ceil(filtered.length / PER_PAGE);
-  if (total <= 1) { el.innerHTML = ''; return; }
+function renderLoadMore() {
+  const el = document.getElementById('load-more-wrap');
+  const shown = (page + 1) * PER_PAGE;
+  if (shown >= filtered.length) { el.innerHTML = ''; return; }
+  const remaining = filtered.length - shown;
+  el.innerHTML = `<button class="load-more-btn" onclick="loadMore()">Load more</button><span class="load-more-count">${shown} of ${filtered.length} shown</span>`;
+}
 
-  let html = `<button class="page-btn" ${page===0?'disabled':''} onclick="goPage(${page-1})">&larr; Prev</button>`;
-
-  const start = Math.max(0, page - 3);
-  const end = Math.min(total, start + 7);
-  for (let i = start; i < end; i++) {
-    html += `<button class="page-btn ${i===page?'active':''}" onclick="goPage(${i})">${i+1}</button>`;
-  }
-  html += `<button class="page-btn" ${page>=total-1?'disabled':''} onclick="goPage(${page+1})">Next &rarr;</button>`;
-  el.innerHTML = html;
+function loadMore() {
+  page++;
+  renderCards();
+  renderLoadMore();
 }
 
 function toggleSol(btn) {
@@ -1293,13 +1298,10 @@ function adminReclassify(id, sel) {
       // Refresh the tag pills for this card
       const card = document.getElementById('qcard-' + id);
       if (card) {
-        const pillContainer = card.querySelector('.qtags');
-        if (pillContainer) {
+        const aosEl = card.querySelector('.qaos');
+        if (aosEl) {
           const updatedQ = allQ.find(q => q.id === id);
-          if (updatedQ) {
-            const aosPills = IS_METHODS ? renderMethodsTagPills(updatedQ) : `<span class="qtag aos">${aosName}</span>`;
-            pillContainer.innerHTML = aosPills + `<span class="qtag pub">${updatedQ.publisher} ${updatedQ.year}</span>`;
-          }
+          if (updatedQ) aosEl.textContent = getAosText(updatedQ);
         }
       }
     }
@@ -2093,8 +2095,8 @@ def browse_methods():
     return render_template_string(BROWSE_HTML, is_admin=admin_required(), user_name=user["name"] if user else "",
                                   subject="methods", subject_name="Mathematical Methods",
                                   aos_map=cfg["aos_map"], is_methods=True,
-                                  css_primary="#2563eb", css_primary_dark="#1e3a5f",
-                                  css_primary_light="#eff6ff", css_primary_hover="#1d4ed8",
+                                  css_primary="#1e40af", css_primary_dark="#1e3a5f",
+                                  css_primary_light="#eff6ff", css_primary_hover="#1e3a8a",
                                   funny_popup=get_funny_popup(user),
                                   show_leaderboard=get_show_leaderboard(user))
 
