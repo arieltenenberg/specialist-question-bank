@@ -315,10 +315,73 @@ a { color:var(--primary); text-decoration:none; }
   overflow:hidden;
   text-overflow:ellipsis;
 }
-.user-avatar-wrap {
-  position:relative;
+.topbar-right {
+  display:flex;
+  align-items:center;
+  gap:6px;
   justify-self:end;
 }
+.user-avatar-wrap {
+  position:relative;
+}
+.settings-wrap {
+  position:relative;
+}
+.settings-icon-btn {
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  background:rgba(255,255,255,.13);
+  border:1.5px solid rgba(255,255,255,.25);
+  color:rgba(255,255,255,.85);
+  font-size:1rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:background .15s;
+  user-select:none;
+  padding:0;
+  line-height:1;
+}
+.settings-icon-btn:hover { background:rgba(255,255,255,.25); }
+.settings-dropdown {
+  display:none;
+  position:absolute;
+  top:calc(100% + 10px);
+  right:0;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:10px;
+  box-shadow:var(--shadow-md);
+  min-width:200px;
+  z-index:200;
+  overflow:hidden;
+}
+.settings-dropdown.open { display:block; }
+.settings-dropdown-title {
+  padding:10px 14px 8px;
+  font-size:.75rem;
+  font-weight:600;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  border-bottom:1px solid var(--border);
+}
+.settings-toggle {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 14px;
+  cursor:pointer;
+  transition:background .15s;
+  user-select:none;
+}
+.settings-toggle + .settings-toggle { border-top:1px solid var(--border); }
+.settings-toggle:hover { background:var(--bg); }
+.settings-toggle span { font-size:.84rem; color:var(--text); }
+.settings-toggle.active .toggle-switch { background:var(--primary); }
+.settings-toggle.active .toggle-switch::after { transform:translateX(15px); }
 .user-avatar {
   width:34px;
   height:34px;
@@ -384,26 +447,6 @@ a { color:var(--primary); text-decoration:none; }
 .topbar .tab:hover { color:#fff; border-bottom-color:rgba(255,255,255,.4); }
 .topbar .tab.active { color:#fff; border-bottom-color:#fff; font-weight:600; }
 
-/* ----- Sidebar toggle switch ----- */
-.sidebar-toggles {
-  border:1px solid var(--border);
-  border-radius:8px;
-  background:var(--bg);
-  margin-bottom:16px;
-  overflow:hidden;
-}
-.sidebar-toggle {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:9px 12px;
-  cursor:pointer;
-  transition:background .15s;
-  user-select:none;
-}
-.sidebar-toggle + .sidebar-toggle { border-top:1px solid var(--border); }
-.sidebar-toggle:hover { background:var(--bg-hover, #f3f4f6); }
-.sidebar-toggle span { font-size:.83rem; color:var(--text-secondary); font-weight:500; }
 .toggle-switch {
   width:34px;
   height:19px;
@@ -425,9 +468,6 @@ a { color:var(--primary); text-decoration:none; }
   transition:transform .2s;
   box-shadow:0 1px 3px rgba(0,0,0,.2);
 }
-.sidebar-toggle.active .toggle-switch { background:var(--primary); }
-.sidebar-toggle.active .toggle-switch::after { transform:translateX(15px); }
-
 /* ----- Leaderboard widget ----- */
 .leaderboard-widget {
   border:1px solid var(--border);
@@ -814,11 +854,29 @@ body.methods .qcard.completed { background:#f0f7ff; border-color:#c9dff7; }
   <div class="topbar-top">
     <a class="back-link" href="/">← Subjects</a>
     <h1>{{ subject_name }}</h1>
-    <div class="user-avatar-wrap" id="user-avatar-btn" onclick="toggleUserDropdown()">
-      <div class="user-avatar" id="user-avatar-initials"></div>
-      <div class="user-dropdown" id="user-dropdown">
-        <div class="user-dropdown-header">Signed in as {{ user_name }}</div>
-        <a href="/logout">Sign out</a>
+    <div class="topbar-right">
+      <div class="settings-wrap" id="settings-btn">
+        <button class="settings-icon-btn" onclick="toggleSettingsDropdown()" aria-label="View settings">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="9" cy="6" r="2.5" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="2.5" fill="currentColor" stroke="none"/><circle cx="9" cy="18" r="2.5" fill="currentColor" stroke="none"/></svg>
+        </button>
+        <div class="settings-dropdown" id="settings-dropdown">
+          <div class="settings-dropdown-title">View Options</div>
+          <div class="settings-toggle" id="hide-completed-btn" onclick="event.stopPropagation(); toggleHideCompleted()">
+            <span>Hide Completed</span>
+            <div class="toggle-switch"></div>
+          </div>
+          <div class="settings-toggle" id="hide-saved-btn" onclick="event.stopPropagation(); toggleHideSaved()">
+            <span>Hide Saved</span>
+            <div class="toggle-switch"></div>
+          </div>
+        </div>
+      </div>
+      <div class="user-avatar-wrap" id="user-avatar-btn" onclick="toggleUserDropdown()">
+        <div class="user-avatar" id="user-avatar-initials"></div>
+        <div class="user-dropdown" id="user-dropdown">
+          <div class="user-dropdown-header">Signed in as {{ user_name }}</div>
+          <a href="/logout">Sign out</a>
+        </div>
       </div>
     </div>
   </div>
@@ -838,16 +896,6 @@ body.methods .qcard.completed { background:#f0f7ff; border-color:#c9dff7; }
       <div id="leaderboard-entries"><span style="font-size:.8rem;color:var(--muted)">Loading…</span></div>
     </div>
     {% endif %}
-    <div class="sidebar-toggles">
-      <div class="sidebar-toggle" id="hide-completed-btn" onclick="toggleHideCompleted()">
-        <span>Hide Completed</span>
-        <div class="toggle-switch"></div>
-      </div>
-      <div class="sidebar-toggle" id="hide-saved-btn" onclick="toggleHideSaved()">
-        <span>Hide Saved</span>
-        <div class="toggle-switch"></div>
-      </div>
-    </div>
     {% if is_admin %}
     <a class="sort-unsorted-btn" id="sort-unsorted-btn" href="/classify?subject={{ subject }}&unsorted=1">Sort Unsorted (<span id="unsorted-count">…</span>)</a>
     {% endif %}
@@ -942,10 +990,17 @@ loadLeaderboard();
 })();
 function toggleUserDropdown() {
   document.getElementById('user-dropdown').classList.toggle('open');
+  document.getElementById('settings-dropdown').classList.remove('open');
+}
+function toggleSettingsDropdown() {
+  document.getElementById('settings-dropdown').classList.toggle('open');
+  document.getElementById('user-dropdown').classList.remove('open');
 }
 document.addEventListener('click', e => {
-  const wrap = document.getElementById('user-avatar-btn');
-  if (wrap && !wrap.contains(e.target)) document.getElementById('user-dropdown').classList.remove('open');
+  const avatarWrap = document.getElementById('user-avatar-btn');
+  const settingsWrap = document.getElementById('settings-btn');
+  if (avatarWrap && !avatarWrap.contains(e.target)) document.getElementById('user-dropdown').classList.remove('open');
+  if (settingsWrap && !settingsWrap.contains(e.target)) document.getElementById('settings-dropdown').classList.remove('open');
 });
 
 const sectionLabels = { short_answer: 'Short Answer', multiple_choice: 'Multiple Choice', extended_response: 'Extended Response' };
