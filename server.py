@@ -1421,20 +1421,17 @@ function markCompletePromptYes() {
         if (btn) markCompleteBtn(btn, true);
         const card = document.getElementById('qcard-' + id);
         if (card) card.classList.add('completed');
-        if (data.marked && funnyPopup === 'jacaranda_moses' && Math.random() < 0.1) showJacarandaModal();
-        if (data.marked && funnyPopup === 'levick' && Math.random() < 0.1) showLevickModal();
-        if (data.marked && funnyPopup === 'cordo' && Math.random() < 0.1) showCorodoModal();
+        if (funnyPopup === 'jacaranda_moses' && Math.random() < 0.1) showJacarandaModal();
+        if (funnyPopup === 'levick' && Math.random() < 0.1) showLevickModal();
+        if (funnyPopup === 'cordo' && Math.random() < 0.1) showCorodoModal();
+        if (hideCompleted && !completedOnly && !savedOnly) applyFilters();
       }
-      applyFilters();
     });
-  } else {
-    applyFilters();
   }
 }
 
 function markCompletePromptNo() {
   document.getElementById('mark-complete-prompt').style.display = 'none';
-  applyFilters();
 }
 
 function showUnsavePrompt(id) {
@@ -1456,14 +1453,13 @@ function unsavePromptYes() {
       savedIds.delete(id);
       const btn = document.getElementById('save-btn-' + id);
       if (btn) markSaveBtn(btn, false);
+      if (savedOnly || hideSaved) applyFilters();
     }
-    applyFilters();
   });
 }
 
 function unsavePromptNo() {
   document.getElementById('unsave-prompt').style.display = 'none';
-  applyFilters();
 }
 
 function markSaveBtn(btn, saved) {
