@@ -855,7 +855,6 @@ body.methods .qcard.saved { border-left:3px solid #2563eb; }
   user-select: none;
   padding: 0;
   line-height: 1;
-  margin-right: 8px;
 }
 .progress-btn-topbar:hover { background: rgba(255,255,255,.25); }
 
