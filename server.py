@@ -627,10 +627,10 @@ a { color:var(--primary); text-decoration:none; }
   background:var(--primary-light);
   color:var(--primary);
   border:1px solid rgba(25,96,97,.2);
-  padding:9px 20px;
+  padding:8px 20px;
   border-radius:8px;
   cursor:pointer;
-  font-size:.82rem;
+  font-size:.85rem;
   font-weight:500;
   transition:all .15s;
   align-self:flex-start;
@@ -1174,13 +1174,75 @@ function renderMethodsTagPills(q) {
   }).join('');
 }
 
+function buildCardHtml(q) {
+  const aosText = getAosText(q);
+  const sLabel = sectionLabels[q.section] || '';
+  const solInner = q.solution_image
+    ? `<div class="qimg-wrap"><h4>Solution</h4><img src="${q.solution_image}" loading="lazy"/></div>`
+    : '<div class="qimg-wrap"><h4>Solution</h4><p style="color:var(--muted);font-size:.85rem">Not available</p></div>';
+  const solBtn = q.solution_image
+    ? `<button class="show-sol-btn" onclick="toggleSol(this)">Show Solution</button>`
+    : '';
+  const adminControls = IS_ADMIN ? `
+    <div class="admin-bar" onclick="event.stopPropagation()">
+      <select class="admin-reclassify" onchange="adminReclassify('${q.id}', this)">
+        <option value="">Reclassify…</option>
+        {% for num, name in aos_map.items() %}{% if num != 0 and num != 9 %}<option value="{{ num }}|{{ name }}">{{ num }} — {{ name }}</option>{% endif %}{% endfor %}
+        <option value="0|Unsorted">Unsorted</option>
+      </select>
+      <button class="admin-hide-btn" onclick="adminHide('${q.id}', ${q.aos === 9 ? 0 : 9}, this)">${q.aos === 9 ? 'Unhide' : 'Hide'}</button>
+      ${q.aos === 9 ? '<span class="hidden-badge">HIDDEN</span>' : ''}
+    </div>` : '';
+  const cardActions = !IS_ADMIN ? `
+    <div class="card-actions">
+      <div class="card-actions-left">
+        ${solBtn}
+        <button class="save-btn" id="save-btn-${q.id}" onclick="toggleSaved('${q.id}', this)">Save</button>
+        <button class="complete-btn" id="complete-btn-${q.id}" onclick="toggleCompleted('${q.id}', this)">Mark as Done</button>
+      </div>
+      <button class="flag-btn" id="flag-btn-${q.id}" onclick="submitFlag('${q.id}', this)">⚑ Flag as misclassified</button>
+    </div>` : solBtn;
+  return `<div class="qcard" id="qcard-${q.id}" onclick="this.classList.toggle('open')">
+    <div class="qcard-header">
+      <div class="qcard-left">
+        <span class="qaos">${aosText}</span>
+        <span class="qmeta">&nbsp;·&nbsp;${sLabel}</span>
+      </div>
+      <span class="qsection">${q.publisher} ${q.year} · Q${q.question_number}</span>
+      <span class="toggle-icon">&#9656;</span>
+    </div>
+    <div class="qcard-body-outer">
+      <div class="qcard-body" onclick="event.stopPropagation()">
+        <div class="qimg-wrap"><h4>Question</h4><img src="${q.question_image}" loading="lazy"/></div>
+        ${cardActions}
+        <div class="sol-wrap sol-hidden">${solInner}</div>
+        ${adminControls}
+      </div>
+    </div>
+  </div>`;
+}
+
+function applyCardStates(questions) {
+  questions.forEach(q => {
+    if (savedIds.has(q.id)) {
+      const btn = document.getElementById('save-btn-' + q.id);
+      if (btn) markSaveBtn(btn, true);
+    }
+    if (completedIds.has(q.id)) {
+      const btn = document.getElementById('complete-btn-' + q.id);
+      if (btn) markCompleteBtn(btn, true);
+      const card = document.getElementById('qcard-' + q.id);
+      if (card) card.classList.add('completed');
+    }
+  });
+}
+
 function renderCards() {
   const grid = document.getElementById('qgrid');
   const countEl = document.getElementById('question-count');
-  const visible = filtered.slice(0, (page + 1) * PER_PAGE);
-
   if (countEl) countEl.textContent = filtered.length === 1 ? '1 question' : `${filtered.length} questions`;
 
+  const visible = filtered.slice(0, (page + 1) * PER_PAGE);
   if (!visible.length) {
     if (savedOnly) {
       grid.innerHTML = '<div class="no-results"><p style="font-size:2rem;margin-bottom:12px">★</p><p>No saved questions yet</p><p style="font-size:.88rem;margin-top:6px">Hit <strong>Save</strong> on any question to find it here later</p></div>';
@@ -1191,82 +1253,26 @@ function renderCards() {
     }
     return;
   }
-  const pageQ = visible;
-
-  grid.innerHTML = pageQ.map(q => {
-    const aosText = getAosText(q);
-    const sLabel = sectionLabels[q.section] || '';
-
-    const solInner = q.solution_image
-      ? `<div class="qimg-wrap"><h4>Solution</h4><img src="${q.solution_image}" loading="lazy"/></div>`
-      : '<div class="qimg-wrap"><h4>Solution</h4><p style="color:var(--muted);font-size:.85rem">Not available</p></div>';
-    const solBtn = q.solution_image
-      ? `<button class="show-sol-btn" onclick="toggleSol(this)">Show Solution</button>`
-      : '';
-
-    const adminControls = IS_ADMIN ? `
-      <div class="admin-bar" onclick="event.stopPropagation()">
-        <select class="admin-reclassify" onchange="adminReclassify('${q.id}', this)">
-          <option value="">Reclassify…</option>
-          {% for num, name in aos_map.items() %}{% if num != 0 and num != 9 %}<option value="{{ num }}|{{ name }}">{{ num }} — {{ name }}</option>{% endif %}{% endfor %}
-          <option value="0|Unsorted">Unsorted</option>
-        </select>
-        <button class="admin-hide-btn" onclick="adminHide('${q.id}', ${q.aos === 9 ? 0 : 9}, this)">${q.aos === 9 ? 'Unhide' : 'Hide'}</button>
-        ${q.aos === 9 ? '<span class="hidden-badge">HIDDEN</span>' : ''}
-      </div>` : '';
-
-    const cardActions = !IS_ADMIN ? `
-      <div class="card-actions">
-        <div class="card-actions-left">
-          ${solBtn}
-          <button class="save-btn" id="save-btn-${q.id}" onclick="toggleSaved('${q.id}', this)">Save</button>
-          <button class="complete-btn" id="complete-btn-${q.id}" onclick="toggleCompleted('${q.id}', this)">Mark as Done</button>
-        </div>
-        <button class="flag-btn" id="flag-btn-${q.id}" onclick="submitFlag('${q.id}', this)">⚑ Flag as misclassified</button>
-      </div>` : solBtn;
-
-    return `<div class="qcard" id="qcard-${q.id}" onclick="this.classList.toggle('open')">
-      <div class="qcard-header">
-        <div class="qcard-left">
-          <span class="qaos">${aosText}</span>
-          <span class="qmeta">&nbsp;·&nbsp;${sLabel}</span>
-        </div>
-        <span class="qsection">${q.publisher} ${q.year} · Q${q.question_number}</span>
-        <span class="toggle-icon">&#9656;</span>
-      </div>
-      <div class="qcard-body-outer">
-        <div class="qcard-body" onclick="event.stopPropagation()">
-          <div class="qimg-wrap"><h4>Question</h4><img src="${q.question_image}" loading="lazy"/></div>
-          ${cardActions}
-          <div class="sol-wrap sol-hidden">${solInner}</div>
-          ${adminControls}
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-  savedIds.forEach(id => {
-    const btn = document.getElementById('save-btn-' + id);
-    if (btn) markSaveBtn(btn, true);
-  });
-  completedIds.forEach(id => {
-    const btn = document.getElementById('complete-btn-' + id);
-    if (btn) markCompleteBtn(btn, true);
-    const card = document.getElementById('qcard-' + id);
-    if (card) card.classList.add('completed');
-  });
+  grid.innerHTML = visible.map(buildCardHtml).join('');
+  applyCardStates(visible);
 }
 
 function renderLoadMore() {
   const el = document.getElementById('load-more-wrap');
   const shown = (page + 1) * PER_PAGE;
   if (shown >= filtered.length) { el.innerHTML = ''; return; }
-  const remaining = filtered.length - shown;
   el.innerHTML = `<button class="load-more-btn" onclick="loadMore()">Load more</button><span class="load-more-count">${shown} of ${filtered.length} shown</span>`;
 }
 
 function loadMore() {
+  const start = (page + 1) * PER_PAGE;
   page++;
-  renderCards();
+  const newQ = filtered.slice(start, (page + 1) * PER_PAGE);
+  const grid = document.getElementById('qgrid');
+  const tmp = document.createElement('div');
+  tmp.innerHTML = newQ.map(buildCardHtml).join('');
+  while (tmp.firstChild) grid.appendChild(tmp.firstChild);
+  applyCardStates(newQ);
   renderLoadMore();
 }
 
@@ -1459,7 +1465,7 @@ function unsavePromptNo() {
 }
 
 function markSaveBtn(btn, saved) {
-  btn.textContent = saved ? 'Unsave' : 'Save';
+  btn.textContent = saved ? 'Saved' : 'Save';
   btn.classList.toggle('saved', saved);
   const card = btn.closest('.qcard');
   if (card) card.classList.toggle('saved', saved);
