@@ -600,10 +600,9 @@ a { color:var(--primary); text-decoration:none; }
 .qcard-header .toggle-icon { color:var(--muted); font-size:.8rem; transition:transform .2s; }
 .qcard.open .toggle-icon { transform:rotate(90deg); }
 
-.qcard-body-outer { display:grid; grid-template-rows:0fr; transition:grid-template-rows .22s ease; }
-.qcard.open .qcard-body-outer { grid-template-rows:1fr; }
-.qcard-body { overflow:hidden; padding:0 20px; }
-.qcard.open .qcard-body { padding-bottom:20px; }
+.qcard-body-outer { display:none; }
+.qcard.open .qcard-body-outer { display:block; }
+.qcard-body { padding:0 20px 20px; }
 
 .qimages { display:flex; gap:20px; flex-wrap:wrap; }
 .qimg-wrap { flex:1; min-width:280px; }
@@ -772,17 +771,18 @@ a { color:var(--primary); text-decoration:none; }
 /* ----- Flag controls ----- */
 .flag-btn {
   font-family:inherit;
-  font-size:.78rem;
+  font-size:.85rem;
+  font-weight:500;
   color:var(--muted);
   background:none;
   border:1px solid var(--border);
-  padding:5px 12px;
-  border-radius:6px;
+  padding:8px 20px;
+  border-radius:8px;
   cursor:pointer;
   transition:all .15s;
   align-self:flex-start;
 }
-.flag-btn:hover { border-color:#dd6b20; color:#dd6b20; }
+.flag-btn:hover { background:#e53e3e; color:#fff; border-color:#e53e3e; }
 .flag-btn.flagged { border-color:#dd6b20; color:#dd6b20; background:#fff8f0; cursor:default; }
 
 /* ----- Save controls ----- */
@@ -818,11 +818,11 @@ a { color:var(--primary); text-decoration:none; }
   align-self:flex-start;
   margin-top:4px;
 }
-.complete-btn:hover { background:#e8f5ea; color:#2d6a4f; border-color:#c3ddc7; }
+.complete-btn:hover { background:#38a169; color:#fff; border-color:#38a169; }
 .complete-btn.completed { background:#e8f5ea; color:#2d6a4f; border-color:#c3ddc7; }
 .qcard.completed { background:#f6fdf7; border-color:#d1e8d5; }
 .qcard.saved { border-left:3px solid #196061; }
-body.methods .complete-btn:hover { background:#eff6ff; color:#1e40af; border-color:#c9dff7; }
+body.methods .complete-btn:hover { background:#38a169; color:#fff; border-color:#38a169; }
 body.methods .complete-btn.completed { background:#eff6ff; color:#1e40af; border-color:#c9dff7; }
 body.methods .qcard.completed { background:#f0f7ff; border-color:#c9dff7; }
 body.methods .qcard.saved { border-left:3px solid #2563eb; }
