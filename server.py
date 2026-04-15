@@ -841,21 +841,23 @@ body.methods .qcard.saved { border-left:3px solid #2563eb; }
 
 /* ----- Progress button ----- */
 .progress-btn-topbar {
-  background: none;
-  border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.13);
+  border: 1.5px solid rgba(255,255,255,.25);
+  color: rgba(255,255,255,.85);
   cursor: pointer;
-  color: rgba(255,255,255,.75);
-  padding: 6px;
-  border-radius: 8px;
   display: flex;
   align-items: center;
-  transition: color .15s, background .15s;
-  margin-right: 6px;
+  justify-content: center;
+  transition: background .15s;
+  user-select: none;
+  padding: 0;
+  line-height: 1;
+  margin-right: 8px;
 }
-.progress-btn-topbar:hover {
-  color: #fff;
-  background: rgba(255,255,255,.12);
-}
+.progress-btn-topbar:hover { background: rgba(255,255,255,.25); }
 
 /* ----- Progress modal ----- */
 #progress-modal {
@@ -975,6 +977,9 @@ body.methods .qcard.saved { border-left:3px solid #2563eb; }
     <a class="back-link" href="/">← Subjects</a>
     <h1>{{ subject_name }}</h1>
     <div class="topbar-right">
+      <button class="progress-btn-topbar" onclick="openProgressModal()" title="View Progress" aria-label="View Progress">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="6" width="4" height="15"/><rect x="17" y="2" width="4" height="19"/></svg>
+      </button>
       <div class="settings-wrap" id="settings-btn">
         <button class="settings-icon-btn" onclick="toggleSettingsDropdown()" aria-label="View settings">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="9" cy="6" r="2.5" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="2.5" fill="currentColor" stroke="none"/><circle cx="9" cy="18" r="2.5" fill="currentColor" stroke="none"/></svg>
@@ -991,9 +996,6 @@ body.methods .qcard.saved { border-left:3px solid #2563eb; }
           </div>
         </div>
       </div>
-      <button class="progress-btn-topbar" onclick="openProgressModal()" title="View Progress" aria-label="View Progress">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="6" width="4" height="15"/><rect x="17" y="2" width="4" height="19"/></svg>
-      </button>
       <div class="user-avatar-wrap" id="user-avatar-btn" onclick="toggleUserDropdown()">
         <div class="user-avatar" id="user-avatar-initials"></div>
         <div class="user-dropdown" id="user-dropdown">
