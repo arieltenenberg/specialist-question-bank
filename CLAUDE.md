@@ -254,8 +254,9 @@ Students can mark questions as done. Completed questions are highlighted light g
 
 ## Topbar Architecture
 Two-row topbar (96px total):
-- **Row 1 — brand row (52px):** CSS grid (`1fr auto 1fr`) with "← Subjects" back link left, subject name centred, avatar circle right
+- **Row 1 — brand row (52px):** CSS grid (`1fr auto 1fr`) with "← Subjects" back link left, subject name centred, and three icons right (progress, settings, avatar)
 - **Row 2 — tabs row (44px, darker):** centred tabs (Questions, Saved, Completed, Admin) with underline active indicator
+- **Right icon row (left→right):** progress bar-chart button → settings (filter sliders) button → avatar circle. All three are 34×34px circles with `rgba(255,255,255,.13)` background and `1.5px` white border. Spacing via `gap:6px` on `.topbar-right`.
 - **Avatar:** initials derived from `{{ user_name }}`; click opens dropdown with "Signed in as X" + Sign out; closes on outside click
 - **All tabs are buttons** (no `<a>` links) — switching tabs is instant with no page reload
 - **Height references:** sidebar `top: 96px`, `height: calc(100vh - 96px)`; backdrop `inset: 96px 0 0 0`; mobile sidebar `top: 84px`
@@ -311,6 +312,19 @@ A per-student "funny popup" that fires randomly when a student marks a question 
 ### Notes
 - The DB column was originally integer 0/1, migrated to text in April 2025 — existing `1` values were updated to `'jacaranda_moses'`
 - `funny_popup` is NOT stored in the session — it's read fresh from the DB on every browse page load, so admin changes take effect immediately without requiring the student to re-login
+
+## Progress Modal Feature
+
+Students can view their completion progress broken down by Area of Study and question type.
+
+- **Trigger:** Bar-chart icon button (`.progress-btn-topbar`) in the topbar brand row, to the left of the settings icon. Styled identically to the settings icon (34×34px circle).
+- **UI:** Modal overlay (`#progress-modal`) with one `.progress-card` per visible AOS. Each card shows:
+  - Main bar: "X% complete — N / Y" for the full AOS
+  - Sub-bars (indented, `border-left` group): Short Answer, Multiple Choice, Extended Response — each showing N / Y. Sub-bars with 0 questions are hidden.
+- **Subject-specific:** AOS list comes from `AOS_MAP` (injected from Flask as `{{ aos_map | tojson }}`). Hidden AOS: 0 and 9 always; plus 8 (Mechanics) for Specialist.
+- **Client-side only:** Computed from `allQ` + `completedIds` — no new API endpoint.
+- **Dismiss:** Click backdrop or press Escape.
+- **Key JS:** `openProgressModal()`, `closeProgressModal()`, `renderProgressView()`, `progressModalKeyHandler()`.
 
 ## Leaderboard Feature
 
