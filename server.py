@@ -1089,7 +1089,6 @@ function loadLeaderboard() {
           `<span class="leaderboard-rank">${i + 1}.</span>` +
           `<span class="leaderboard-name">${firstName}</span>` +
           `<span class="leaderboard-count">${entry.count}</span>` +
-          `<span class="leaderboard-tick">✓</span>` +
           `</div>`;
       }).join('');
     })
