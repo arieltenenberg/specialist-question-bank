@@ -250,7 +250,7 @@ Students can mark questions as done. Completed questions are highlighted in emer
 - **Popup:** marking a saved question as done (regardless of active tab) prompts "Unsave?" — `showUnsavePrompt(id)`
 - **Storage:** `completed_questions` table in `users.db`
 - **Schema:** `user_id TEXT, question_id TEXT, subject TEXT, completed_at TEXT, PRIMARY KEY (user_id, question_id, subject)`
-- **Colour:** `.qcard.completed` — `background:#ecfdf5; border-color:#6ee7b7` for both subjects (no Methods override)
+- **Colour:** `.qcard.completed` — `border-left:5px solid #6ee7b7` (no background fill); `.qcard.completed.saved` also uses the green left border (overrides charcoal saved border)
 - **Hide Completed:** `hideCompleted` boolean stored in `localStorage`; re-applies after `loadCompletedIds()` resolves on page load
 
 ## Topbar Architecture
