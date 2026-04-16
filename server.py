@@ -879,6 +879,7 @@ a { color:#1f1f1f; text-decoration:none; }
   width: min(680px, calc(100vw - 32px));
   max-height: calc(100vh - 120px);
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 28px 28px 24px;
 }
 #progress-modal-header {
