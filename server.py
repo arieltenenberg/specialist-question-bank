@@ -864,6 +864,7 @@ a { color:#1f1f1f; text-decoration:none; }
   justify-content: center;
   padding-top: 80px;
   overflow: hidden;
+  overscroll-behavior: none;
 }
 #progress-modal.open { display: flex; }
 #progress-modal-backdrop {
@@ -880,7 +881,7 @@ a { color:#1f1f1f; text-decoration:none; }
   width: min(680px, calc(100vw - 32px));
   max-height: calc(100vh - 120px);
   overflow-y: auto;
-  overscroll-behavior: contain;
+  overscroll-behavior: none;
   padding: 28px 28px 24px;
 }
 #progress-modal-header {
