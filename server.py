@@ -820,9 +820,9 @@ a { color:#1f1f1f; text-decoration:none; }
   margin-top:4px;
 }
 .complete-btn:hover { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
-.qcard.completed { border-left:5px solid #6ee7b7; }
+.qcard.completed { border:2px solid #6ee7b7; }
 .qcard.saved { border-left:3px solid #1f1f1f; }
-.qcard.completed.saved { border-left:3px solid #1f1f1f; box-shadow:-2px 0 0 0 #6ee7b7,var(--shadow-sm); }
+.qcard.completed.saved { border:2px solid #6ee7b7; border-left:3px solid #1f1f1f; }
 .card-actions {
   display:flex;
   align-items:flex-start;
