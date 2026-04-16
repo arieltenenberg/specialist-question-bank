@@ -1522,6 +1522,7 @@ function toggleSaved(id, btn) {
     markSaveBtn(btn, data.marked);
     if (isUnsaving) {
       showMarkCompletePrompt(id);
+      if (savedOnly || hideSaved) applyFilters();
     } else {
       if (savedOnly || (hideSaved && !completedOnly && data.marked)) applyFilters();
     }
