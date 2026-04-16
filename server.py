@@ -863,6 +863,7 @@ a { color:#1f1f1f; text-decoration:none; }
   align-items: flex-start;
   justify-content: center;
   padding-top: 80px;
+  overflow: hidden;
 }
 #progress-modal.open { display: flex; }
 #progress-modal-backdrop {
