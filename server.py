@@ -1043,7 +1043,6 @@ a { color:#1f1f1f; text-decoration:none; }
       <button class="show-sidebar-btn" onclick="toggleSidebar()">☰ Filters</button>
       <div class="active-filters" id="active-filters"></div>
       <button class="clear-btn" id="clear-btn" style="display:none" onclick="clearAll()">Clear all</button>
-      <span class="question-count" id="question-count" style="font-size:.78rem;color:var(--muted);margin-left:auto;white-space:nowrap;"></span>
     </div>
     <div class="qgrid" id="qgrid"></div>
     <div class="load-more-wrap" id="load-more-wrap"></div>
@@ -1368,7 +1367,6 @@ function applyCardStates(questions) {
 function renderCards() {
   const grid = document.getElementById('qgrid');
   const countEl = document.getElementById('question-count');
-  if (countEl) countEl.textContent = filtered.length === 1 ? '1 question' : `${filtered.length} questions`;
 
   const visible = filtered.slice(0, (page + 1) * PER_PAGE);
   if (!visible.length) {
