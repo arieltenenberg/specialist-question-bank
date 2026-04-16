@@ -46,7 +46,7 @@ Questions are classified into Areas of Study (AOS) per subject.
 - `settings.json` — Per-subject publisher visibility (gitignored)
 - `overrides.json` — Server-side AOS overrides (gitignored — see below)
 - `get_subject_config(subject)` helper returns data, file path, AOS map, and subject name
-- Colour themes: Specialist = teal (`#196061`, `#042f3a`), Methods = blue (`#1e40af`, `#1e3a5f`) — Methods primary deepened from `#2563eb` to `#1e40af`
+- Colour theme: neutral charcoal for both subjects — subject-specific teal/blue removed entirely. CSS variables (`--primary`, `--primary-dark`, etc.) are still injected per subject but the browse page UI no longer uses them.
 - `users.db` — SQLite database for user accounts, saved questions, and completed questions (server-only, not in git)
 
 ## Specialist Mathematics — Areas of Study (AOS)
@@ -236,26 +236,27 @@ When asked, Claude Code will delete all AOS 9 questions from both base JSON file
 
 ## Saved Questions Feature
 Students can save questions from the browse page for easy access later.
-- **UI:** "Save" button toggles to filled "Saved" state; "Saved" tab in the topbar toggles a saved-only filter
+- **UI:** "Save" button toggles to filled dark "Saved" state; "Saved" tab in the topbar toggles a saved-only filter
 - **Popup:** unsaving any saved question (regardless of active tab) prompts "Mark as done?" — `showMarkCompletePrompt(id)`
 - **Storage:** `difficult_questions` table in `users.db` (column name is historical; feature is called "Saved Questions" in the UI)
 - **Schema:** `user_id TEXT, question_id TEXT, subject TEXT, created_at TEXT, PRIMARY KEY (user_id, question_id, subject)`
+- **Saved indicator:** `.qcard.saved` — `border-left: 3px solid #1f1f1f` (charcoal left border, both subjects)
 - **Isolation:** Specialist and Methods saved collections are completely separate (scoped by `subject` column)
 - **DEV_MODE:** Uses `"dev_user"` as the user ID when no session exists
 
 ## Completed Questions Feature
-Students can mark questions as done. Completed questions are highlighted light green (Specialist) or light blue (Methods).
-- **UI:** "Mark as Done" / "Unmark as Done" button on each question card; "Completed" tab filters to completed-only; "Hide Completed" toggle in settings popover (persists via `localStorage`)
+Students can mark questions as done. Completed questions are highlighted in emerald green for both subjects.
+- **UI:** "Mark as Done" / "Unmark as Done" button on each question card; button stays neutral grey in both states (card background is the only visual indicator); "Completed" tab filters to completed-only; "Hide Completed" toggle in settings popover (persists via `localStorage`)
 - **Popup:** marking a saved question as done (regardless of active tab) prompts "Unsave?" — `showUnsavePrompt(id)`
 - **Storage:** `completed_questions` table in `users.db`
 - **Schema:** `user_id TEXT, question_id TEXT, subject TEXT, completed_at TEXT, PRIMARY KEY (user_id, question_id, subject)`
-- **Colour:** `.qcard.completed` — green (`#f6fdf7` / `#d1e8d5`) for Specialist, blue (`#f0f7ff` / `#c9dff7`) for Methods via `body.methods .qcard.completed`
+- **Colour:** `.qcard.completed` — `background:#ecfdf5; border-color:#6ee7b7` for both subjects (no Methods override)
 - **Hide Completed:** `hideCompleted` boolean stored in `localStorage`; re-applies after `loadCompletedIds()` resolves on page load
 
 ## Topbar Architecture
 Two-row topbar (96px total):
-- **Row 1 — brand row (52px):** CSS grid (`1fr auto 1fr`) with "← Subjects" back link left, subject name centred, and three icons right (progress, settings, avatar)
-- **Row 2 — tabs row (44px, darker):** centred tabs (Questions, Saved, Completed, Admin) with underline active indicator
+- **Row 1 — brand row (52px):** CSS grid (`1fr auto 1fr`) with "← Subjects" back link left, subject name centred, and three icons right (progress, settings, avatar). Background: `#2d2d2d` (charcoal) for both subjects.
+- **Row 2 — tabs row (44px):** centred tabs (Questions, Saved, Completed, Admin) with underline active indicator. Background: `#1f1f1f` (darker charcoal).
 - **Right icon row (left→right):** progress bar-chart button → settings (filter sliders) button → avatar circle. All three are 34×34px circles with `rgba(255,255,255,.13)` background and `1.5px` white border. Spacing via `gap:6px` on `.topbar-right`.
 - **Avatar:** initials derived from `{{ user_name }}`; click opens dropdown with "Signed in as X" + Sign out; closes on outside click
 - **All tabs are buttons** (no `<a>` links) — switching tabs is instant with no page reload
@@ -265,24 +266,24 @@ Two-row topbar (96px total):
 
 ### Question Card Header Layout
 ```
-[Topic (bold, primary colour) · Question Type]    [Publisher Year · Q#]  ›
+[Topic (bold, #1f1f1f) · Question Type]    [Publisher Year · Q#]  ›
 ```
-- Left group (`.qcard-left`): topic bold in `--primary`, middot + question type in `--primary` normal weight
+- Left group (`.qcard-left`): topic bold in `#1f1f1f`, middot + question type in muted grey
 - Right (`.qsection`): publisher, year, Q number — muted plain text, `margin-left:auto`
 - No pill/bubble styling on any header element
 
 ### Action Buttons (inside expanded card)
-All three action buttons (Show Solution, Save, Mark as Done) share identical styling:
-- `padding:8px 20px; font-size:.85rem; border-radius:8px`
-- Default: `--primary-light` background, `--primary` text
-- Hover: fills to `--primary` with white text
-- Saved state: filled `--primary`; shows "Saved"
-- Completed state: light green (Specialist) / light blue (Methods); shows "Unmark as Done"; hover fills `--primary`
+All four buttons (Show Solution, Save, Mark as Done, Flag as misclassified) share identical proportions:
+- `padding:8px 20px; font-size:.85rem; border-radius:8px; margin-top:4px`
+- Default: `#f0f0f0` background, `#2d2d2d` text, `#d5d5d5` border
+- Hover: fills to `#2d2d2d` with white text
+- Saved state: filled `#2d2d2d`; shows "Saved"
+- Completed state: button stays neutral grey; shows "Unmark as Done" (card background indicates completion)
 - Flag button: same proportions, fills red on hover
 
 ### Card List
 - 20 questions per page; "Load more" button appends next batch without re-rendering existing cards
-- Toolbar shows live question count ("X questions")
+- No question counter in toolbar
 - Empty states for Saved and Completed tabs when nothing is saved/done yet
 - `buildCardHtml(q)` — renders one card; `applyCardStates(questions)` — applies saved/completed visual states
 
@@ -331,7 +332,7 @@ Students can view their completion progress broken down by Area of Study and que
 A friendly competition widget for selected students, showing per-subject completion counts side by side.
 
 - **Visibility:** Only shown to users with `leaderboard=1` on the `users` table, plus admin. `get_show_leaderboard(user)` determines this; always `True` in DEV_MODE.
-- **UI:** Small widget at the very top of the sidebar (above "Hide Completed"), showing rank, first name, count, and ✓ per entry. Current user's row is bold.
+- **UI:** Small widget at the very top of the sidebar (above "Hide Completed"), showing rank, first name, and count per entry. Current user's row is bold.
 - **Subject scope:** Shows counts for the current subject only (Specialist on `/specialist`, Methods on `/methods`).
 - **Admin toggle:** 🏆 button per student in the Approved Students section of `/admin/users`. Clicking toggles `leaderboard` column; button turns gold when on.
 - **Storage:** `leaderboard INTEGER NOT NULL DEFAULT 0` column on `users` table (migrated via try/except in `init_db()`).
