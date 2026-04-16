@@ -240,7 +240,7 @@ Students can save questions from the browse page for easy access later.
 - **Popup:** unsaving any saved question (regardless of active tab) prompts "Mark as done?" — `showMarkCompletePrompt(id)`
 - **Storage:** `difficult_questions` table in `users.db` (column name is historical; feature is called "Saved Questions" in the UI)
 - **Schema:** `user_id TEXT, question_id TEXT, subject TEXT, created_at TEXT, PRIMARY KEY (user_id, question_id, subject)`
-- **Saved indicator:** `.qcard.saved` — `border-left: 3px solid #1f1f1f` (charcoal left border, both subjects)
+- **Saved indicator:** ★ star icon in card header (see Completed Questions section for details) — no left border
 - **Isolation:** Specialist and Methods saved collections are completely separate (scoped by `subject` column)
 - **DEV_MODE:** Uses `"dev_user"` as the user ID when no session exists
 
@@ -250,7 +250,8 @@ Students can mark questions as done. Completed questions are highlighted in emer
 - **Popup:** marking a saved question as done (regardless of active tab) prompts "Unsave?" — `showUnsavePrompt(id)`
 - **Storage:** `completed_questions` table in `users.db`
 - **Schema:** `user_id TEXT, question_id TEXT, subject TEXT, completed_at TEXT, PRIMARY KEY (user_id, question_id, subject)`
-- **Colour:** `.qcard.completed` — `border-left:5px solid #6ee7b7` (no background fill); `.qcard.completed.saved` also uses the green left border (overrides charcoal saved border)
+- **Colour:** `.qcard.completed` — `border-left:5px solid #8db370` (sage green, no background fill)
+- **Saved indicator:** ★ star icon (`.bookmark-icon`) injected in the card header, left of publisher info; hidden by default, shown via `.qcard.saved .bookmark-icon { display:inline }`. Replaces the old charcoal left bar. When both saved and completed, green bar + star coexist with no conflict.
 - **Hide Completed:** `hideCompleted` boolean stored in `localStorage`; re-applies after `loadCompletedIds()` resolves on page load
 
 ## Topbar Architecture
