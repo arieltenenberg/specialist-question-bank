@@ -821,8 +821,8 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 .complete-btn:hover { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
 .qcard.completed { border-left:5px solid #6ee7b7; }
-.qcard.saved { border-left:3px solid #1f1f1f; }
-.qcard.completed.saved { border-left:3px solid #1f1f1f; box-shadow:inset 2px 0 0 0 #6ee7b7,var(--shadow-sm); }
+.bookmark-icon { display:none; color:#1f1f1f; font-size:.85rem; flex-shrink:0; margin-left:6px; line-height:1; }
+.qcard.saved .bookmark-icon { display:inline; }
 .card-actions {
   display:flex;
   align-items:flex-start;
@@ -1337,6 +1337,7 @@ function buildCardHtml(q) {
         <span class="qmeta">&nbsp;·&nbsp;${sLabel}</span>
       </div>
       <span class="qsection">${q.publisher} ${q.year} · Q${q.question_number}</span>
+      <span class="bookmark-icon">&#9733;</span>
       <span class="toggle-icon">&#9656;</span>
     </div>
     <div class="qcard-body-outer">
