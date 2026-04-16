@@ -1522,7 +1522,6 @@ function toggleSaved(id, btn) {
     markSaveBtn(btn, data.marked);
     if (isUnsaving) {
       showMarkCompletePrompt(id);
-      if (savedOnly || hideSaved) applyFilters();
     } else {
       if (savedOnly || (hideSaved && !completedOnly && data.marked)) applyFilters();
     }
@@ -1555,13 +1554,16 @@ function markCompletePromptYes() {
         if (funnyPopup === 'levick' && Math.random() < 0.1) showLevickModal();
         if (funnyPopup === 'cordo' && Math.random() < 0.1) showCorodoModal();
         if (hideCompleted && !completedOnly && !savedOnly) applyFilters();
+        else if (savedOnly || hideSaved) applyFilters();
       }
     });
   }
+  if (savedOnly || hideSaved) applyFilters();
 }
 
 function markCompletePromptNo() {
   document.getElementById('mark-complete-prompt').style.display = 'none';
+  if (savedOnly || hideSaved) applyFilters();
 }
 
 function showUnsavePrompt(id) {
