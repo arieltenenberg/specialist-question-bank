@@ -2948,7 +2948,7 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
 .btn-lb-del:hover { border-color:var(--red); color:var(--red); }
 .btn-add-lb { font-size:.82rem; padding:7px 16px; border-radius:8px; border:1px solid #555; background:none; color:#555; cursor:pointer; font-family:inherit; transition:all .15s; }
 .btn-add-lb:hover { background:#555; color:#fff; }
-.lb-members { display:flex; flex-direction:column; gap:3px; margin-top:4px; padding-left:4px; }
+.lb-members { display:flex; flex-direction:column; gap:3px; margin-top:6px; padding-left:4px; }
 .lb-member-chip { font-size:.8rem; color:#555; display:flex; align-items:center; gap:7px; }
 .lb-member-chip::before { content:''; width:4px; height:4px; border-radius:50%; background:#cbd5e0; flex-shrink:0; }
 /* Student settings modal */
@@ -3055,7 +3055,7 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
     <h2>Leaderboards</h2>
     <div class="lb-list" id="lb-list">
       {% for lb in leaderboards %}
-      <div class="lb-row" id="lb-row-{{ lb['id'] }}" style="flex-direction:column;align-items:stretch;">
+      <div class="lb-row" id="lb-row-{{ lb['id'] }}" style="flex-direction:column;align-items:stretch;gap:0;">
         <div style="display:flex;align-items:center;gap:10px;">
           <div class="lb-row-name" id="lb-name-{{ lb['id'] }}">{{ lb['name'] }}</div>
           <button class="btn-lb-rename" data-lb-id="{{ lb['id'] }}" data-lb-name="{{ lb['name'] | e }}" onclick="startRename(this)">Rename</button>
