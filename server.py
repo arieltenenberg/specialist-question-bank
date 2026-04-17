@@ -2948,8 +2948,9 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
 .btn-lb-del:hover { border-color:var(--red); color:var(--red); }
 .btn-add-lb { font-size:.82rem; padding:7px 16px; border-radius:8px; border:1px solid #555; background:none; color:#555; cursor:pointer; font-family:inherit; transition:all .15s; }
 .btn-add-lb:hover { background:#555; color:#fff; }
-.lb-members { display:flex; flex-direction:column; gap:3px; margin-top:8px; }
-.lb-member-chip { font-size:.8rem; color:var(--muted); padding:1px 0; }
+.lb-members { display:flex; flex-direction:column; gap:5px; margin-top:10px; padding-left:14px; border-left:2px solid var(--border); }
+.lb-member-chip { font-size:.8rem; color:#555; display:flex; align-items:center; gap:7px; }
+.lb-member-chip::before { content:''; width:5px; height:5px; border-radius:50%; background:#cbd5e0; flex-shrink:0; }
 /* Student settings modal */
 .modal-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:1000; align-items:center; justify-content:center; }
 .modal-backdrop.open { display:flex; }
