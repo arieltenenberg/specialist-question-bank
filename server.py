@@ -113,6 +113,11 @@ def init_db():
                 conn.commit()
         except Exception:
             pass  # column already exists
+        try:
+            conn.execute("ALTER TABLE users ADD COLUMN nickname TEXT")
+            conn.commit()
+        except Exception:
+            pass  # column already exists
 
 init_db()
 
@@ -1140,7 +1145,7 @@ function loadLeaderboard(lbId) {
         return;
       }
       el.innerHTML = entries.map((entry, i) => {
-        const firstName = entry.name ? entry.name.split(' ')[0] : entry.name;
+        const firstName = entry.nickname || (entry.name ? entry.name.split(' ')[0] : entry.name);
         return `<div class="leaderboard-entry${entry.is_you ? ' you' : ''}">` +
           `<span class="leaderboard-rank">${i + 1}.</span>` +
           `<span class="leaderboard-name">${firstName}</span>` +
@@ -2993,6 +2998,7 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
             data-name="{{ u['name'] | e }}"
             data-lb="{{ u['leaderboard_id'] if u['leaderboard_id'] is not none else '' }}"
             data-popup="{{ u['funny_popup'] or '' }}"
+            data-nickname="{{ u['nickname'] or '' }}"
             onclick="openSettings(this)"
             title="Student settings"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
           <button class="btn btn-revoke" onclick="act('{{ u['google_id'] }}','reject')">Revoke</button>
@@ -3055,7 +3061,11 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
       </div>
     </div>
     <div class="modal-field">
-      <label>Funny Popup</label>
+      <label>Nickname <span style="font-weight:400;color:#aaa">(shown on leaderboard)</span></label>
+      <input type="text" class="modal-select" id="modal-nickname" placeholder="Leave blank to use first name…" style="padding:8px 10px;">
+    </div>
+    <div class="modal-field">
+      <label>Easter Egg</label>
       <select class="modal-select" id="modal-popup-select">
         <option value="">Off</option>
         <option value="jacaranda_moses">Jacaranda Moses</option>
@@ -3085,9 +3095,11 @@ function openSettings(btn) {
   settingsGearBtn = btn;
   const lbId = btn.dataset.lb || '';
   const funnyPopup = btn.dataset.popup || '';
+  const nickname = btn.dataset.nickname || '';
   document.getElementById('modal-title').textContent = btn.dataset.name;
   const lbSel = document.getElementById('modal-lb-select');
   lbSel.value = lbId !== '' ? String(lbId) : '';
+  document.getElementById('modal-nickname').value = nickname;
   document.getElementById('modal-popup-select').value = funnyPopup;
   document.getElementById('modal-new-lb').classList.remove('visible');
   document.getElementById('modal-new-lb-name').value = '';
@@ -3109,6 +3121,7 @@ async function saveSettings() {
   if (!settingsUserId) return;
   const lbSel = document.getElementById('modal-lb-select');
   const funnyPopup = document.getElementById('modal-popup-select').value;
+  const nickname = document.getElementById('modal-nickname').value.trim();
   let lbId = lbSel.value === '' ? null : (lbSel.value === '__new__' ? null : parseInt(lbSel.value));
 
   if (lbSel.value === '__new__') {
@@ -3127,13 +3140,14 @@ async function saveSettings() {
   const r = await fetch('/admin/users/' + settingsUserId + '/settings', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({leaderboard_id: lbId, funny_popup: funnyPopup})
+    body: JSON.stringify({leaderboard_id: lbId, funny_popup: funnyPopup, nickname})
   });
   const d = await r.json();
   if (d.ok) {
     if (settingsGearBtn) {
       settingsGearBtn.dataset.lb = lbId !== null ? String(lbId) : '';
       settingsGearBtn.dataset.popup = funnyPopup;
+      settingsGearBtn.dataset.nickname = nickname;
     }
     closeSettings();
     if (lbSel.value === '__new__') location.reload(); // reload to show new leaderboard in lists
@@ -3976,7 +3990,7 @@ def api_leaderboard():
         lb = conn.execute("SELECT name FROM leaderboards WHERE id=?", (lb_id,)).fetchone()
         lb_name = lb["name"] if lb else None
         rows = conn.execute("""
-            SELECT u.name, u.google_id,
+            SELECT u.name, u.nickname, u.google_id,
                    COUNT(DISTINCT cq.question_id) AS count
             FROM users u
             LEFT JOIN completed_questions cq
@@ -3985,7 +3999,7 @@ def api_leaderboard():
             GROUP BY u.google_id
             ORDER BY count DESC
         """, (subject, lb_id)).fetchall()
-    entries = [{"name": r["name"], "count": r["count"], "is_you": r["google_id"] == user_id} for r in rows]
+    entries = [{"name": r["name"], "nickname": r["nickname"], "count": r["count"], "is_you": r["google_id"] == user_id} for r in rows]
     return jsonify({"leaderboard_name": lb_name, "entries": entries})
 
 @app.route("/api/admin/publishers/toggle", methods=["POST"])
@@ -4074,10 +4088,11 @@ def admin_user_settings(google_id):
     body = request.get_json()
     leaderboard_id = body.get("leaderboard_id")  # int or None
     funny_popup = body.get("funny_popup", "")
+    nickname = body.get("nickname", "").strip()
     with get_db() as conn:
         conn.execute(
-            "UPDATE users SET leaderboard_id=?, funny_popup=? WHERE google_id=?",
-            (leaderboard_id, funny_popup, google_id)
+            "UPDATE users SET leaderboard_id=?, funny_popup=?, nickname=? WHERE google_id=?",
+            (leaderboard_id, funny_popup, nickname or None, google_id)
         )
         conn.commit()
     return jsonify(ok=True)
