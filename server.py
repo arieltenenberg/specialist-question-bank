@@ -783,7 +783,7 @@ a { color:#1f1f1f; text-decoration:none; }
   align-self:flex-start;
   margin-top:4px;
 }
-.flag-btn:hover { background:#e53e3e; color:#fff; border-color:#e53e3e; }
+.flag-btn:hover, .flag-btn:active { background:#e53e3e; color:#fff; border-color:#e53e3e; }
 .flag-btn.flagged { border-color:#dd6b20; color:#dd6b20; background:#fff8f0; cursor:default; }
 
 /* ----- Save controls ----- */
