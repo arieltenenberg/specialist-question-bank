@@ -3063,7 +3063,7 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
         {% if lb['members'] %}
         <div class="lb-members" id="lb-members-{{ lb['id'] }}">
           {% for m in lb['members'] %}
-          <div class="lb-member-chip">{{ m['nickname'] or m['name'] }}</div>
+          <div class="lb-member-chip" data-uid="{{ m['google_id'] }}">{{ m['nickname'] or m['name'] }}</div>
           {% endfor %}
         </div>
         {% else %}
@@ -3194,10 +3194,30 @@ async function saveSettings() {
   });
   const d = await r.json();
   if (d.ok) {
+    const oldLbId = settingsGearBtn ? settingsGearBtn.dataset.lb : '';
     if (settingsGearBtn) {
       settingsGearBtn.dataset.lb = lbId !== null ? String(lbId) : '';
       settingsGearBtn.dataset.popup = funnyPopup;
       settingsGearBtn.dataset.nickname = nickname;
+    }
+    // Update member lists in the leaderboard section without a reload
+    const uid = settingsUserId;
+    const displayName = nickname || (settingsGearBtn ? settingsGearBtn.dataset.name : '');
+    // Remove from old leaderboard list
+    if (oldLbId) {
+      const oldChip = document.querySelector(`#lb-members-${oldLbId} [data-uid="${uid}"]`);
+      if (oldChip) oldChip.remove();
+    }
+    // Add to new leaderboard list
+    if (lbId !== null) {
+      const newList = document.getElementById('lb-members-' + lbId);
+      if (newList && !newList.querySelector(`[data-uid="${uid}"]`)) {
+        const chip = document.createElement('div');
+        chip.className = 'lb-member-chip';
+        chip.dataset.uid = uid;
+        chip.textContent = displayName;
+        newList.appendChild(chip);
+      }
     }
     closeSettings();
     if (lbSel.value === '__new__') location.reload(); // reload to show new leaderboard in lists
