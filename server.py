@@ -784,7 +784,7 @@ a { color:#1f1f1f; text-decoration:none; }
   margin-top:4px;
 }
 .flag-btn:hover, .flag-btn:active { background:#e53e3e; color:#fff; border-color:#e53e3e; }
-.flag-btn.flagged { border-color:#dd6b20; color:#dd6b20; background:#fff8f0; cursor:default; }
+.flag-btn.flagged { border-color:#e53e3e; color:#e53e3e; background:#fff5f5; cursor:default; }
 
 /* ----- Save controls ----- */
 .save-btn {
