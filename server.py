@@ -2902,7 +2902,6 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
 .badge.green { background:var(--accent-green); }
 .badge.red { background:var(--red); }
 .user-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px 18px; display:flex; align-items:center; gap:14px; box-shadow:var(--shadow-sm); margin-bottom:8px; }
-.user-card img { width:38px; height:38px; border-radius:50%; object-fit:cover; background:var(--border); flex-shrink:0; }
 .info { flex:1; min-width:0; }
 .uname { font-size:.9rem; font-weight:500; }
 .uemail { font-size:.78rem; color:var(--muted); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -2949,6 +2948,10 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
 .btn-lb-del:hover { border-color:var(--red); color:var(--red); }
 .btn-add-lb { font-size:.82rem; padding:7px 16px; border-radius:8px; border:1px solid #555; background:none; color:#555; cursor:pointer; font-family:inherit; transition:all .15s; }
 .btn-add-lb:hover { background:#555; color:#fff; }
+.lb-members { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+.lb-member-chip { display:inline-flex; align-items:center; gap:5px; background:#f0f0f0; border:1px solid var(--border); border-radius:99px; padding:3px 10px 3px 12px; font-size:.75rem; color:#444; }
+.lb-member-chip button { background:none; border:none; cursor:pointer; color:#999; font-size:.8rem; line-height:1; padding:0; transition:color .12s; }
+.lb-member-chip button:hover { color:var(--red); }
 /* Student settings modal */
 .modal-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:1000; align-items:center; justify-content:center; }
 .modal-backdrop.open { display:flex; }
@@ -2983,7 +2986,6 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
     {% if pending %}
       {% for u in pending %}
       <div class="user-card" id="card-{{ u['google_id'] }}">
-        <img src="{{ u['picture'] or '' }}" alt="" onerror="this.style.visibility='hidden'">
         <div class="info">
           <div class="uname">{{ u['name'] }}</div>
           <div class="uemail">{{ u['email'] }}</div>
@@ -3004,7 +3006,6 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
     {% if approved %}
       {% for u in approved %}
       <div class="user-card" id="card-{{ u['google_id'] }}">
-        <img src="{{ u['picture'] or '' }}" alt="" onerror="this.style.visibility='hidden'">
         <div class="info">
           <div class="uname">{{ u['name'] }}</div>
           <div class="uemail">{{ u['email'] }}</div>
@@ -3055,10 +3056,24 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
     <h2>Leaderboards</h2>
     <div class="lb-list" id="lb-list">
       {% for lb in leaderboards %}
-      <div class="lb-row" id="lb-row-{{ lb['id'] }}">
-        <div class="lb-row-name" id="lb-name-{{ lb['id'] }}">{{ lb['name'] }}</div>
-        <button class="btn-lb-rename" data-lb-id="{{ lb['id'] }}" data-lb-name="{{ lb['name'] | e }}" onclick="startRename(this)">Rename</button>
-        <button class="btn-lb-del" onclick="deleteLeaderboard({{ lb['id'] }})">Delete</button>
+      <div class="lb-row" id="lb-row-{{ lb['id'] }}" style="flex-direction:column;align-items:stretch;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="lb-row-name" id="lb-name-{{ lb['id'] }}">{{ lb['name'] }}</div>
+          <button class="btn-lb-rename" data-lb-id="{{ lb['id'] }}" data-lb-name="{{ lb['name'] | e }}" onclick="startRename(this)">Rename</button>
+          <button class="btn-lb-del" onclick="deleteLeaderboard({{ lb['id'] }})">Delete</button>
+        </div>
+        {% if lb['members'] %}
+        <div class="lb-members" id="lb-members-{{ lb['id'] }}">
+          {% for m in lb['members'] %}
+          <span class="lb-member-chip" id="lb-chip-{{ m['google_id'] }}">
+            {{ m['nickname'] or m['name'] }}
+            <button onclick="removeFromLeaderboard('{{ m['google_id'] }}', {{ lb['id'] }})" title="Remove from leaderboard">×</button>
+          </span>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="lb-members" id="lb-members-{{ lb['id'] }}"></div>
+        {% endif %}
       </div>
       {% endfor %}
     </div>
@@ -3245,6 +3260,18 @@ function confirmRename(id, btn) {
     if (d.ok) location.reload();
     else alert(d.error || 'Error');
   });
+}
+
+function removeFromLeaderboard(googleId, lbId) {
+  fetch('/api/admin/users/' + googleId + '/leaderboard/remove', {method: 'POST'})
+    .then(r => r.json()).then(d => {
+      if (!d.ok) return;
+      const chip = document.getElementById('lb-chip-' + googleId);
+      if (chip) chip.remove();
+      // also clear the gear button's data-lb so reopening settings shows None
+      const gear = document.querySelector(`[data-uid="${googleId}"]`);
+      if (gear) gear.dataset.lb = '';
+    });
 }
 
 function deleteLeaderboard(id) {
@@ -4158,7 +4185,16 @@ def admin_users():
         pending = [dict(r) for r in conn.execute("SELECT * FROM users WHERE status='pending' ORDER BY created_at").fetchall()]
         approved = [dict(r) for r in conn.execute("SELECT * FROM users WHERE status='approved' AND email!=? ORDER BY approved_at DESC", (ADMIN_EMAIL,)).fetchall()]
         rejected = [dict(r) for r in conn.execute("SELECT * FROM users WHERE status='rejected' ORDER BY created_at DESC").fetchall()]
-        leaderboards = [dict(r) for r in conn.execute("SELECT * FROM leaderboards ORDER BY name").fetchall()]
+        lb_rows = conn.execute("SELECT * FROM leaderboards ORDER BY name").fetchall()
+        leaderboards = []
+        for lb in lb_rows:
+            lb_dict = dict(lb)
+            members = conn.execute(
+                "SELECT google_id, name, nickname FROM users WHERE leaderboard_id=? AND status='approved' ORDER BY name",
+                (lb_dict["id"],)
+            ).fetchall()
+            lb_dict["members"] = [dict(m) for m in members]
+            leaderboards.append(lb_dict)
     return render_template_string(USERS_HTML, pending=pending, approved=approved, rejected=rejected, leaderboards=leaderboards)
 
 @app.route("/admin/users/<google_id>/approve", methods=["POST"])
@@ -4244,6 +4280,15 @@ def api_rename_leaderboard(lb_id):
         except Exception:
             return jsonify(error="name already exists"), 409
     return jsonify(ok=True, id=lb_id, name=name)
+
+@app.route("/api/admin/users/<google_id>/leaderboard/remove", methods=["POST"])
+def api_remove_from_leaderboard(google_id):
+    if not admin_required():
+        return jsonify(error="forbidden"), 403
+    with get_db() as conn:
+        conn.execute("UPDATE users SET leaderboard_id=NULL WHERE google_id=?", (google_id,))
+        conn.commit()
+    return jsonify(ok=True)
 
 @app.route("/api/admin/leaderboards/<int:lb_id>", methods=["DELETE"])
 def api_delete_leaderboard(lb_id):
