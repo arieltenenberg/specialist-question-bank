@@ -3009,7 +3009,6 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
           <div class="uname">{{ u['name'] }}</div>
           <div class="uemail">{{ u['email'] }}</div>
         </div>
-        <div class="udate">{{ u['approved_at'][:10] if u['approved_at'] else '' }}</div>
         <div class="actions">
           <button class="btn-prog"
             data-uid="{{ u['google_id'] }}"
