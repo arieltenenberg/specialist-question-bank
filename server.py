@@ -3131,6 +3131,10 @@ async function saveSettings() {
   });
   const d = await r.json();
   if (d.ok) {
+    if (settingsGearBtn) {
+      settingsGearBtn.dataset.lb = lbId !== null ? String(lbId) : '';
+      settingsGearBtn.dataset.popup = funnyPopup;
+    }
     closeSettings();
     if (lbSel.value === '__new__') location.reload(); // reload to show new leaderboard in lists
   }
