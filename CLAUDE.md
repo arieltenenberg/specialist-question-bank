@@ -301,7 +301,7 @@ A per-student "Easter Egg" (formerly called "funny popup") that fires randomly w
 - `funny_popup` column on the `users` table stores a text key: `''` = off, or a popup name like `'jacaranda_moses'`
 - Admin assigns an Easter Egg (or off) per student via the **student settings modal** in `/admin/users` — open with the ⚙ gear icon next to each student
 - On the browse page, `funnyPopup` JS variable holds the current user's popup key (read live from DB on each page load via `get_funny_popup()`)
-- In `toggleCompleted()`, if `data.marked && funnyPopup === '<key>' && Math.random() < 0.1`, the modal is shown (10% chance)
+- In `toggleCompleted()`, if `data.marked && funnyPopup === '<key>' && Math.random() < 0.2`, the modal is shown (20% chance)
 - The modal HTML lives at the bottom of `BROWSE_HTML`, just before `</body>`
 
 ### Current popups

@@ -1604,9 +1604,9 @@ function markCompletePromptYes() {
         if (btn) markCompleteBtn(btn, true);
         const card = document.getElementById('qcard-' + id);
         if (card) card.classList.add('completed');
-        if (funnyPopup === 'jacaranda_moses' && Math.random() < 0.1) showJacarandaModal();
-        if (funnyPopup === 'levick' && Math.random() < 0.1) showLevickModal();
-        if (funnyPopup === 'cordo' && Math.random() < 0.1) showCorodoModal();
+        if (funnyPopup === 'jacaranda_moses' && Math.random() < 0.2) showJacarandaModal();
+        if (funnyPopup === 'levick' && Math.random() < 0.2) showLevickModal();
+        if (funnyPopup === 'cordo' && Math.random() < 0.2) showCorodoModal();
         if (hideCompleted && !completedOnly && !savedOnly) applyFilters();
         else if (savedOnly || hideSaved) applyFilters();
       }
@@ -1707,9 +1707,9 @@ function toggleCompleted(id, btn) {
     } else {
       if (completedOnly || (hideCompleted && !savedOnly && data.marked)) applyFilters();
     }
-    if (data.marked && funnyPopup === 'jacaranda_moses' && Math.random() < 0.1) showJacarandaModal();
-    if (data.marked && funnyPopup === 'levick' && Math.random() < 0.1) showLevickModal();
-    if (data.marked && funnyPopup === 'cordo' && Math.random() < 0.1) showCorodoModal();
+    if (data.marked && funnyPopup === 'jacaranda_moses' && Math.random() < 0.2) showJacarandaModal();
+    if (data.marked && funnyPopup === 'levick' && Math.random() < 0.2) showLevickModal();
+    if (data.marked && funnyPopup === 'cordo' && Math.random() < 0.2) showCorodoModal();
   });
 }
 
