@@ -3028,7 +3028,7 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
       {% for lb in leaderboards %}
       <div class="lb-row" id="lb-row-{{ lb['id'] }}">
         <div class="lb-row-name" id="lb-name-{{ lb['id'] }}">{{ lb['name'] }}</div>
-        <button class="btn-lb-rename" onclick="startRename({{ lb['id'] }}, {{ lb['name']|tojson }})">Rename</button>
+        <button class="btn-lb-rename" data-lb-id="{{ lb['id'] }}" data-lb-name="{{ lb['name'] | e }}" onclick="startRename(this)">Rename</button>
         <button class="btn-lb-del" onclick="deleteLeaderboard({{ lb['id'] }})">Delete</button>
       </div>
       {% endfor %}
@@ -3149,23 +3149,33 @@ function addLeaderboard() {
   });
 }
 
-function startRename(id, currentName) {
+function startRename(btn) {
+  const id = btn.dataset.lbId;
+  const currentName = btn.dataset.lbName;
   const nameEl = document.getElementById('lb-name-' + id);
-  nameEl.innerHTML = `<input type="text" value="${currentName.replace(/"/g, '&quot;')}" id="rename-input-${id}" onkeydown="if(event.key==='Enter')confirmRename(${id}); if(event.key==='Escape')cancelRename(${id},${JSON.stringify(currentName)})">`;
-  const row = document.getElementById('lb-row-' + id);
-  row.querySelector('.btn-lb-rename').textContent = 'Save';
-  row.querySelector('.btn-lb-rename').onclick = () => confirmRename(id);
-  document.getElementById('rename-input-' + id).focus();
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = currentName;
+  input.id = 'rename-input-' + id;
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') confirmRename(id, btn);
+    if (e.key === 'Escape') cancelRename(id, currentName, btn);
+  });
+  nameEl.innerHTML = '';
+  nameEl.appendChild(input);
+  btn.textContent = 'Save';
+  btn.onclick = () => confirmRename(id, btn);
+  input.focus();
 }
 
-function cancelRename(id, oldName) {
+function cancelRename(id, oldName, btn) {
   document.getElementById('lb-name-' + id).textContent = oldName;
-  const row = document.getElementById('lb-row-' + id);
-  row.querySelector('.btn-lb-rename').textContent = 'Rename';
-  row.querySelector('.btn-lb-rename').onclick = () => startRename(id, oldName);
+  btn.textContent = 'Rename';
+  btn.dataset.lbName = oldName;
+  btn.onclick = () => startRename(btn);
 }
 
-function confirmRename(id) {
+function confirmRename(id, btn) {
   const input = document.getElementById('rename-input-' + id);
   const name = input ? input.value.trim() : '';
   if (!name) return;
