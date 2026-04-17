@@ -35,8 +35,13 @@ Questions are classified into Areas of Study (AOS) per subject.
 | `POST /api/saved` | Toggle a question saved/unsaved (subject in POST body) |
 | `GET /api/completed?subject=specialist\|methods` | Get current user's completed question IDs |
 | `POST /api/completed` | Toggle a question completed/uncompleted (subject in POST body) |
-| `GET /api/leaderboard?subject=specialist\|methods` | Completion counts for all leaderboard-enabled users (leaderboard members + admin only) |
-| `POST /admin/users/<google_id>/leaderboard` | Toggle leaderboard membership for a user |
+| `GET /api/leaderboard?subject=specialist\|methods[&leaderboard_id=N]` | Entries for a leaderboard group; returns `{leaderboard_name, entries}` |
+| `GET /api/admin/leaderboards` | List all leaderboards (admin only) |
+| `POST /api/admin/leaderboards` | Create a leaderboard `{name}` (admin only) |
+| `PUT /api/admin/leaderboards/<id>` | Rename a leaderboard (admin only) |
+| `DELETE /api/admin/leaderboards/<id>` | Delete a leaderboard — unassigns all members (admin only) |
+| `POST /admin/users/<google_id>/settings` | Set `leaderboard_id`, `funny_popup`, `nickname` for a student (admin only) |
+| `GET /api/admin/users/<google_id>/progress` | Per-student progress breakdown by AOS + section type, both subjects (admin only) |
 
 ### Data & Config
 - `specialist_questions.json` — Specialist questions
@@ -47,7 +52,7 @@ Questions are classified into Areas of Study (AOS) per subject.
 - `overrides.json` — Server-side AOS overrides (gitignored — see below)
 - `get_subject_config(subject)` helper returns data, file path, AOS map, and subject name
 - Colour theme: neutral charcoal for both subjects — subject-specific teal/blue removed entirely. CSS variables (`--primary`, `--primary-dark`, etc.) are still injected per subject but the browse page UI no longer uses them.
-- `users.db` — SQLite database for user accounts, saved questions, and completed questions (server-only, not in git)
+- `users.db` — SQLite database for user accounts, saved questions, completed questions, and leaderboard data (server-only, not in git)
 
 ## Specialist Mathematics — Areas of Study (AOS)
 | # | Name |
@@ -288,13 +293,13 @@ All four buttons (Show Solution, Save, Mark as Done, Flag as misclassified) shar
 - Empty states for Saved and Completed tabs when nothing is saved/done yet
 - `buildCardHtml(q)` — renders one card; `applyCardStates(questions)` — applies saved/completed visual states
 
-## Funny Popup Feature
+## Easter Egg Feature
 
-A per-student "funny popup" that fires randomly when a student marks a question as done. Designed to be extensible — new popups can be added easily.
+A per-student "Easter Egg" (formerly called "funny popup") that fires randomly when a student marks a question as done. Designed to be extensible — new popups can be added easily.
 
 ### How it works
 - `funny_popup` column on the `users` table stores a text key: `''` = off, or a popup name like `'jacaranda_moses'`
-- Admin assigns a popup (or off) per student via a dropdown in `/admin/users` (Approved Students section)
+- Admin assigns an Easter Egg (or off) per student via the **student settings modal** in `/admin/users` — open with the ⚙ gear icon next to each student
 - On the browse page, `funnyPopup` JS variable holds the current user's popup key (read live from DB on each page load via `get_funny_popup()`)
 - In `toggleCompleted()`, if `data.marked && funnyPopup === '<key>' && Math.random() < 0.1`, the modal is shown (10% chance)
 - The modal HTML lives at the bottom of `BROWSE_HTML`, just before `</body>`
@@ -305,7 +310,7 @@ A per-student "funny popup" that fires randomly when a student marks a question 
 | `jacaranda_moses` | Moses holding the Jacaranda Specialist Maths textbook, with motivational quote | `static/jacaranda_moses.jpeg` |
 
 ### Adding a new popup
-1. **Admin dropdown** (`USERS_HTML`): add `<option value="new_key">Display Name</option>` to the `<select>` in the approved students loop
+1. **Settings modal** (`USERS_HTML`): add `<option value="new_key">Display Name</option>` to `#modal-popup-select`
 2. **Modal HTML** (`BROWSE_HTML`): add a new `<div id="new-key-modal" ...>` with image and text, just before `</body>`
 3. **JS trigger** (`BROWSE_HTML`, inside `toggleCompleted()`): add `else if (funnyPopup === 'new_key' && Math.random() < 0.1) document.getElementById('new-key-modal').style.display = 'flex';`
 4. **Image**: add to `static/` and commit + scp to server (or just commit if small enough for git)
@@ -330,14 +335,36 @@ Students can view their completion progress broken down by Area of Study and que
 
 ## Leaderboard Feature
 
-A friendly competition widget for selected students, showing per-subject completion counts side by side.
+Named leaderboard groups — students see their own group's completion rankings in the browse page sidebar.
 
-- **Visibility:** Only shown to users with `leaderboard=1` on the `users` table, plus admin. `get_show_leaderboard(user)` determines this; always `True` in DEV_MODE.
-- **UI:** Small widget at the very top of the sidebar (above "Hide Completed"), showing rank, first name, and count per entry. Current user's row is bold.
-- **Subject scope:** Shows counts for the current subject only (Specialist on `/specialist`, Methods on `/methods`).
-- **Admin toggle:** 🏆 button per student in the Approved Students section of `/admin/users`. Clicking toggles `leaderboard` column; button turns gold when on.
-- **Storage:** `leaderboard INTEGER NOT NULL DEFAULT 0` column on `users` table (migrated via try/except in `init_db()`).
-- **Data fetch:** `loadLeaderboard()` JS function called on page load; fetches `/api/leaderboard?subject=<subject>` and renders into `#leaderboard-entries`.
+### Storage
+- `leaderboards` table: `id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE NOT NULL`
+- `users.leaderboard_id INTEGER` (NULL = not on any leaderboard) — replaces the old `leaderboard INTEGER 0/1` boolean (kept in schema but unused)
+- `users.nickname TEXT` — optional display name shown on the leaderboard instead of first name
+
+### Visibility
+- Students: shown only if their `leaderboard_id IS NOT NULL`. Widget title = group name. See only their own group.
+- Admin: always shown; sidebar widget has a dropdown picker to preview any group.
+- `get_show_leaderboard(user)` determines this; always `True` in DEV_MODE.
+
+### Browse page widget
+- Sits at the top of the sidebar. Title updates dynamically to the leaderboard's name.
+- Admin gets a `<select>` dropdown populated via `GET /api/admin/leaderboards` to pick which group to view.
+- `loadLeaderboard(lbId)` fetches `/api/leaderboard?subject=<subject>[&leaderboard_id=N]` and renders into `#leaderboard-entries`.
+- API returns `{leaderboard_name, entries: [{name, nickname, count, is_you}]}`. Display uses `nickname` if set, otherwise first name.
+
+### Admin management (`/admin/users`)
+- **⚙ gear button** per student opens a settings modal to assign leaderboard, nickname, and Easter Egg.
+- **Leaderboards section** at the bottom of the page lists all groups with inline Rename/Delete and a member list (dot-bulleted, nickname or name).
+- **Settings modal** uses `data-*` attributes on the gear button (never `onclick` parameters) to avoid HTML quoting issues — `data-lb`, `data-popup`, `data-nickname` are updated in-place after saving so reopening shows current values.
+- Saving calls `POST /admin/users/<id>/settings` with `{leaderboard_id, funny_popup, nickname}`.
+- Creating a new leaderboard inline (via "＋ Create new…" option) triggers a page reload to refresh all dropdowns.
+
+### Per-student progress modal (`/admin/users`)
+- **Bar-chart button** per student opens a progress modal with Specialist / Methods tabs.
+- Data fetched from `GET /api/admin/users/<google_id>/progress` — server-side breakdown by AOS + section type for both subjects.
+- Same visual style as the student-facing progress modal (`.progress-card`, `.progress-bar-*` CSS).
+- Hidden AOS: Specialist hides 0, 8, 9 — Methods hides 0, 9.
 
 ## Known Issues
 _(none)_
