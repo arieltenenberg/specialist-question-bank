@@ -4285,7 +4285,7 @@ def api_admin_user_progress(google_id):
                 continue
             if aos not in by_aos:
                 by_aos[aos] = {
-                    "name": aos_map.get(str(aos), str(aos)),
+                    "name": aos_map.get(aos, str(aos)),
                     "total": 0, "done": 0,
                     "sections": {k: {"total": 0, "done": 0} for k in SECTION_KEYS}
                 }
