@@ -2917,6 +2917,24 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
 .btn-revoke:hover { border-color:var(--red); color:var(--red); }
 .btn-gear { padding:5px 10px; border-radius:8px; border:1px solid var(--border); background:none; color:var(--muted); cursor:pointer; font-family:inherit; transition:all .15s; line-height:1; display:inline-flex; align-items:center; }
 .btn-gear:hover { border-color:#555; color:#222; background:#f0f0f0; }
+.btn-prog { padding:5px 10px; border-radius:8px; border:1px solid var(--border); background:none; color:var(--muted); cursor:pointer; font-family:inherit; transition:all .15s; line-height:1; display:inline-flex; align-items:center; }
+.btn-prog:hover { border-color:#555; color:#222; background:#f0f0f0; }
+/* Admin progress modal */
+.prog-tabs { display:flex; gap:4px; margin-bottom:18px; }
+.prog-tab { padding:6px 16px; border-radius:7px; border:1px solid var(--border); background:none; color:var(--muted); cursor:pointer; font-family:inherit; font-size:.82rem; font-weight:500; transition:all .15s; }
+.prog-tab.active { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
+.progress-card { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:16px 20px; margin-bottom:10px; }
+.progress-card-title { font-size:.85rem; font-weight:700; color:var(--text); margin-bottom:10px; }
+.progress-bar-row { display:flex; align-items:center; gap:12px; margin-bottom:4px; }
+.progress-bar-label { font-size:.76rem; color:var(--text-secondary,#4a5568); white-space:nowrap; min-width:130px; }
+.progress-bar-track { flex:1; height:9px; background:var(--border); border-radius:99px; overflow:hidden; }
+.progress-bar-fill { height:100%; background:#2d2d2d; border-radius:99px; }
+.progress-bar-count { font-size:.76rem; color:var(--muted); white-space:nowrap; min-width:48px; text-align:right; }
+.progress-sub-bars { margin-top:10px; padding-left:14px; display:flex; flex-direction:column; gap:6px; border-left:2px solid var(--border); }
+.progress-bar-track.sub { height:5px; }
+.progress-bar-fill.sub { opacity:.6; }
+.progress-bar-label.sub { font-size:.71rem; color:var(--muted); min-width:130px; }
+.progress-bar-count.sub { font-size:.71rem; }
 .empty { color:var(--muted); font-size:.85rem; padding:20px; text-align:center; background:var(--surface); border:1px solid var(--border); border-radius:10px; }
 /* Leaderboard management section */
 .lb-section { margin-bottom:44px; }
@@ -2993,6 +3011,11 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
         </div>
         <div class="udate">{{ u['approved_at'][:10] if u['approved_at'] else '' }}</div>
         <div class="actions">
+          <button class="btn-prog"
+            data-uid="{{ u['google_id'] }}"
+            data-name="{{ u['name'] | e }}"
+            onclick="openProgress(this)"
+            title="View progress"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="6" width="4" height="15"/><rect x="17" y="2" width="4" height="19"/></svg></button>
           <button class="btn-gear"
             data-uid="{{ u['google_id'] }}"
             data-name="{{ u['name'] | e }}"
@@ -3040,6 +3063,23 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
       {% endfor %}
     </div>
     <button class="btn-add-lb" onclick="addLeaderboard()">＋ Add Leaderboard</button>
+  </div>
+</div>
+
+<!-- Student progress modal -->
+<div class="modal-backdrop" id="prog-modal" onclick="if(event.target===this)closeProgress()">
+  <div class="modal" style="max-width:560px;max-height:80vh;display:flex;flex-direction:column;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-shrink:0;">
+      <h3 id="prog-modal-title">Progress</h3>
+      <button class="btn-modal-cancel" style="padding:4px 10px;font-size:1rem;" onclick="closeProgress()">✕</button>
+    </div>
+    <div class="prog-tabs" style="flex-shrink:0;">
+      <button class="prog-tab active" id="prog-tab-specialist" onclick="switchProgTab('specialist')">Specialist</button>
+      <button class="prog-tab" id="prog-tab-methods" onclick="switchProgTab('methods')">Methods</button>
+    </div>
+    <div id="prog-content" style="overflow-y:auto;flex:1;">
+      <span style="font-size:.85rem;color:var(--muted)">Loading…</span>
+    </div>
   </div>
 </div>
 
@@ -3214,6 +3254,75 @@ function deleteLeaderboard(id) {
       if (d.ok) location.reload();
       else alert(d.error || 'Error');
     });
+}
+
+let progData = null;
+let progSubject = 'specialist';
+const SECTION_LABELS = {short_answer: 'Short Answer', multiple_choice: 'Multiple Choice', extended_response: 'Extended Response'};
+const SECTION_KEYS = ['short_answer', 'multiple_choice', 'extended_response'];
+
+function openProgress(btn) {
+  const uid = btn.dataset.uid;
+  const name = btn.dataset.name;
+  document.getElementById('prog-modal-title').textContent = name;
+  document.getElementById('prog-content').innerHTML = '<span style="font-size:.85rem;color:var(--muted)">Loading…</span>';
+  progData = null;
+  progSubject = 'specialist';
+  document.getElementById('prog-tab-specialist').classList.add('active');
+  document.getElementById('prog-tab-methods').classList.remove('active');
+  document.getElementById('prog-modal').classList.add('open');
+  document.addEventListener('keydown', progKeyHandler);
+  fetch('/api/admin/users/' + uid + '/progress')
+    .then(r => r.json())
+    .then(data => { progData = data; renderProgView(); })
+    .catch(() => { document.getElementById('prog-content').innerHTML = '<span style="font-size:.85rem;color:var(--muted)">Error loading data</span>'; });
+}
+
+function closeProgress() {
+  document.getElementById('prog-modal').classList.remove('open');
+  document.removeEventListener('keydown', progKeyHandler);
+}
+
+function progKeyHandler(e) { if (e.key === 'Escape') closeProgress(); }
+
+function switchProgTab(subject) {
+  progSubject = subject;
+  document.getElementById('prog-tab-specialist').classList.toggle('active', subject === 'specialist');
+  document.getElementById('prog-tab-methods').classList.toggle('active', subject === 'methods');
+  renderProgView();
+}
+
+function renderProgView() {
+  const el = document.getElementById('prog-content');
+  if (!progData) return;
+  const subjectData = progData[progSubject];
+  if (!subjectData) { el.innerHTML = '<span style="font-size:.85rem;color:var(--muted)">No data</span>'; return; }
+  const byAos = subjectData.by_aos;
+  const sortedAos = Object.keys(byAos).map(Number).sort((a, b) => a - b);
+  if (!sortedAos.length) { el.innerHTML = '<span style="font-size:.85rem;color:var(--muted)">No questions found</span>'; return; }
+  el.innerHTML = sortedAos.map(num => {
+    const s = byAos[num];
+    const mainPct = s.total === 0 ? 0 : Math.round((s.done / s.total) * 100);
+    const subBarsHtml = SECTION_KEYS.map(sec => {
+      const ss = s.sections[sec];
+      if (!ss || ss.total === 0) return '';
+      const pct = Math.round((ss.done / ss.total) * 100);
+      return `<div class="progress-bar-row">
+        <span class="progress-bar-label sub">${SECTION_LABELS[sec]}</span>
+        <div class="progress-bar-track sub"><div class="progress-bar-fill sub" style="width:${pct}%"></div></div>
+        <span class="progress-bar-count sub">${ss.done} / ${ss.total}</span>
+      </div>`;
+    }).join('');
+    return `<div class="progress-card">
+      <div class="progress-card-title">${s.name}</div>
+      <div class="progress-bar-row">
+        <span class="progress-bar-label">${mainPct}% complete</span>
+        <div class="progress-bar-track"><div class="progress-bar-fill" style="width:${mainPct}%"></div></div>
+        <span class="progress-bar-count">${s.done} / ${s.total}</span>
+      </div>
+      ${subBarsHtml ? `<div class="progress-sub-bars">${subBarsHtml}</div>` : ''}
+    </div>`;
+  }).join('');
 }
 </script>
 </body>
@@ -4147,6 +4256,50 @@ def api_delete_leaderboard(lb_id):
     return jsonify(ok=True)
 
 
+
+@app.route("/api/admin/users/<google_id>/progress")
+def api_admin_user_progress(google_id):
+    if not admin_required():
+        return jsonify(error="forbidden"), 403
+    HIDDEN_AOS = {"specialist": {0, 8, 9}, "methods": {0, 9}}
+    SECTION_KEYS = ["short_answer", "multiple_choice", "extended_response"]
+    with get_db() as conn:
+        completed = {}
+        for subject in ("specialist", "methods"):
+            rows = conn.execute(
+                "SELECT question_id FROM completed_questions WHERE user_id=? AND subject=?",
+                (google_id, subject)
+            ).fetchall()
+            completed[subject] = {r["question_id"] for r in rows}
+    result = {}
+    for subject in ("specialist", "methods"):
+        cfg = get_subject_config(subject)
+        data = apply_overrides(cfg["data"](), subject)
+        hidden = HIDDEN_AOS[subject]
+        aos_map = cfg["aos_map"]
+        done_ids = completed[subject]
+        by_aos = {}
+        for q in data:
+            aos = q.get("aos", 0)
+            if aos in hidden:
+                continue
+            if aos not in by_aos:
+                by_aos[aos] = {
+                    "name": aos_map.get(str(aos), str(aos)),
+                    "total": 0, "done": 0,
+                    "sections": {k: {"total": 0, "done": 0} for k in SECTION_KEYS}
+                }
+            is_done = q["id"] in done_ids
+            by_aos[aos]["total"] += 1
+            if is_done:
+                by_aos[aos]["done"] += 1
+            sec = q.get("section", "")
+            if sec in SECTION_KEYS:
+                by_aos[aos]["sections"][sec]["total"] += 1
+                if is_done:
+                    by_aos[aos]["sections"][sec]["done"] += 1
+        result[subject] = {"by_aos": by_aos}
+    return jsonify(result)
 
 if __name__ == "__main__":
     import sys
