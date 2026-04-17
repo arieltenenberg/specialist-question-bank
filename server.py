@@ -2910,9 +2910,8 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
 .btn-reject:hover { border-color:var(--red); color:var(--red); }
 .btn-revoke { background:none; border:1px solid var(--border); color:var(--muted); font-size:.75rem; padding:5px 12px; }
 .btn-revoke:hover { border-color:var(--red); color:var(--red); }
-.btn-gear { font-size:.82rem; padding:5px 10px; border-radius:8px; border:1px solid var(--border); background:none; color:var(--muted); cursor:pointer; font-family:inherit; transition:all .15s; line-height:1; }
+.btn-gear { padding:5px 10px; border-radius:8px; border:1px solid var(--border); background:none; color:var(--muted); cursor:pointer; font-family:inherit; transition:all .15s; line-height:1; display:inline-flex; align-items:center; }
 .btn-gear:hover { border-color:#555; color:#222; background:#f0f0f0; }
-.btn-gear.has-lb { border-color:#b7791f; color:#b7791f; background:#fefce8; }
 .empty { color:var(--muted); font-size:.85rem; padding:20px; text-align:center; background:var(--surface); border:1px solid var(--border); border-radius:10px; }
 /* Leaderboard management section */
 .lb-section { margin-bottom:44px; }
@@ -2989,9 +2988,13 @@ body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:v
         </div>
         <div class="udate">{{ u['approved_at'][:10] if u['approved_at'] else '' }}</div>
         <div class="actions">
-          <button class="btn-gear {% if u['leaderboard_id'] %}has-lb{% endif %}"
-            onclick="openSettings('{{ u['google_id'] }}', {{ u['name']|tojson }}, {{ (u['leaderboard_id'] or '')|tojson }}, {{ (u['funny_popup'] or '')|tojson }})"
-            title="Student settings">⚙</button>
+          <button class="btn-gear"
+            data-uid="{{ u['google_id'] }}"
+            data-name="{{ u['name'] | e }}"
+            data-lb="{{ u['leaderboard_id'] if u['leaderboard_id'] is not none else '' }}"
+            data-popup="{{ u['funny_popup'] or '' }}"
+            onclick="openSettings(this)"
+            title="Student settings"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
           <button class="btn btn-revoke" onclick="act('{{ u['google_id'] }}','reject')">Revoke</button>
         </div>
       </div>
@@ -3077,13 +3080,15 @@ function act(id, action) {
     .then(r => r.json()).then(d => { if (d.ok) location.reload(); });
 }
 
-function openSettings(id, name, lbId, funnyPopup) {
-  settingsUserId = id;
-  settingsGearBtn = document.querySelector(`#card-${id} .btn-gear`);
-  document.getElementById('modal-title').textContent = name;
+function openSettings(btn) {
+  settingsUserId = btn.dataset.uid;
+  settingsGearBtn = btn;
+  const lbId = btn.dataset.lb || '';
+  const funnyPopup = btn.dataset.popup || '';
+  document.getElementById('modal-title').textContent = btn.dataset.name;
   const lbSel = document.getElementById('modal-lb-select');
-  lbSel.value = lbId !== null && lbId !== '' ? String(lbId) : '';
-  document.getElementById('modal-popup-select').value = funnyPopup || '';
+  lbSel.value = lbId !== '' ? String(lbId) : '';
+  document.getElementById('modal-popup-select').value = funnyPopup;
   document.getElementById('modal-new-lb').classList.remove('visible');
   document.getElementById('modal-new-lb-name').value = '';
   document.getElementById('settings-modal').classList.add('open');
@@ -3126,7 +3131,6 @@ async function saveSettings() {
   });
   const d = await r.json();
   if (d.ok) {
-    if (settingsGearBtn) settingsGearBtn.classList.toggle('has-lb', lbId !== null);
     closeSettings();
     if (lbSel.value === '__new__') location.reload(); // reload to show new leaderboard in lists
   }
