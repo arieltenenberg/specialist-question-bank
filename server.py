@@ -118,6 +118,26 @@ def init_db():
             conn.commit()
         except Exception:
             pass  # column already exists
+        try:
+            conn.execute("ALTER TABLE users ADD COLUMN xp INTEGER NOT NULL DEFAULT 0")
+            conn.commit()
+        except Exception:
+            pass
+        try:
+            conn.execute("ALTER TABLE users ADD COLUMN current_streak INTEGER NOT NULL DEFAULT 0")
+            conn.commit()
+        except Exception:
+            pass
+        try:
+            conn.execute("ALTER TABLE users ADD COLUMN longest_streak INTEGER NOT NULL DEFAULT 0")
+            conn.commit()
+        except Exception:
+            pass
+        try:
+            conn.execute("ALTER TABLE users ADD COLUMN last_streak_date TEXT")
+            conn.commit()
+        except Exception:
+            pass
 
 init_db()
 
@@ -224,6 +244,170 @@ if os.path.exists(METHODS_QUESTIONS_JSON):
     with open(METHODS_QUESTIONS_JSON) as f:
         methods_data = json.load(f)
 
+# ---------------------------------------------------------------------------
+# Gamification — constants and helpers
+# ---------------------------------------------------------------------------
+
+AEST = datetime.timezone(datetime.timedelta(hours=10))
+
+def today_aest():
+    return datetime.datetime.now(AEST).strftime("%Y-%m-%d")
+
+def yesterday_aest():
+    return (datetime.datetime.now(AEST) - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+
+XP_PER_SECTION = {
+    "multiple_choice": 5,
+    "short_answer": 10,
+    "extended_response": 25,
+}
+
+LEVELS = [
+    (1, "Novice",       0),
+    (2, "Student",      200),
+    (3, "Practitioner", 600),
+    (4, "Scholar",      1400),
+    (5, "Analyst",      3000),
+    (6, "Expert",       6000),
+    (7, "Master",       11000),
+    (8, "Grandmaster",  17000),
+]
+
+QUESTION_BADGES = [
+    {"id": "q_1",    "name": "First Step",        "desc": "Complete your first question",  "threshold": 1},
+    {"id": "q_10",   "name": "On a Roll",          "desc": "Complete 10 questions",         "threshold": 10},
+    {"id": "q_50",   "name": "Committed",          "desc": "Complete 50 questions",         "threshold": 50},
+    {"id": "q_100",  "name": "Dedicated",          "desc": "Complete 100 questions",        "threshold": 100},
+    {"id": "q_250",  "name": "Relentless",         "desc": "Complete 250 questions",        "threshold": 250},
+    {"id": "q_500",  "name": "Grinder",            "desc": "Complete 500 questions",        "threshold": 500},
+    {"id": "q_1000", "name": "Elite",              "desc": "Complete 1,000 questions",      "threshold": 1000},
+    {"id": "q_1500", "name": "The Real Deal",      "desc": "Complete 1,500 questions",      "threshold": 1500},
+]
+
+STREAK_BADGES = [
+    {"id": "s_7",   "name": "Week Warrior", "desc": "Reach a 7-day streak",   "threshold": 7},
+    {"id": "s_30",  "name": "Month Grind",  "desc": "Reach a 30-day streak",  "threshold": 30},
+    {"id": "s_100", "name": "Centurion",    "desc": "Reach a 100-day streak", "threshold": 100},
+]
+
+# Build question_id → section lookup and AOS question counts at startup
+_question_lookup = {}  # question_id → section
+for _q in questions_data + methods_data:
+    _question_lookup[_q["id"]] = _q.get("section", "")
+
+SPECIALIST_HIDDEN_AOS = {0, 8, 9}
+METHODS_HIDDEN_AOS = {0, 9}
+
+_specialist_aos_counts = {}
+for _q in questions_data:
+    _aos = _q.get("aos")
+    if _aos not in SPECIALIST_HIDDEN_AOS:
+        _specialist_aos_counts[_aos] = _specialist_aos_counts.get(_aos, 0) + 1
+
+_methods_aos_counts = {}
+for _q in methods_data:
+    _aos = _q.get("aos")
+    if _aos not in METHODS_HIDDEN_AOS:
+        _methods_aos_counts[_aos] = _methods_aos_counts.get(_aos, 0) + 1
+
+AOS_QUESTION_COUNTS = {"specialist": _specialist_aos_counts, "methods": _methods_aos_counts}
+
+def get_level(xp):
+    level = LEVELS[0]
+    for lv in LEVELS:
+        if xp >= lv[2]:
+            level = lv
+    return level
+
+def get_next_level(xp):
+    for lv in LEVELS:
+        if lv[2] > xp:
+            return lv
+    return None
+
+def get_xp_for_question(question_id):
+    section = _question_lookup.get(question_id, "")
+    return XP_PER_SECTION.get(section, 0)
+
+def get_aos_badges_for_subject(subject):
+    aos_map = SPECIALIST_AOS if subject == "specialist" else METHODS_AOS
+    hidden = SPECIALIST_HIDDEN_AOS if subject == "specialist" else METHODS_HIDDEN_AOS
+    return [
+        {"id": f"aos_{subject}_{aos_id}", "name": f"Mastered {name}", "desc": f"Complete all {name} questions", "aos_id": aos_id}
+        for aos_id, name in sorted(aos_map.items())
+        if aos_id not in hidden
+    ]
+
+def compute_earned_badge_ids(total_completed, longest_streak, completed_ids_subject, subject):
+    earned = set()
+    for b in QUESTION_BADGES:
+        if total_completed >= b["threshold"]:
+            earned.add(b["id"])
+    for b in STREAK_BADGES:
+        if longest_streak >= b["threshold"]:
+            earned.add(b["id"])
+    counts = AOS_QUESTION_COUNTS.get(subject, {})
+    for aos_id, total in counts.items():
+        done = sum(1 for qid in completed_ids_subject if _question_lookup.get(qid) is not None and _get_aos_for_id(qid, subject) == aos_id)
+        if total > 0 and done >= total:
+            earned.add(f"aos_{subject}_{aos_id}")
+    return earned
+
+def _get_aos_for_id(question_id, subject):
+    data = questions_data if subject == "specialist" else methods_data
+    for q in data:
+        if q["id"] == question_id:
+            return q.get("aos")
+    return None
+
+# Build per-subject question_id → aos lookup for fast badge checking
+_specialist_aos_lookup = {q["id"]: q.get("aos") for q in questions_data}
+_methods_aos_lookup    = {q["id"]: q.get("aos") for q in methods_data}
+
+def _fast_get_aos(question_id, subject):
+    if subject == "specialist":
+        return _specialist_aos_lookup.get(question_id)
+    return _methods_aos_lookup.get(question_id)
+
+def compute_earned_badge_ids(total_completed, longest_streak, completed_ids_subject, subject):
+    earned = set()
+    for b in QUESTION_BADGES:
+        if total_completed >= b["threshold"]:
+            earned.add(b["id"])
+    for b in STREAK_BADGES:
+        if longest_streak >= b["threshold"]:
+            earned.add(b["id"])
+    counts = AOS_QUESTION_COUNTS.get(subject, {})
+    hidden = SPECIALIST_HIDDEN_AOS if subject == "specialist" else METHODS_HIDDEN_AOS
+    aos_done = {}
+    for qid in completed_ids_subject:
+        aos = _fast_get_aos(qid, subject)
+        if aos is not None and aos not in hidden:
+            aos_done[aos] = aos_done.get(aos, 0) + 1
+    for aos_id, total in counts.items():
+        if total > 0 and aos_done.get(aos_id, 0) >= total:
+            earned.add(f"aos_{subject}_{aos_id}")
+    return earned
+
+def migrate_xp_for_existing_users():
+    """One-time: compute XP for users who have completed questions but xp=0."""
+    with get_db() as conn:
+        users_needing_migration = conn.execute(
+            "SELECT google_id FROM users WHERE xp = 0"
+        ).fetchall()
+        for row in users_needing_migration:
+            uid = row["google_id"]
+            completed = conn.execute(
+                "SELECT question_id FROM completed_questions WHERE user_id=?", (uid,)
+            ).fetchall()
+            if not completed:
+                continue
+            total_xp = sum(get_xp_for_question(r["question_id"]) for r in completed)
+            if total_xp > 0:
+                conn.execute("UPDATE users SET xp=? WHERE google_id=?", (total_xp, uid))
+        conn.commit()
+
+migrate_xp_for_existing_users()
 
 # AOS maps per subject
 SPECIALIST_AOS = {0: "Unsorted", 1: "Logic and Proof", 2: "Functions, Relations and Graphs", 3: "Complex Numbers", 4: "Calculus", 5: "Vectors, Lines and Planes", 6: "Probability and Statistics", 7: "Pseudocode", 8: "Mechanics", 9: "Hidden"}
@@ -878,6 +1062,196 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 .progress-btn-topbar:hover { background: rgba(255,255,255,.25); }
 
+/* ----- Achievements button ----- */
+.achievements-btn-topbar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.13);
+  border: 1.5px solid rgba(255,255,255,.25);
+  color: rgba(255,255,255,.85);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s;
+  user-select: none;
+  padding: 0;
+  line-height: 1;
+  font-size: 15px;
+}
+.achievements-btn-topbar:hover { background: rgba(255,255,255,.25); }
+
+/* ----- Achievements modal ----- */
+#achievements-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 80px;
+}
+#achievements-modal.open { display: flex; }
+#achievements-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+}
+#achievements-modal-box {
+  position: relative;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0,0,0,.18);
+  width: 100%;
+  max-width: 560px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  padding: 28px 28px 24px;
+}
+#achievements-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+#achievements-modal-header h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1f1f1f;
+}
+.achievements-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: #999;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+}
+.achievements-modal-close:hover { color: var(--text); }
+
+/* Level section */
+.ach-section { margin-bottom: 24px; }
+.ach-section-title {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #999;
+  margin-bottom: 10px;
+}
+.ach-level-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.ach-level-badge {
+  background: #1f1f1f;
+  color: #fff;
+  font-size: .75rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.ach-level-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f1f1f;
+}
+.ach-xp-bar-wrap {
+  height: 8px;
+  background: #e8e8e8;
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.ach-xp-bar-fill {
+  height: 100%;
+  background: #1f1f1f;
+  border-radius: 99px;
+  transition: width .5s;
+}
+.ach-xp-label {
+  font-size: .78rem;
+  color: #718096;
+}
+
+/* Streak section */
+.ach-streak-row {
+  display: flex;
+  gap: 20px;
+}
+.ach-streak-stat {
+  background: #f5f7fa;
+  border-radius: 10px;
+  padding: 12px 16px;
+  flex: 1;
+  text-align: center;
+}
+.ach-streak-val {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1f1f1f;
+  line-height: 1.1;
+}
+.ach-streak-lbl {
+  font-size: .72rem;
+  color: #718096;
+  margin-top: 3px;
+}
+.ach-streak-hint {
+  font-size: .75rem;
+  color: #999;
+  margin-top: 8px;
+}
+
+/* Badge grid */
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 10px;
+  margin-top: 4px;
+}
+.badge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 6px 8px;
+  border-radius: 10px;
+  text-align: center;
+  transition: background .15s;
+}
+.badge-item.earned {
+  background: #f0f7f0;
+  border: 1.5px solid #c6dfc6;
+}
+.badge-item.locked {
+  background: #f8f8f8;
+  border: 1.5px solid #e8e8e8;
+  opacity: 0.5;
+}
+.badge-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+.badge-name {
+  font-size: .68rem;
+  font-weight: 600;
+  color: #1f1f1f;
+  line-height: 1.2;
+}
+.badge-item.locked .badge-name { color: #999; }
+.badge-desc {
+  font-size: .62rem;
+  color: #718096;
+  line-height: 1.2;
+}
+.badge-item.locked .badge-desc { color: #bbb; }
+
 /* ----- Progress modal ----- */
 #progress-modal {
   display: none;
@@ -999,6 +1373,7 @@ a { color:#1f1f1f; text-decoration:none; }
     <a class="back-link" href="/">← Subjects</a>
     <h1>{{ subject_name }}</h1>
     <div class="topbar-right">
+      <button class="achievements-btn-topbar" onclick="openAchievementsModal()" title="Achievements" aria-label="Achievements">🏆</button>
       <button class="progress-btn-topbar" onclick="openProgressModal()" title="View Progress" aria-label="View Progress">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="6" width="4" height="15"/><rect x="17" y="2" width="4" height="19"/></svg>
       </button>
@@ -1710,6 +2085,10 @@ function toggleCompleted(id, btn) {
     if (data.marked && funnyPopup === 'jacaranda_moses' && Math.random() < 0.2) showJacarandaModal();
     if (data.marked && funnyPopup === 'levick' && Math.random() < 0.2) showLevickModal();
     if (data.marked && funnyPopup === 'cordo' && Math.random() < 0.2) showCorodoModal();
+    // Update achievements modal if open
+    if (data.marked && data.new_badges && document.getElementById('achievements-modal').classList.contains('open')) {
+      loadGamification();
+    }
   });
 }
 
@@ -1757,6 +2136,118 @@ function closeProgressModal() {
 
 function progressModalKeyHandler(e) {
   if (e.key === 'Escape') closeProgressModal();
+}
+
+// ---------------------------------------------------------------------------
+// Achievements modal
+// ---------------------------------------------------------------------------
+let _gamificationData = null;
+
+function openAchievementsModal() {
+  document.getElementById('achievements-modal').classList.add('open');
+  document.addEventListener('keydown', achievementsKeyHandler);
+  loadGamification();
+}
+
+function closeAchievementsModal() {
+  document.getElementById('achievements-modal').classList.remove('open');
+  document.removeEventListener('keydown', achievementsKeyHandler);
+}
+
+function achievementsKeyHandler(e) {
+  if (e.key === 'Escape') closeAchievementsModal();
+}
+
+function loadGamification() {
+  fetch('/api/gamification?subject={{ subject }}')
+    .then(r => r.json())
+    .then(data => {
+      _gamificationData = data;
+      renderAchievements(data);
+    });
+}
+
+function renderAchievements(data) {
+  const earned = new Set(data.earned_badge_ids);
+  const BADGE_ICONS = {
+    q_1: '⭐', q_10: '🎯', q_50: '🔑', q_100: '💯',
+    q_250: '⚡', q_500: '🔥', q_1000: '💎', q_1500: '👑',
+    s_7: '📅', s_30: '🗓️', s_100: '🏅',
+  };
+  const AOS_ICON = '✅';
+
+  function badgeHtml(badge, icon) {
+    const isEarned = earned.has(badge.id);
+    return `<div class="badge-item ${isEarned ? 'earned' : 'locked'}" title="${badge.desc}">
+      <div class="badge-icon">${isEarned ? icon : '🔒'}</div>
+      <div class="badge-name">${badge.name}</div>
+      <div class="badge-desc">${badge.desc}</div>
+    </div>`;
+  }
+
+  // Level bar
+  const xp = data.xp;
+  const minXp = data.level_xp_min;
+  const maxXp = data.next_level_xp;
+  let barPct, xpLabel;
+  if (maxXp === null) {
+    barPct = 100;
+    xpLabel = `${xp.toLocaleString()} XP — Max level reached`;
+  } else {
+    barPct = Math.round(((xp - minXp) / (maxXp - minXp)) * 100);
+    xpLabel = `${xp.toLocaleString()} / ${maxXp.toLocaleString()} XP`;
+  }
+
+  const levelSection = `
+    <div class="ach-section">
+      <div class="ach-section-title">Level</div>
+      <div class="ach-level-row">
+        <div class="ach-level-badge">Lv ${data.level_num}</div>
+        <div class="ach-level-name">${data.level_name}</div>
+      </div>
+      <div class="ach-xp-bar-wrap"><div class="ach-xp-bar-fill" style="width:${barPct}%"></div></div>
+      <div class="ach-xp-label">${xpLabel}${maxXp !== null ? ` &nbsp;·&nbsp; Next: ${data.next_level_name}` : ''}</div>
+    </div>`;
+
+  const streakSection = `
+    <div class="ach-section">
+      <div class="ach-section-title">Streak</div>
+      <div class="ach-streak-row">
+        <div class="ach-streak-stat">
+          <div class="ach-streak-val">${data.current_streak}</div>
+          <div class="ach-streak-lbl">Current streak (days)</div>
+        </div>
+        <div class="ach-streak-stat">
+          <div class="ach-streak-val">${data.longest_streak}</div>
+          <div class="ach-streak-lbl">Best streak (days)</div>
+        </div>
+        <div class="ach-streak-stat">
+          <div class="ach-streak-val">${data.total_completed.toLocaleString()}</div>
+          <div class="ach-streak-lbl">Questions done</div>
+        </div>
+      </div>
+      <div class="ach-streak-hint">Complete 5 questions per day to maintain your streak. Missing a day resets it to 0.</div>
+    </div>`;
+
+  const qBadgesHtml = data.question_badges.map(b => badgeHtml(b, BADGE_ICONS[b.id] || '🏆')).join('');
+  const sBadgesHtml = data.streak_badges.map(b => badgeHtml(b, BADGE_ICONS[b.id] || '🔥')).join('');
+  const aosBadgesHtml = data.aos_badges.map(b => badgeHtml(b, AOS_ICON)).join('');
+
+  const badgesSection = `
+    <div class="ach-section">
+      <div class="ach-section-title">Question Milestones</div>
+      <div class="badge-grid">${qBadgesHtml}</div>
+    </div>
+    <div class="ach-section">
+      <div class="ach-section-title">Streaks</div>
+      <div class="badge-grid">${sBadgesHtml}</div>
+    </div>
+    <div class="ach-section">
+      <div class="ach-section-title">Areas of Study</div>
+      <div class="badge-grid">${aosBadgesHtml}</div>
+    </div>`;
+
+  document.getElementById('achievements-content').innerHTML = levelSection + streakSection + badgesSection;
 }
 
 function renderProgressView() {
@@ -1865,6 +2356,17 @@ function renderProgressView() {
     <button onclick="document.getElementById('levick-modal').style.display='none'" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-family:'Poppins',system-ui,sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;">Got it</button>
   </div>
 </div>
+<div id="achievements-modal" role="dialog" aria-modal="true" aria-labelledby="achievements-modal-title">
+  <div id="achievements-modal-backdrop" onclick="closeAchievementsModal()"></div>
+  <div id="achievements-modal-box">
+    <div id="achievements-modal-header">
+      <h2 id="achievements-modal-title">Achievements</h2>
+      <button class="achievements-modal-close" onclick="closeAchievementsModal()" aria-label="Close">✕</button>
+    </div>
+    <div id="achievements-content"><span style="font-size:.85rem;color:#999">Loading…</span></div>
+  </div>
+</div>
+
 <div id="progress-modal" role="dialog" aria-modal="true" aria-labelledby="progress-modal-title">
   <div id="progress-modal-backdrop" onclick="closeProgressModal()"></div>
   <div id="progress-modal-box">
@@ -4091,6 +4593,10 @@ def api_toggle_completed():
     data = request.get_json()
     question_id = data["question_id"]
     subject = data.get("subject", "specialist")
+    xp_gained = 0
+    new_streak = None
+    new_badges = []
+
     with get_db() as conn:
         existing = conn.execute(
             "SELECT 1 FROM completed_questions WHERE user_id=? AND question_id=? AND subject=?",
@@ -4102,14 +4608,121 @@ def api_toggle_completed():
                 (user_id, question_id, subject)
             )
             marked = False
+            # Subtract XP (clamp at 0)
+            if user_id != "dev_user":
+                xp_lost = get_xp_for_question(question_id)
+                conn.execute(
+                    "UPDATE users SET xp = MAX(0, xp - ?) WHERE google_id=?",
+                    (xp_lost, user_id)
+                )
         else:
             conn.execute(
                 "INSERT INTO completed_questions (user_id, question_id, subject, completed_at) VALUES (?,?,?,?)",
                 (user_id, question_id, subject, datetime.datetime.utcnow().isoformat())
             )
             marked = True
+            if user_id != "dev_user":
+                xp_gained = get_xp_for_question(question_id)
+                conn.execute(
+                    "UPDATE users SET xp = xp + ? WHERE google_id=?",
+                    (xp_gained, user_id)
+                )
+                # Streak logic — count completions today (AEST) after this insert
+                today = today_aest()
+                yesterday = yesterday_aest()
+                today_count = conn.execute(
+                    "SELECT COUNT(*) FROM completed_questions WHERE user_id=? AND date(completed_at, '+10 hours') = ?",
+                    (user_id, today)
+                ).fetchone()[0]
+                user_row = conn.execute(
+                    "SELECT current_streak, longest_streak, last_streak_date FROM users WHERE google_id=?",
+                    (user_id,)
+                ).fetchone()
+                if user_row and today_count >= 5 and user_row["last_streak_date"] != today:
+                    last = user_row["last_streak_date"]
+                    streak = (user_row["current_streak"] + 1) if last == yesterday else 1
+                    longest = max(user_row["longest_streak"] or 0, streak)
+                    conn.execute(
+                        "UPDATE users SET current_streak=?, longest_streak=?, last_streak_date=? WHERE google_id=?",
+                        (streak, longest, today, user_id)
+                    )
+                    new_streak = streak
         conn.commit()
-    return jsonify({"ok": True, "marked": marked})
+
+        # Compute new XP + new badges after commit
+        if user_id != "dev_user" and marked:
+            new_xp_row = conn.execute("SELECT xp, longest_streak FROM users WHERE google_id=?", (user_id,)).fetchone()
+            new_xp = new_xp_row["xp"] if new_xp_row else 0
+            longest_streak = new_xp_row["longest_streak"] if new_xp_row else 0
+            total_completed = conn.execute(
+                "SELECT COUNT(*) FROM completed_questions WHERE user_id=?", (user_id,)
+            ).fetchone()[0]
+            completed_ids_subject = {r["question_id"] for r in conn.execute(
+                "SELECT question_id FROM completed_questions WHERE user_id=? AND subject=?",
+                (user_id, subject)
+            ).fetchall()}
+            earned = compute_earned_badge_ids(total_completed, longest_streak, completed_ids_subject, subject)
+            # Return only badges newly earned this completion (client tracks prior state)
+            new_badges = list(earned)
+        else:
+            new_xp = 0
+
+    return jsonify({"ok": True, "marked": marked, "xp_gained": xp_gained, "new_xp": new_xp, "new_streak": new_streak, "new_badges": new_badges})
+
+@app.route("/api/gamification")
+def api_gamification():
+    r = check_approved()
+    if r: return r
+    user_id = get_current_user_id()
+    subject = request.args.get("subject", "specialist")
+
+    if user_id == "dev_user":
+        # Return stub data in dev mode
+        return jsonify({
+            "xp": 0, "level_num": 1, "level_name": "Novice", "level_xp_min": 0,
+            "next_level_num": 2, "next_level_name": "Student", "next_level_xp": 200,
+            "current_streak": 0, "longest_streak": 0, "total_completed": 0,
+            "earned_badge_ids": [], "question_badges": QUESTION_BADGES,
+            "streak_badges": STREAK_BADGES, "aos_badges": get_aos_badges_for_subject(subject),
+        })
+
+    with get_db() as conn:
+        user_row = conn.execute(
+            "SELECT xp, current_streak, longest_streak FROM users WHERE google_id=?", (user_id,)
+        ).fetchone()
+        xp = user_row["xp"] if user_row else 0
+        current_streak = user_row["current_streak"] if user_row else 0
+        longest_streak = user_row["longest_streak"] if user_row else 0
+
+        total_completed = conn.execute(
+            "SELECT COUNT(*) FROM completed_questions WHERE user_id=?", (user_id,)
+        ).fetchone()[0]
+
+        completed_ids_subject = {r["question_id"] for r in conn.execute(
+            "SELECT question_id FROM completed_questions WHERE user_id=? AND subject=?",
+            (user_id, subject)
+        ).fetchall()}
+
+    level = get_level(xp)
+    next_lv = get_next_level(xp)
+    earned = compute_earned_badge_ids(total_completed, longest_streak, completed_ids_subject, subject)
+
+    return jsonify({
+        "xp": xp,
+        "level_num": level[0],
+        "level_name": level[1],
+        "level_xp_min": level[2],
+        "next_level_num": next_lv[0] if next_lv else None,
+        "next_level_name": next_lv[1] if next_lv else None,
+        "next_level_xp": next_lv[2] if next_lv else None,
+        "current_streak": current_streak,
+        "longest_streak": longest_streak,
+        "total_completed": total_completed,
+        "earned_badge_ids": list(earned),
+        "question_badges": QUESTION_BADGES,
+        "streak_badges": STREAK_BADGES,
+        "aos_badges": get_aos_badges_for_subject(subject),
+    })
 
 @app.route("/api/leaderboard")
 def api_leaderboard():
