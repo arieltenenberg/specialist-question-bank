@@ -269,6 +269,46 @@ Two-row topbar (96px total):
 - **All tabs are buttons** (no `<a>` links) — switching tabs is instant with no page reload
 - **Height references:** sidebar `top: 96px`, `height: calc(100vh - 96px)`; backdrop `inset: 96px 0 0 0`; mobile sidebar `top: 84px`
 
+## Colour Scheme
+
+All pages use a unified warm neutral palette. Never introduce cool blue-greys (Tailwind slate/blue-grey family). Every new feature must use these values.
+
+### CSS Variables (defined in each template's `:root`)
+| Variable | Value | Usage |
+|----------|-------|-------|
+| `--bg` | `#f6f3ee` | Page background |
+| `--surface` | `#fdfaf6` | Cards, dropdowns, modals |
+| `--border` | `#e3ddd4` | All borders |
+| `--text` | `#1c1917` | Primary text |
+| `--text-secondary` | `#57534e` | Secondary text |
+| `--muted` | `#78716c` | Labels, placeholders, icons |
+| `--shadow-sm` | `0 1px 3px rgba(60,44,28,.07)` | Card shadows |
+| `--shadow-md` | `0 4px 12px rgba(60,44,28,.09)` | Dropdown/modal shadows |
+| `--radius` | `12px` | Default border-radius |
+
+### Fixed colours (used directly, not via variables)
+| Value | Usage |
+|-------|-------|
+| `#2d2d2d` | Topbar background, primary buttons, active states |
+| `#1f1f1f` | Tabs row background |
+| `#1c1917` | Dark text (same as `--text`) |
+| `#8db370` | Sage green — XP bars, completed state, earned badges |
+| `#f0f7eb` | Sage green tint — completed card bg, earned badge bg |
+| `#b8d4a0` | Sage green border — earned badge border |
+| `#c53030` | Red — admin bar, flag button, error states |
+| `#c5bdb4` | Warm mid-grey — toggle switch inactive, card hover border |
+| `#a09890` | Warm light-grey — locked/disabled element names |
+| `#b5ada5` | Warm lighter-grey — locked/disabled descriptions |
+
+### Rules
+- **Shadows:** always warm-tinted `rgba(60,44,28,...)`, never `rgba(0,0,0,...)`
+- **Surfaces:** modals, cards, dropdowns use `var(--surface)` (`#fdfaf6`), not `#fff`
+- **Toggle knobs** (the white circle) are the only exception — keep `#fff` for contrast
+- **Image backgrounds** (`.qimg-wrap img`) keep `#fff` — images need a neutral white mat
+- **Modal backdrops** keep `rgba(0,0,0,...)` — full-screen overlays are fine as pure black
+- **Topbar overlays** (`rgba(255,255,255,...)`) are fine — these sit on charcoal, not warm bg
+- Never use: `#718096`, `#4a5568`, `#1a202c`, `#e2e8f0`, `#f5f7fa`, `#cbd5e0`, `#a0aec0`
+
 ## Browse Page UI Standards
 
 ### Question Card Header Layout
