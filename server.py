@@ -1158,8 +1158,7 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 .ach-xp-label {
   font-size: .78rem;
-  color: #3d5c28;
-  opacity: .75;
+  color: #718096;
 }
 
 /* Section wrapper */
