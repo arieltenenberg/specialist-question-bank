@@ -443,7 +443,7 @@ BROWSE_HTML = r"""<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f6f3ee;
+  --bg: #f5f7fa;
   --surface: #fdfaf6;
   --border: #e3ddd4;
   --text: #1c1917;
@@ -3570,7 +3570,7 @@ HOME_HTML = r"""<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'DM Sans',system-ui,sans-serif; background:#f6f3ee; color:#1a202c; min-height:100vh; }
+body { font-family:'DM Sans',system-ui,sans-serif; background:#f5f7fa; color:#1a202c; min-height:100vh; }
 .topbar {
   background:#2d2d2d;
   position:sticky; top:0; z-index:100;
@@ -3601,7 +3601,7 @@ body { font-family:'DM Sans',system-ui,sans-serif; background:#f6f3ee; color:#1a
 .user-dropdown.open { display:block; }
 .user-dropdown-header { padding:11px 16px; font-size:.78rem; color:#718096; border-bottom:1px solid #e2e8f0; }
 .user-dropdown a { display:block; padding:10px 16px; font-size:.84rem; color:#1a202c; text-decoration:none; transition:background .15s; }
-.user-dropdown a:hover { background:#f6f3ee; }
+.user-dropdown a:hover { background:#f5f7fa; }
 .main {
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   min-height:calc(100vh - 56px); padding:40px 24px;
