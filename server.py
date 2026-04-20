@@ -1118,8 +1118,8 @@ a { color:#1f1f1f; text-decoration:none; }
 
 /* Level hero card */
 .ach-level-card {
-  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-  border: 1.5px solid #fcd34d;
+  background: linear-gradient(135deg, #f0f7eb 0%, #e4f0d8 100%);
+  border: 1.5px solid #b8d4a0;
   border-radius: 14px;
   padding: 20px 20px 16px;
   text-align: center;
@@ -1128,14 +1128,14 @@ a { color:#1f1f1f; text-decoration:none; }
 .ach-level-num {
   font-size: 3rem;
   font-weight: 800;
-  color: #92400e;
+  color: #3d5c28;
   line-height: 1;
   letter-spacing: -.03em;
 }
 .ach-level-name {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #78350f;
+  color: #4a6f32;
   margin: 4px 0 14px;
 }
 .ach-xp-bar-wrap {
@@ -1152,13 +1152,13 @@ a { color:#1f1f1f; text-decoration:none; }
 .ach-xp-bar-fill {
   height: 100%;
   border-radius: 99px;
-  background: linear-gradient(90deg, #f59e0b, #fbbf24, #f59e0b, #fbbf24);
+  background: linear-gradient(90deg, #8db370, #b8d4a0, #8db370, #b8d4a0);
   background-size: 300% 100%;
   animation: xp-shimmer 2s linear infinite;
 }
 .ach-xp-label {
   font-size: .78rem;
-  color: #92400e;
+  color: #3d5c28;
   opacity: .75;
 }
 
@@ -1218,8 +1218,8 @@ a { color:#1f1f1f; text-decoration:none; }
   text-align: center;
 }
 .badge-item.earned {
-  background: #fffbeb;
-  border: 1.5px solid #fcd34d;
+  background: #f0f7eb;
+  border: 1.5px solid #b8d4a0;
 }
 .badge-item.locked {
   background: #f8f8f8;
@@ -1244,13 +1244,13 @@ a { color:#1f1f1f; text-decoration:none; }
 .badge-name {
   font-size: .7rem;
   font-weight: 600;
-  color: #78350f;
+  color: #4a6f32;
   line-height: 1.25;
 }
 .badge-item.locked .badge-name { color: #aaa; }
 .badge-desc {
   font-size: .62rem;
-  color: #92400e;
+  color: #3d5c28;
   opacity: .65;
   line-height: 1.25;
 }
@@ -1265,7 +1265,7 @@ a { color:#1f1f1f; text-decoration:none; }
   padding: 10px 14px;
   border-radius: 10px;
 }
-.aos-badge-row.earned { background: #fffbeb; border: 1.5px solid #fcd34d; }
+.aos-badge-row.earned { background: #f0f7eb; border: 1.5px solid #b8d4a0; }
 .aos-badge-row.locked { background: #f8f8f8; border: 1.5px solid #e8e8e8; }
 .aos-badge-row-icon { font-size: 1.3rem; flex-shrink: 0; }
 .aos-badge-row.locked .aos-badge-row-icon { filter: grayscale(1); opacity: .35; }
@@ -1283,8 +1283,8 @@ a { color:#1f1f1f; text-decoration:none; }
   100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
 }
 @keyframes levelup-pulse {
-  0%, 100% { box-shadow: 0 8px 36px rgba(245,158,11,.35); }
-  50%       { box-shadow: 0 8px 48px rgba(245,158,11,.6); }
+  0%, 100% { box-shadow: 0 8px 36px rgba(90,122,69,.35); }
+  50%       { box-shadow: 0 8px 48px rgba(90,122,69,.6); }
 }
 #celebration-toast {
   position: fixed;
@@ -1306,8 +1306,8 @@ a { color:#1f1f1f; text-decoration:none; }
   animation: toast-in .38s cubic-bezier(.22,1,.36,1) forwards;
 }
 #celebration-toast.toast-levelup {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  box-shadow: 0 8px 36px rgba(245,158,11,.4);
+  background: linear-gradient(135deg, #8db370, #5a7a45);
+  box-shadow: 0 8px 36px rgba(90,122,69,.4);
 }
 #celebration-toast.toast-levelup.visible {
   animation: toast-in .38s cubic-bezier(.22,1,.36,1) forwards, levelup-pulse 2s ease-in-out .4s infinite;
@@ -1315,7 +1315,7 @@ a { color:#1f1f1f; text-decoration:none; }
 #celebration-toast.toast-badge {
   background: #fff;
   box-shadow: 0 8px 36px rgba(0,0,0,.14);
-  border-left: 5px solid #f59e0b;
+  border-left: 5px solid #8db370;
 }
 .celebration-levelup-eyebrow {
   font-size: .68rem;
@@ -1354,7 +1354,7 @@ a { color:#1f1f1f; text-decoration:none; }
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .06em;
-  color: #b45309;
+  color: #4a6f32;
 }
 .celebration-badge-name { font-size: .88rem; font-weight: 600; color: #1f1f1f; }
 .celebration-dismiss-levelup {
@@ -2279,6 +2279,72 @@ const BADGE_ICONS = {
 
 let _celebrationTimer = null;
 
+function launchConfetti() {
+  const canvas = document.createElement('canvas');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  canvas.style.cssText = 'position:fixed;inset:0;z-index:9998;pointer-events:none';
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+
+  const COLORS = ['#8db370','#6a9852','#b8d4a0','#d4ead0','#ffffff','#4a6f32','#c6dfc6','#e4f0d8'];
+  const particles = Array.from({length: 90}, () => {
+    const angle = (Math.random() * 160 - 80) * Math.PI / 180; // spread upward
+    const speed = Math.random() * 14 + 4;
+    return {
+      x: canvas.width / 2 + (Math.random() - 0.5) * 120,
+      y: 115,
+      vx: Math.sin(angle) * speed,
+      vy: -Math.cos(angle) * speed,
+      size: Math.random() * 7 + 3,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      rot: Math.random() * 360,
+      rotV: (Math.random() - 0.5) * 12,
+      shape: Math.random() > 0.4 ? 'rect' : 'circle',
+      aspect: Math.random() * 0.5 + 0.3,
+    };
+  });
+
+  const start = performance.now();
+  const DURATION = 2800;
+
+  function frame(now) {
+    const elapsed = now - start;
+    const progress = elapsed / DURATION;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach(p => {
+      p.x  += p.vx;
+      p.y  += p.vy;
+      p.vy += 0.32;
+      p.vx *= 0.992;
+      p.rot += p.rotV;
+      const alpha = Math.max(0, 1 - progress * 1.4);
+
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = p.color;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI / 180);
+      if (p.shape === 'rect') {
+        ctx.fillRect(-p.size / 2, -p.size * p.aspect / 2, p.size, p.size * p.aspect);
+      } else {
+        ctx.beginPath();
+        ctx.ellipse(0, 0, p.size / 2, p.size * p.aspect / 2, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    });
+
+    if (elapsed < DURATION) {
+      requestAnimationFrame(frame);
+    } else {
+      canvas.remove();
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
 function showCelebration(levelUp, newLevelName, newLevelNum, newBadges) {
   clearTimeout(_celebrationTimer);
   const toast = document.getElementById('celebration-toast');
@@ -2288,7 +2354,8 @@ function showCelebration(levelUp, newLevelName, newLevelNum, newBadges) {
   void toast.offsetWidth;
 
   if (levelUp) {
-    // Level-up gets its own dramatic gold toast
+    launchConfetti();
+    // Level-up gets its own dramatic green toast
     const badgeSection = (newBadges && newBadges.length > 0) ? `
       <hr class="celebration-divider">
       ${newBadges.map(b => {
