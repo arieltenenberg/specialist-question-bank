@@ -3706,25 +3706,27 @@ LOGIN_HTML = """<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Manrope',system-ui,sans-serif; background:#0f1117; min-height:100vh; display:flex; align-items:center; justify-content:center; }
-.card { background:#1a1d27; border:1px solid #2d3148; border-radius:16px; padding:40px 36px; width:100%; max-width:380px; text-align:center; }
-h1 { color:#e2e8f0; font-size:1.2rem; font-weight:600; margin-bottom:8px; }
-p { color:#718096; font-size:.85rem; margin-bottom:32px; line-height:1.6; }
+body { font-family:'Manrope',system-ui,sans-serif; background:#f5f7fa; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.topbar-strip { background:#2d2d2d; width:100%; height:4px; position:fixed; top:0; left:0; }
+.card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:40px 36px; width:100%; max-width:380px; text-align:center; box-shadow:0 1px 3px rgba(0,0,0,.06); }
+h1 { color:#1a202c; font-size:1.1rem; font-weight:700; margin-bottom:8px; }
+p { color:#718096; font-size:.85rem; margin-bottom:28px; line-height:1.6; }
 .google-btn {
   display:flex; align-items:center; justify-content:center; gap:12px;
-  background:#fff; color:#3c4043; border:none; border-radius:8px;
+  background:#fff; color:#3c4043; border:1px solid #e2e8f0; border-radius:8px;
   padding:12px 24px; width:100%; font-family:inherit; font-size:.9rem; font-weight:500;
-  cursor:pointer; text-decoration:none; transition:box-shadow .15s;
-  box-shadow:0 1px 3px rgba(0,0,0,.3);
+  cursor:pointer; text-decoration:none; transition:border-color .15s, box-shadow .15s;
+  box-shadow:0 1px 3px rgba(0,0,0,.06);
 }
-.google-btn:hover { box-shadow:0 2px 10px rgba(0,0,0,.45); }
+.google-btn:hover { border-color:#cbd5e0; box-shadow:0 2px 8px rgba(0,0,0,.1); }
 .google-btn svg { width:20px; height:20px; flex-shrink:0; }
 .msg { font-size:.82rem; margin-bottom:20px; padding:10px 14px; border-radius:8px; }
-.msg.error { color:#fc8181; background:rgba(252,129,129,.1); border:1px solid rgba(252,129,129,.2); }
-.msg.info { color:#90cdf4; background:rgba(144,205,244,.1); border:1px solid rgba(144,205,244,.2); }
+.msg.error { color:#c53030; background:#fff5f5; border:1px solid #fed7d7; }
+.msg.info { color:#2b6cb0; background:#ebf8ff; border:1px solid #bee3f8; }
 </style>
 </head>
 <body>
+<div class="topbar-strip"></div>
 <div class="card">
   <h1>VCE Mathematics Question Bank</h1>
   <p>Sign in with your Google account.</p>
@@ -3754,17 +3756,19 @@ PENDING_HTML = """<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Manrope',system-ui,sans-serif; background:#0f1117; min-height:100vh; display:flex; align-items:center; justify-content:center; }
-.card { background:#1a1d27; border:1px solid #2d3148; border-radius:16px; padding:48px 36px; width:100%; max-width:420px; text-align:center; }
-.icon { font-size:2.8rem; margin-bottom:20px; }
-h1 { color:#e2e8f0; font-size:1.15rem; font-weight:600; margin-bottom:10px; }
+body { font-family:'Manrope',system-ui,sans-serif; background:#f5f7fa; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.topbar-strip { background:#2d2d2d; width:100%; height:4px; position:fixed; top:0; left:0; }
+.card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:48px 36px; width:100%; max-width:420px; text-align:center; box-shadow:0 1px 3px rgba(0,0,0,.06); }
+.icon { font-size:2.4rem; margin-bottom:16px; }
+h1 { color:#1a202c; font-size:1.1rem; font-weight:700; margin-bottom:10px; }
 p { color:#718096; font-size:.875rem; line-height:1.7; margin-bottom:28px; }
-.email { color:#a0aec0; font-weight:500; }
+.email { color:#2d2d2d; font-weight:600; }
 a { color:#718096; font-size:.82rem; text-decoration:underline; }
-a:hover { color:#a0aec0; }
+a:hover { color:#1a202c; }
 </style>
 </head>
 <body>
+<div class="topbar-strip"></div>
 <div class="card">
   <div class="icon">&#x23F3;</div>
   <h1>Awaiting Approval</h1>
