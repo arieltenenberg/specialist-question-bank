@@ -3765,28 +3765,28 @@ USERS_HTML = r"""<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:#f0f0f0; --surface:#fff; --border:#e4e4e4; --text:#1a202c;
-  --muted:#718096; --accent-green:#38a169; --red:#e53e3e;
-  --shadow-sm:0 1px 3px rgba(0,0,0,.06); --radius:12px;
+  --bg:#f6f3ee; --surface:#fdfaf6; --border:#e3ddd4; --text:#1c1917;
+  --text-secondary:#57534e; --muted:#78716c; --accent-green:#8db370; --red:#c53030;
+  --shadow-sm:0 1px 3px rgba(60,44,28,.07); --shadow-md:0 4px 12px rgba(60,44,28,.09); --radius:12px;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:'DM Sans',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
-.topbar { background:#2d2d2d; padding:0 32px; display:flex; align-items:center; gap:16px; position:sticky; top:0; z-index:100; height:60px; }
+.topbar { background:#2d2d2d; padding:0 28px; display:flex; align-items:center; gap:16px; position:sticky; top:0; z-index:100; height:52px; box-shadow:0 2px 8px rgba(0,0,0,.15); }
 .topbar h1 { font-size:1.05rem; font-weight:600; color:#fff; white-space:nowrap; }
 .tabs { display:flex; gap:4px; margin-left:24px; }
-.tab { background:none; border:none; color:rgba(255,255,255,.55); font-family:inherit; font-size:.875rem; font-weight:500; padding:8px 18px; border-radius:8px; cursor:pointer; text-decoration:none; transition:all .15s; }
-.tab:hover { color:#fff; background:rgba(255,255,255,.1); }
-.tab.active { color:#fff; background:rgba(255,255,255,.12); }
+.tab { background:none; border:none; border-bottom:2px solid transparent; color:rgba(255,255,255,.6); font-family:inherit; font-size:.83rem; font-weight:500; padding:0 18px; height:100%; cursor:pointer; text-decoration:none; transition:all .15s; display:inline-flex; align-items:center; }
+.tab:hover { color:#fff; border-bottom-color:rgba(255,255,255,.4); }
+.tab.active { color:#fff; border-bottom-color:#fff; font-weight:600; }
 .spacer { flex:1; }
-.signout { color:rgba(255,255,255,.6); font-size:.78rem; text-decoration:none; padding:5px 12px; border:1px solid rgba(255,255,255,.2); border-radius:6px; white-space:nowrap; }
+.signout { color:rgba(255,255,255,.65); font-size:.78rem; text-decoration:none; padding:5px 12px; border:1px solid rgba(255,255,255,.2); border-radius:6px; white-space:nowrap; transition:all .15s; }
 .signout:hover { color:#fff; background:rgba(255,255,255,.1); }
 .container { max-width:820px; margin:0 auto; padding:40px 24px; }
 .section { margin-bottom:44px; }
-.section h2 { font-size:1.05rem; font-weight:600; margin-bottom:14px; color:#1a202c; display:flex; align-items:center; gap:8px; }
+.section h2 { font-size:1.05rem; font-weight:600; margin-bottom:14px; color:var(--text); display:flex; align-items:center; gap:8px; }
 .badge { font-size:.7rem; font-weight:600; padding:2px 9px; border-radius:99px; color:#fff; background:#555; }
 .badge.green { background:var(--accent-green); }
 .badge.red { background:var(--red); }
-.user-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px 18px; display:flex; align-items:center; gap:14px; box-shadow:var(--shadow-sm); margin-bottom:8px; }
+.user-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px 18px; display:flex; align-items:center; gap:14px; box-shadow:var(--shadow-sm); margin-bottom:8px; }
 .info { flex:1; min-width:0; }
 .uname { font-size:.9rem; font-weight:500; }
 .uemail { font-size:.78rem; color:var(--muted); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -3794,15 +3794,15 @@ body { font-family:'DM Sans',system-ui,sans-serif; background:var(--bg); color:v
 .actions { display:flex; gap:8px; flex-shrink:0; }
 .btn { padding:7px 16px; border-radius:8px; font-size:.8rem; font-weight:500; cursor:pointer; border:none; font-family:inherit; transition:all .15s; }
 .btn-approve { background:#2d2d2d; color:#fff; }
-.btn-approve:hover { background:#444; }
+.btn-approve:hover { background:#3d3d3d; }
 .btn-reject { background:none; border:1px solid var(--border); color:var(--muted); }
 .btn-reject:hover { border-color:var(--red); color:var(--red); }
 .btn-revoke { background:none; border:1px solid var(--border); color:var(--muted); font-size:.75rem; padding:5px 12px; }
 .btn-revoke:hover { border-color:var(--red); color:var(--red); }
 .btn-gear { padding:5px 10px; border-radius:8px; border:1px solid var(--border); background:none; color:var(--muted); cursor:pointer; font-family:inherit; transition:all .15s; line-height:1; display:inline-flex; align-items:center; }
-.btn-gear:hover { border-color:#555; color:#222; background:#f0f0f0; }
+.btn-gear:hover { border-color:#2d2d2d; color:#1c1917; background:var(--bg); }
 .btn-prog { padding:5px 10px; border-radius:8px; border:1px solid var(--border); background:none; color:var(--muted); cursor:pointer; font-family:inherit; transition:all .15s; line-height:1; display:inline-flex; align-items:center; }
-.btn-prog:hover { border-color:#555; color:#222; background:#f0f0f0; }
+.btn-prog:hover { border-color:#2d2d2d; color:#1c1917; background:var(--bg); }
 /* Admin progress modal */
 .prog-tabs { display:flex; gap:4px; margin-bottom:18px; }
 .prog-tab { padding:6px 16px; border-radius:7px; border:1px solid var(--border); background:none; color:var(--muted); cursor:pointer; font-family:inherit; font-size:.82rem; font-weight:500; transition:all .15s; }
@@ -3810,7 +3810,7 @@ body { font-family:'DM Sans',system-ui,sans-serif; background:var(--bg); color:v
 .progress-card { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:16px 20px; margin-bottom:10px; }
 .progress-card-title { font-size:.85rem; font-weight:700; color:var(--text); margin-bottom:10px; }
 .progress-bar-row { display:flex; align-items:center; gap:12px; margin-bottom:4px; }
-.progress-bar-label { font-size:.76rem; color:var(--text-secondary,#4a5568); white-space:nowrap; min-width:130px; }
+.progress-bar-label { font-size:.76rem; color:var(--text-secondary); white-space:nowrap; min-width:130px; }
 .progress-bar-track { flex:1; height:9px; background:var(--border); border-radius:99px; overflow:hidden; }
 .progress-bar-fill { height:100%; background:#8db370; border-radius:99px; }
 .progress-bar-count { font-size:.76rem; color:var(--muted); white-space:nowrap; min-width:48px; text-align:right; }
@@ -3822,24 +3822,24 @@ body { font-family:'DM Sans',system-ui,sans-serif; background:var(--bg); color:v
 .empty { color:var(--muted); font-size:.85rem; padding:20px; text-align:center; background:var(--surface); border:1px solid var(--border); border-radius:10px; }
 /* Leaderboard management section */
 .lb-section { margin-bottom:44px; }
-.lb-section h2 { font-size:1.05rem; font-weight:600; margin-bottom:14px; color:#1a202c; display:flex; align-items:center; gap:8px; }
+.lb-section h2 { font-size:1.05rem; font-weight:600; margin-bottom:14px; color:var(--text); display:flex; align-items:center; gap:8px; }
 .lb-list { display:flex; flex-direction:column; gap:8px; margin-bottom:12px; }
-.lb-row { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px 16px; display:flex; align-items:center; gap:10px; box-shadow:var(--shadow-sm); }
+.lb-row { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:12px 16px; display:flex; align-items:center; gap:10px; box-shadow:var(--shadow-sm); }
 .lb-row-name { flex:1; font-size:.9rem; font-weight:500; }
 .lb-row-name input { font-family:inherit; font-size:.9rem; font-weight:500; border:1px solid var(--border); border-radius:6px; padding:4px 8px; width:100%; }
 .btn-lb-rename { font-size:.75rem; padding:5px 12px; border-radius:7px; border:1px solid var(--border); background:none; color:var(--muted); cursor:pointer; font-family:inherit; transition:all .15s; }
-.btn-lb-rename:hover { border-color:#555; color:#222; }
+.btn-lb-rename:hover { border-color:#2d2d2d; color:#1c1917; }
 .btn-lb-del { font-size:.75rem; padding:5px 12px; border-radius:7px; border:1px solid var(--border); background:none; color:var(--muted); cursor:pointer; font-family:inherit; transition:all .15s; }
 .btn-lb-del:hover { border-color:var(--red); color:var(--red); }
-.btn-add-lb { font-size:.82rem; padding:7px 16px; border-radius:8px; border:1px solid #555; background:none; color:#555; cursor:pointer; font-family:inherit; transition:all .15s; }
-.btn-add-lb:hover { background:#555; color:#fff; }
+.btn-add-lb { font-size:.82rem; padding:7px 16px; border-radius:8px; border:1px solid var(--text-secondary); background:none; color:var(--text-secondary); cursor:pointer; font-family:inherit; transition:all .15s; }
+.btn-add-lb:hover { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
 .lb-members { display:flex; flex-direction:column; gap:3px; margin-top:2px; padding-left:4px; }
-.lb-member-chip { font-size:.8rem; color:#555; display:flex; align-items:center; gap:7px; }
-.lb-member-chip::before { content:''; width:4px; height:4px; border-radius:50%; background:#cbd5e0; flex-shrink:0; }
+.lb-member-chip { font-size:.8rem; color:var(--text-secondary); display:flex; align-items:center; gap:7px; }
+.lb-member-chip::before { content:''; width:4px; height:4px; border-radius:50%; background:#c5bdb4; flex-shrink:0; }
 /* Student settings modal */
 .modal-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:1000; align-items:center; justify-content:center; }
 .modal-backdrop.open { display:flex; }
-.modal { background:#fff; border-radius:14px; padding:28px 28px 22px; width:100%; max-width:400px; box-shadow:0 8px 32px rgba(0,0,0,.18); }
+.modal { background:var(--surface); border-radius:14px; padding:28px 28px 22px; width:100%; max-width:400px; box-shadow:0 8px 32px rgba(60,44,28,.14); }
 .modal h3 { font-size:1rem; font-weight:600; margin-bottom:20px; }
 .modal-field { margin-bottom:16px; }
 .modal-field label { display:block; font-size:.8rem; font-weight:500; color:var(--muted); margin-bottom:6px; }
@@ -3849,9 +3849,9 @@ body { font-family:'DM Sans',system-ui,sans-serif; background:var(--bg); color:v
 .modal-new-lb.visible { display:flex; }
 .modal-actions { display:flex; gap:8px; margin-top:22px; justify-content:flex-end; }
 .btn-modal-cancel { padding:8px 18px; border-radius:8px; border:1px solid var(--border); background:none; color:var(--muted); cursor:pointer; font-family:inherit; font-size:.85rem; }
-.btn-modal-cancel:hover { border-color:#555; color:#222; }
+.btn-modal-cancel:hover { border-color:#2d2d2d; color:#1c1917; }
 .btn-modal-save { padding:8px 18px; border-radius:8px; border:none; background:#2d2d2d; color:#fff; cursor:pointer; font-family:inherit; font-size:.85rem; }
-.btn-modal-save:hover { background:#444; }
+.btn-modal-save:hover { background:#3d3d3d; }
 </style>
 </head>
 <body>
@@ -3996,7 +3996,7 @@ body { font-family:'DM Sans',system-ui,sans-serif; background:var(--bg); color:v
       </div>
     </div>
     <div class="modal-field">
-      <label>Nickname <span style="font-weight:400;color:#aaa">(shown on leaderboard)</span></label>
+      <label>Nickname <span style="font-weight:400;color:#a09890">(shown on leaderboard)</span></label>
       <input type="text" class="modal-select" id="modal-nickname" placeholder="Leave blank to use first name…" style="padding:8px 10px;">
     </div>
     <div class="modal-field">
