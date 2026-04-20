@@ -1249,11 +1249,10 @@ a { color:#1f1f1f; text-decoration:none; }
 .badge-item.locked .badge-name { color: #aaa; }
 .badge-desc {
   font-size: .62rem;
-  color: #3d5c28;
-  opacity: .65;
+  color: #718096;
   line-height: 1.25;
 }
-.badge-item.locked .badge-desc { color: #bbb; opacity: 1; }
+.badge-item.locked .badge-desc { color: #bbb; }
 
 /* AOS badge list */
 .aos-badge-list { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
