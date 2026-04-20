@@ -467,7 +467,7 @@ a { color:#1f1f1f; text-decoration:none; }
   position:sticky;
   top:0;
   z-index:100;
-  box-shadow:0 2px 8px rgba(0,0,0,.15);
+  box-shadow:0 2px 8px rgba(60,44,28,.15);
 }
 .topbar-top {
   display:grid;
@@ -541,7 +541,7 @@ a { color:#1f1f1f; text-decoration:none; }
   position:absolute;
   top:calc(100% + 10px);
   right:0;
-  background:#fff;
+  background:var(--surface);
   border:1px solid var(--border);
   border-radius:10px;
   box-shadow:var(--shadow-md);
@@ -595,7 +595,7 @@ a { color:#1f1f1f; text-decoration:none; }
   position:absolute;
   top:calc(100% + 10px);
   right:0;
-  background:#fff;
+  background:var(--surface);
   border:1px solid var(--border);
   border-radius:10px;
   box-shadow:var(--shadow-md);
@@ -657,7 +657,7 @@ a { color:#1f1f1f; text-decoration:none; }
   top:2px;
   left:2px;
   transition:transform .2s;
-  box-shadow:0 1px 3px rgba(0,0,0,.2);
+  box-shadow:0 1px 3px rgba(60,44,28,.15);
 }
 /* ----- Leaderboard widget ----- */
 .leaderboard-widget {
@@ -958,7 +958,7 @@ a { color:#1f1f1f; text-decoration:none; }
     max-width:calc(100vw - 40px);
     z-index:99;
     height:calc(100vh - 84px);
-    box-shadow:4px 0 24px rgba(0,0,0,.2);
+    box-shadow:4px 0 24px rgba(60,44,28,.15);
   }
   .qcard-header { padding:14px 16px; gap:8px; }
   .qcard-header .marks { font-size:.75rem; }
@@ -1156,9 +1156,9 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 #achievements-modal-box {
   position: relative;
-  background: #fff;
+  background: var(--surface);
   border-radius: 16px;
-  box-shadow: 0 8px 40px rgba(0,0,0,.18);
+  box-shadow: 0 8px 40px rgba(60,44,28,.18);
   width: 100%;
   max-width: 560px;
   max-height: calc(100vh - 120px);
@@ -1367,14 +1367,14 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 #celebration-toast.toast-levelup {
   background: #2d2d2d;
-  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  box-shadow: 0 4px 16px rgba(60,44,28,.12);
 }
 #celebration-toast.toast-levelup.visible {
   animation: toast-in .38s cubic-bezier(.22,1,.36,1) forwards;
 }
 #celebration-toast.toast-badge {
-  background: #fff;
-  box-shadow: 0 8px 36px rgba(0,0,0,.14);
+  background: var(--surface);
+  box-shadow: 0 8px 36px rgba(60,44,28,.14);
 }
 .celebration-levelup-eyebrow {
   font-size: .68rem;
@@ -1450,7 +1450,7 @@ a { color:#1f1f1f; text-decoration:none; }
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0,0,0,.18);
+  box-shadow: 0 8px 32px rgba(60,44,28,.18);
   width: min(680px, calc(100vw - 32px));
   max-height: calc(100vh - 120px);
   overflow-y: auto;
@@ -2683,7 +2683,7 @@ function renderProgressView() {
 
 <!-- Jacaranda motivational modal -->
 <div id="mark-complete-prompt" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);align-items:center;justify-content:center;">
-  <div style="background:#fff;border-radius:14px;padding:24px;max-width:340px;width:90%;text-align:center;box-shadow:0 16px 48px rgba(0,0,0,.25);">
+  <div style="background:#fdfaf6;border-radius:14px;padding:24px;max-width:340px;width:90%;text-align:center;box-shadow:0 16px 48px rgba(60,44,28,.25);">
     <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.95rem;font-weight:600;color:#1c1917;margin:0 0 6px;">Mark as done?</p>
     <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.83rem;color:#78716c;margin:0 0 20px;">Would you like to mark this question as completed?</p>
     <div style="display:flex;gap:10px;justify-content:center;">
@@ -2693,7 +2693,7 @@ function renderProgressView() {
   </div>
 </div>
 <div id="unsave-prompt" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);align-items:center;justify-content:center;">
-  <div style="background:#fff;border-radius:14px;padding:24px;max-width:340px;width:90%;text-align:center;box-shadow:0 16px 48px rgba(0,0,0,.25);">
+  <div style="background:#fdfaf6;border-radius:14px;padding:24px;max-width:340px;width:90%;text-align:center;box-shadow:0 16px 48px rgba(60,44,28,.25);">
     <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.95rem;font-weight:600;color:#1c1917;margin:0 0 6px;">Unsave this question?</p>
     <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.83rem;color:#78716c;margin:0 0 20px;">You've marked this as done — would you like to remove it from your saved questions?</p>
     <div style="display:flex;gap:10px;justify-content:center;">
@@ -2703,9 +2703,9 @@ function renderProgressView() {
   </div>
 </div>
 <div id="jacaranda-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);align-items:center;justify-content:center;">
-  <div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+  <div style="background:#fdfaf6;border-radius:16px;padding:28px 24px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(60,44,28,.3);">
     <img src="/static/jacaranda_moses.jpeg" alt="Motivation" style="width:100%;border-radius:10px;margin-bottom:18px;">
-    <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.9rem;font-weight:500;color:#1a202c;line-height:1.6;margin-bottom:20px;">
+    <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.9rem;font-weight:500;color:#1c1917;line-height:1.6;margin-bottom:20px;">
       Be like a Jacaranda in exam season — bloom unexpectedly and confuse everyone, including yourself
     </p>
     <button onclick="document.getElementById('jacaranda-modal').style.display='none'" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-family:'DM Sans',system-ui,sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;">Got it</button>
@@ -2713,9 +2713,9 @@ function renderProgressView() {
 </div>
 <!-- Cordo modal -->
 <div id="cordo-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);align-items:center;justify-content:center;">
-  <div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+  <div style="background:#fdfaf6;border-radius:16px;padding:28px 24px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(60,44,28,.3);">
     <img src="/static/cordo.jpeg" alt="Cordo" style="width:100%;border-radius:10px;margin-bottom:18px;">
-    <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.9rem;font-weight:500;color:#1a202c;line-height:1.6;margin-bottom:20px;">
+    <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.9rem;font-weight:500;color:#1c1917;line-height:1.6;margin-bottom:20px;">
       Not Bad
     </p>
     <button onclick="document.getElementById('cordo-modal').style.display='none'" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-family:'DM Sans',system-ui,sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;">Thanks Cordo!</button>
@@ -2723,9 +2723,9 @@ function renderProgressView() {
 </div>
 <!-- Mr Levick modal -->
 <div id="levick-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);align-items:center;justify-content:center;">
-  <div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+  <div style="background:#fdfaf6;border-radius:16px;padding:28px 24px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(60,44,28,.3);">
     <img src="/static/levick.jpeg" alt="Mr Levick" style="width:100%;border-radius:10px;margin-bottom:18px;">
-    <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.9rem;font-weight:500;color:#1a202c;line-height:1.6;margin-bottom:20px;">
+    <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.9rem;font-weight:500;color:#1c1917;line-height:1.6;margin-bottom:20px;">
       He is watching...
     </p>
     <button onclick="document.getElementById('levick-modal').style.display='none'" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-family:'DM Sans',system-ui,sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;">Got it</button>
@@ -3572,7 +3572,7 @@ body { font-family:'DM Sans',system-ui,sans-serif; background:#f6f3ee; color:#1c
 .topbar {
   background:#2d2d2d;
   position:sticky; top:0; z-index:100;
-  box-shadow:0 2px 8px rgba(0,0,0,.15);
+  box-shadow:0 2px 8px rgba(60,44,28,.15);
 }
 .topbar-inner {
   display:grid;
@@ -3771,7 +3771,7 @@ USERS_HTML = r"""<!DOCTYPE html>
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:'DM Sans',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
-.topbar { background:#2d2d2d; padding:0 28px; display:flex; align-items:center; gap:16px; position:sticky; top:0; z-index:100; height:52px; box-shadow:0 2px 8px rgba(0,0,0,.15); }
+.topbar { background:#2d2d2d; padding:0 28px; display:flex; align-items:center; gap:16px; position:sticky; top:0; z-index:100; height:52px; box-shadow:0 2px 8px rgba(60,44,28,.15); }
 .topbar h1 { font-size:1.05rem; font-weight:600; color:#fff; white-space:nowrap; }
 .tabs { display:flex; gap:4px; margin-left:24px; }
 .tab { background:none; border:none; border-bottom:2px solid transparent; color:rgba(255,255,255,.6); font-family:inherit; font-size:.83rem; font-weight:500; padding:0 18px; height:100%; cursor:pointer; text-decoration:none; transition:all .15s; display:inline-flex; align-items:center; }
@@ -4277,7 +4277,7 @@ a { color:#1f1f1f; text-decoration:none; }
 .topbar {
   background:#2d2d2d;
   position:sticky; top:0; z-index:100;
-  box-shadow:0 2px 8px rgba(0,0,0,.15);
+  box-shadow:0 2px 8px rgba(60,44,28,.15);
 }
 .topbar-top {
   display:grid;
