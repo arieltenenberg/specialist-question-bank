@@ -1603,9 +1603,9 @@ a { color:#1f1f1f; text-decoration:none; }
 
 <div class="layout">
   <div class="sidebar" id="sidebar">
-    <div class="sidebar-progress" id="sidebar-progress" style="visibility:hidden">
+    <div class="sidebar-progress" id="sidebar-progress">
       <div class="sidebar-progress-level">
-        <span class="sidebar-level-pill" id="sp-level-pill">Lv 1</span>
+        <span class="sidebar-level-pill" id="sp-level-pill">Level 1</span>
         <span class="sidebar-level-name" id="sp-level-name">Novice</span>
       </div>
       <div class="sidebar-xp-bar-wrap"><div class="sidebar-xp-bar-fill" id="sp-xp-bar" style="width:0%"></div></div>
@@ -2532,7 +2532,6 @@ function loadGamification() {
 
 function updateSidebarGamification(xp, levelNum, levelName, minXp, nextXp, nextName, todayCount, streak) {
   document.getElementById('sp-level-pill').textContent = 'Level ' + levelNum;
-  document.getElementById('sidebar-progress').style.visibility = 'visible';
   document.getElementById('sp-level-name').textContent = levelName;
   let pct;
   if (nextXp === null || nextXp === undefined) {
