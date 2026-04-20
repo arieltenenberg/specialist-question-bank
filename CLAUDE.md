@@ -349,7 +349,7 @@ Named leaderboard groups — students see their own group's completion rankings 
 - `get_show_leaderboard(user)` determines this; always `True` in DEV_MODE.
 
 ### Browse page widget
-- Sits below the sidebar progress widget (see Gamification Feature). Title updates dynamically to the leaderboard's name.
+- Sits at the top of the sidebar (the sidebar-progress widget is excluded). Title updates dynamically to the leaderboard's name.
 - Admin gets a `<select>` dropdown populated via `GET /api/admin/leaderboards` to pick which group to view.
 - `loadLeaderboard(lbId)` fetches `/api/leaderboard?subject=<subject>[&leaderboard_id=N]` and renders into `#leaderboard-entries`.
 - API returns `{leaderboard_name, entries: [{name, nickname, count, level_num, is_you}]}`. Display uses `nickname` if set, otherwise first name. Level is not shown in the leaderboard widget.
@@ -427,7 +427,7 @@ Returns `prev_level_num`, `new_level_num`, `new_level_name`, `newly_earned_badge
 - Celebration toast has two variants: level-up (with level name) and badge unlock
 
 ### Sidebar progress widget
-- `.sidebar-progress` div sits at the very top of the sidebar (above the leaderboard widget)
+- `.sidebar-progress` CSS and JS exist but the HTML widget is **intentionally excluded** from the sidebar — do not add it
 - Shows: level pill (`Level N`, `border-radius:6px` matching card style), level name, sage green XP bar, XP label, today's count, current streak
 - Initialised via `initSidebarGamification()` on page load; updated via `updateSidebarGamification(...)` after each `toggleCompleted`
 - Widget starts visible with placeholder "Level 1" text (not hidden) — placeholder is accurate for new users
