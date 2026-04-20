@@ -1252,6 +1252,80 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 .badge-item.locked .badge-desc { color: #bbb; }
 
+/* ----- Celebration toast ----- */
+#celebration-toast {
+  position: fixed;
+  top: 108px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-12px);
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px 22px;
+  box-shadow: 0 8px 36px rgba(0,0,0,.18);
+  z-index: 3000;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .3s ease, transform .3s ease;
+  pointer-events: none;
+  min-width: 260px;
+  max-width: 380px;
+  text-align: center;
+}
+#celebration-toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+.celebration-levelup {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: #999;
+  margin-bottom: 4px;
+}
+.celebration-levelup-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1f1f1f;
+  margin-bottom: 2px;
+}
+.celebration-levelup-sub {
+  font-size: .8rem;
+  color: #718096;
+}
+.celebration-divider {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 12px 0 10px;
+}
+.celebration-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  padding: 4px 0;
+}
+.celebration-badge-icon { font-size: 1.4rem; flex-shrink: 0; }
+.celebration-badge-info { flex: 1; }
+.celebration-badge-label {
+  font-size: .68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #999;
+}
+.celebration-badge-name {
+  font-size: .88rem;
+  font-weight: 600;
+  color: #1f1f1f;
+}
+.celebration-dismiss {
+  font-size: .7rem;
+  color: #bbb;
+  margin-top: 10px;
+}
+
 /* ----- Progress modal ----- */
 #progress-modal {
   display: none;
@@ -2085,9 +2159,15 @@ function toggleCompleted(id, btn) {
     if (data.marked && funnyPopup === 'jacaranda_moses' && Math.random() < 0.2) showJacarandaModal();
     if (data.marked && funnyPopup === 'levick' && Math.random() < 0.2) showLevickModal();
     if (data.marked && funnyPopup === 'cordo' && Math.random() < 0.2) showCorodoModal();
-    // Update achievements modal if open
-    if (data.marked && data.new_badges && document.getElementById('achievements-modal').classList.contains('open')) {
-      loadGamification();
+    if (data.marked) {
+      const leveledUp = data.new_level_num > data.prev_level_num;
+      const newBadges = data.newly_earned_badges || [];
+      if (leveledUp || newBadges.length > 0) {
+        showCelebration(leveledUp, data.new_level_name, data.new_level_num, newBadges);
+      }
+      if (document.getElementById('achievements-modal').classList.contains('open')) {
+        loadGamification();
+      }
     }
   });
 }
@@ -2139,6 +2219,56 @@ function progressModalKeyHandler(e) {
 }
 
 // ---------------------------------------------------------------------------
+// Celebration toast
+// ---------------------------------------------------------------------------
+const BADGE_ICONS = {
+  q_1: '⭐', q_10: '🎯', q_50: '🔑', q_100: '💯',
+  q_250: '⚡', q_500: '🔥', q_1000: '💎', q_1500: '👑',
+  s_7: '📅', s_30: '🗓️', s_100: '🏅',
+};
+
+let _celebrationTimer = null;
+
+function showCelebration(levelUp, newLevelName, newLevelNum, newBadges) {
+  clearTimeout(_celebrationTimer);
+  const parts = [];
+
+  if (levelUp) {
+    parts.push(`
+      <div class="celebration-levelup">🎉 Level Up!</div>
+      <div class="celebration-levelup-name">Lv ${newLevelNum} — ${newLevelName}</div>
+      <div class="celebration-levelup-sub">Keep going!</div>`);
+  }
+
+  if (newBadges && newBadges.length > 0) {
+    if (levelUp) parts.push('<hr class="celebration-divider">');
+    newBadges.forEach(b => {
+      const icon = b.id.startsWith('aos_') ? '✅' : (BADGE_ICONS[b.id] || '🏆');
+      parts.push(`
+        <div class="celebration-badge-row">
+          <div class="celebration-badge-icon">${icon}</div>
+          <div class="celebration-badge-info">
+            <div class="celebration-badge-label">Achievement Unlocked</div>
+            <div class="celebration-badge-name">${b.name}</div>
+          </div>
+        </div>`);
+    });
+  }
+
+  if (parts.length === 0) return;
+
+  document.getElementById('celebration-content').innerHTML = parts.join('');
+  const toast = document.getElementById('celebration-toast');
+  toast.classList.add('visible');
+  _celebrationTimer = setTimeout(hideCelebration, 4000);
+}
+
+function hideCelebration() {
+  clearTimeout(_celebrationTimer);
+  document.getElementById('celebration-toast').classList.remove('visible');
+}
+
+// ---------------------------------------------------------------------------
 // Achievements modal
 // ---------------------------------------------------------------------------
 let _gamificationData = null;
@@ -2169,11 +2299,6 @@ function loadGamification() {
 
 function renderAchievements(data) {
   const earned = new Set(data.earned_badge_ids);
-  const BADGE_ICONS = {
-    q_1: '⭐', q_10: '🎯', q_50: '🔑', q_100: '💯',
-    q_250: '⚡', q_500: '🔥', q_1000: '💎', q_1500: '👑',
-    s_7: '📅', s_30: '🗓️', s_100: '🏅',
-  };
   const AOS_ICON = '✅';
 
   function badgeHtml(badge, icon) {
@@ -2356,6 +2481,11 @@ function renderProgressView() {
     <button onclick="document.getElementById('levick-modal').style.display='none'" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-family:'Poppins',system-ui,sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;">Got it</button>
   </div>
 </div>
+<div id="celebration-toast" onclick="hideCelebration()">
+  <div id="celebration-content"></div>
+  <div class="celebration-dismiss">Tap to dismiss</div>
+</div>
+
 <div id="achievements-modal" role="dialog" aria-modal="true" aria-labelledby="achievements-modal-title">
   <div id="achievements-modal-backdrop" onclick="closeAchievementsModal()"></div>
   <div id="achievements-modal-box">
@@ -4595,7 +4725,11 @@ def api_toggle_completed():
     subject = data.get("subject", "specialist")
     xp_gained = 0
     new_streak = None
-    new_badges = []
+    newly_earned_badges = []
+    prev_level_num = 1
+    new_level_num = 1
+    new_level_name = "Novice"
+    new_xp = 0
 
     with get_db() as conn:
         existing = conn.execute(
@@ -4608,26 +4742,37 @@ def api_toggle_completed():
                 (user_id, question_id, subject)
             )
             marked = False
-            # Subtract XP (clamp at 0)
             if user_id != "dev_user":
                 xp_lost = get_xp_for_question(question_id)
-                conn.execute(
-                    "UPDATE users SET xp = MAX(0, xp - ?) WHERE google_id=?",
-                    (xp_lost, user_id)
-                )
+                conn.execute("UPDATE users SET xp = MAX(0, xp - ?) WHERE google_id=?", (xp_lost, user_id))
         else:
+            marked = True
+            if user_id != "dev_user":
+                # Snapshot state BEFORE this completion so we can diff
+                prev_row = conn.execute(
+                    "SELECT xp, longest_streak FROM users WHERE google_id=?", (user_id,)
+                ).fetchone()
+                prev_xp = prev_row["xp"] if prev_row else 0
+                prev_longest = prev_row["longest_streak"] if prev_row else 0
+                prev_level_num = get_level(prev_xp)[0]
+                prev_total = conn.execute(
+                    "SELECT COUNT(*) FROM completed_questions WHERE user_id=?", (user_id,)
+                ).fetchone()[0]
+                prev_completed_subject = {r["question_id"] for r in conn.execute(
+                    "SELECT question_id FROM completed_questions WHERE user_id=? AND subject=?",
+                    (user_id, subject)
+                ).fetchall()}
+                prev_earned = compute_earned_badge_ids(prev_total, prev_longest, prev_completed_subject, subject)
+
             conn.execute(
                 "INSERT INTO completed_questions (user_id, question_id, subject, completed_at) VALUES (?,?,?,?)",
                 (user_id, question_id, subject, datetime.datetime.utcnow().isoformat())
             )
-            marked = True
+
             if user_id != "dev_user":
                 xp_gained = get_xp_for_question(question_id)
-                conn.execute(
-                    "UPDATE users SET xp = xp + ? WHERE google_id=?",
-                    (xp_gained, user_id)
-                )
-                # Streak logic — count completions today (AEST) after this insert
+                conn.execute("UPDATE users SET xp = xp + ? WHERE google_id=?", (xp_gained, user_id))
+                # Streak logic
                 today = today_aest()
                 yesterday = yesterday_aest()
                 today_count = conn.execute(
@@ -4635,8 +4780,7 @@ def api_toggle_completed():
                     (user_id, today)
                 ).fetchone()[0]
                 user_row = conn.execute(
-                    "SELECT current_streak, longest_streak, last_streak_date FROM users WHERE google_id=?",
-                    (user_id,)
+                    "SELECT current_streak, longest_streak, last_streak_date FROM users WHERE google_id=?", (user_id,)
                 ).fetchone()
                 if user_row and today_count >= 5 and user_row["last_streak_date"] != today:
                     last = user_row["last_streak_date"]
@@ -4647,27 +4791,36 @@ def api_toggle_completed():
                         (streak, longest, today, user_id)
                     )
                     new_streak = streak
+
         conn.commit()
 
-        # Compute new XP + new badges after commit
+        # Compute new state and diff for celebrations
         if user_id != "dev_user" and marked:
-            new_xp_row = conn.execute("SELECT xp, longest_streak FROM users WHERE google_id=?", (user_id,)).fetchone()
-            new_xp = new_xp_row["xp"] if new_xp_row else 0
-            longest_streak = new_xp_row["longest_streak"] if new_xp_row else 0
-            total_completed = conn.execute(
+            new_row = conn.execute("SELECT xp, longest_streak FROM users WHERE google_id=?", (user_id,)).fetchone()
+            new_xp = new_row["xp"] if new_row else 0
+            new_longest = new_row["longest_streak"] if new_row else 0
+            new_level = get_level(new_xp)
+            new_level_num = new_level[0]
+            new_level_name = new_level[1]
+            new_total = conn.execute(
                 "SELECT COUNT(*) FROM completed_questions WHERE user_id=?", (user_id,)
             ).fetchone()[0]
-            completed_ids_subject = {r["question_id"] for r in conn.execute(
+            new_completed_subject = {r["question_id"] for r in conn.execute(
                 "SELECT question_id FROM completed_questions WHERE user_id=? AND subject=?",
                 (user_id, subject)
             ).fetchall()}
-            earned = compute_earned_badge_ids(total_completed, longest_streak, completed_ids_subject, subject)
-            # Return only badges newly earned this completion (client tracks prior state)
-            new_badges = list(earned)
-        else:
-            new_xp = 0
+            new_earned = compute_earned_badge_ids(new_total, new_longest, new_completed_subject, subject)
+            new_badge_ids = new_earned - prev_earned
+            badge_map = {b["id"]: b for b in QUESTION_BADGES + STREAK_BADGES + get_aos_badges_for_subject(subject)}
+            newly_earned_badges = [badge_map[bid] for bid in new_badge_ids if bid in badge_map]
 
-    return jsonify({"ok": True, "marked": marked, "xp_gained": xp_gained, "new_xp": new_xp, "new_streak": new_streak, "new_badges": new_badges})
+    return jsonify({
+        "ok": True, "marked": marked,
+        "xp_gained": xp_gained, "new_xp": new_xp,
+        "prev_level_num": prev_level_num, "new_level_num": new_level_num, "new_level_name": new_level_name,
+        "new_streak": new_streak,
+        "newly_earned_badges": newly_earned_badges,
+    })
 
 @app.route("/api/gamification")
 def api_gamification():
