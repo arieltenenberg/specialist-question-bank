@@ -785,7 +785,7 @@ a { color:#1f1f1f; text-decoration:none; }
   text-transform:uppercase;
   letter-spacing:.1em;
   color:var(--muted);
-  margin:20px 0 5px;
+  margin:20px 0 8px;
   font-weight:600;
 }
 .filter-group { display:flex; flex-direction:column; gap:3px; }
