@@ -891,9 +891,9 @@ a { color:#1f1f1f; text-decoration:none; }
 .sol-hidden { display:none; }
 .show-sol-btn {
   font-family:inherit;
-  background:#f0f0f0;
-  color:#2d2d2d;
-  border:1px solid #d5d5d5;
+  background:#2d2d2d;
+  color:#fff;
+  border:1px solid #2d2d2d;
   padding:8px 20px;
   border-radius:8px;
   cursor:pointer;
@@ -903,7 +903,7 @@ a { color:#1f1f1f; text-decoration:none; }
   align-self:flex-start;
   margin-top:4px;
 }
-.show-sol-btn:hover { background:#2d2d2d; color:#fff; }
+.show-sol-btn:hover { background:#444; border-color:#444; }
 
 /* ----- Load More ----- */
 .load-more-wrap { display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:28px; }
@@ -1349,10 +1349,6 @@ a { color:#1f1f1f; text-decoration:none; }
   60%  { transform: translateX(-50%) translateY(3px) scale(1.01); }
   100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
 }
-@keyframes levelup-pulse {
-  0%, 100% { box-shadow: 0 8px 36px rgba(90,122,69,.35); }
-  50%       { box-shadow: 0 8px 48px rgba(90,122,69,.6); }
-}
 #celebration-toast {
   position: fixed;
   top: 108px;
@@ -1373,11 +1369,11 @@ a { color:#1f1f1f; text-decoration:none; }
   animation: toast-in .38s cubic-bezier(.22,1,.36,1) forwards;
 }
 #celebration-toast.toast-levelup {
-  background: #4a6f32;
-  box-shadow: 0 8px 24px rgba(0,0,0,.15);
+  background: #4a4a4a;
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
 }
 #celebration-toast.toast-levelup.visible {
-  animation: toast-in .38s cubic-bezier(.22,1,.36,1) forwards, levelup-pulse 2s ease-in-out .4s infinite;
+  animation: toast-in .38s cubic-bezier(.22,1,.36,1) forwards;
 }
 #celebration-toast.toast-badge {
   background: #fff;
