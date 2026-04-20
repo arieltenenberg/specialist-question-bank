@@ -1237,8 +1237,8 @@ a { color:#1f1f1f; text-decoration:none; }
   position: absolute;
   bottom: -3px;
   right: -5px;
-  font-size: .65rem;
   line-height: 1;
+  color: #bbb;
 }
 .badge-name {
   font-size: .7rem;
@@ -2270,7 +2270,7 @@ function progressModalKeyHandler(e) {
 // Celebration toast
 // ---------------------------------------------------------------------------
 const BADGE_ICONS = {
-  q_1: '⭐', q_10: '🎯', q_50: '🔑', q_100: '💯',
+  q_1: '👣', q_10: '🎯', q_50: '🔑', q_100: '💯',
   q_250: '⚡', q_500: '🔥', q_1000: '💎', q_1500: '👑',
   s_7: '📅', s_30: '🗓️', s_100: '🏅',
 };
@@ -2444,7 +2444,7 @@ function renderAchievements(data) {
     return `<div class="badge-item ${isEarned ? 'earned' : 'locked'}" title="${badge.desc}">
       <div class="badge-icon-wrap">
         <span class="badge-icon">${icon}</span>
-        ${!isEarned ? '<span class="badge-lock-pip">🔒</span>' : ''}
+        ${!isEarned ? '<span class="badge-lock-pip"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>' : ''}
       </div>
       <div class="badge-name">${badge.name}</div>
       <div class="badge-desc">${badge.desc}</div>
@@ -2459,7 +2459,7 @@ function renderAchievements(data) {
         <div class="aos-badge-row-name">${badge.name}</div>
         <div class="aos-badge-row-desc">${badge.desc}</div>
       </div>
-      ${!isEarned ? '<div class="aos-badge-row-lock">🔒</div>' : ''}
+      ${!isEarned ? '<div class="aos-badge-row-lock"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>' : ''}
     </div>`;
   }
 
