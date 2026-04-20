@@ -443,20 +443,20 @@ BROWSE_HTML = r"""<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f5f7fa;
-  --surface: #ffffff;
-  --border: #e2e8f0;
-  --text: #1a202c;
-  --text-secondary: #4a5568;
-  --muted: #718096;
+  --bg: #f6f3ee;
+  --surface: #fdfaf6;
+  --border: #e3ddd4;
+  --text: #1c1917;
+  --text-secondary: #57534e;
+  --muted: #78716c;
   --primary: {{ css_primary }};
   --primary-dark: {{ css_primary_dark }};
   --primary-light: {{ css_primary_light }};
   --primary-hover: {{ css_primary_hover }};
   --accent-green: #38a169;
   --accent-green-light: #f0fff4;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.06);
-  --shadow-md: 0 4px 12px rgba(0,0,0,.08);
+  --shadow-sm: 0 1px 3px rgba(60,44,28,.07);
+  --shadow-md: 0 4px 12px rgba(60,44,28,.09);
   --radius: 12px;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -891,9 +891,9 @@ a { color:#1f1f1f; text-decoration:none; }
 .sol-hidden { display:none; }
 .show-sol-btn {
   font-family:inherit;
-  background:#2d2d2d;
+  background:#4a6f32;
   color:#fff;
-  border:1px solid #2d2d2d;
+  border:1px solid #4a6f32;
   padding:8px 20px;
   border-radius:8px;
   cursor:pointer;
@@ -903,7 +903,7 @@ a { color:#1f1f1f; text-decoration:none; }
   align-self:flex-start;
   margin-top:4px;
 }
-.show-sol-btn:hover { background:#444; border-color:#444; }
+.show-sol-btn:hover { background:#3d5c28; border-color:#3d5c28; }
 
 /* ----- Load More ----- */
 .load-more-wrap { display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:28px; }
@@ -1369,8 +1369,8 @@ a { color:#1f1f1f; text-decoration:none; }
   animation: toast-in .38s cubic-bezier(.22,1,.36,1) forwards;
 }
 #celebration-toast.toast-levelup {
-  background: #4a4a4a;
-  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  background: #3a5a28;
+  box-shadow: 0 4px 16px rgba(0,0,0,.15);
 }
 #celebration-toast.toast-levelup.visible {
   animation: toast-in .38s cubic-bezier(.22,1,.36,1) forwards;
@@ -1518,7 +1518,7 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 .progress-bar-fill {
   height: 100%;
-  background: #2d2d2d;
+  background: #8db370;
   border-radius: 99px;
   transition: width .4s ease;
 }
@@ -3815,7 +3815,7 @@ body { font-family:'Manrope',system-ui,sans-serif; background:var(--bg); color:v
 .progress-bar-row { display:flex; align-items:center; gap:12px; margin-bottom:4px; }
 .progress-bar-label { font-size:.76rem; color:var(--text-secondary,#4a5568); white-space:nowrap; min-width:130px; }
 .progress-bar-track { flex:1; height:9px; background:var(--border); border-radius:99px; overflow:hidden; }
-.progress-bar-fill { height:100%; background:#2d2d2d; border-radius:99px; }
+.progress-bar-fill { height:100%; background:#8db370; border-radius:99px; }
 .progress-bar-count { font-size:.76rem; color:var(--muted); white-space:nowrap; min-width:48px; text-align:right; }
 .progress-sub-bars { margin-top:10px; padding-left:14px; display:flex; flex-direction:column; gap:6px; border-left:2px solid var(--border); }
 .progress-bar-track.sub { height:5px; }
