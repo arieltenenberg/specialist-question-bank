@@ -453,8 +453,6 @@ BROWSE_HTML = r"""<!DOCTYPE html>
   --primary-dark: {{ css_primary_dark }};
   --primary-light: {{ css_primary_light }};
   --primary-hover: {{ css_primary_hover }};
-  --accent-green: #38a169;
-  --accent-green-light: #f0fff4;
   --shadow-sm: 0 1px 3px rgba(60,44,28,.07);
   --shadow-md: 0 4px 12px rgba(60,44,28,.09);
   --radius: 12px;
@@ -643,7 +641,7 @@ a { color:#1f1f1f; text-decoration:none; }
 .toggle-switch {
   width:34px;
   height:19px;
-  background:#cbd5e0;
+  background:#c5bdb4;
   border-radius:10px;
   position:relative;
   transition:background .2s;
@@ -850,7 +848,7 @@ a { color:#1f1f1f; text-decoration:none; }
   box-shadow:var(--shadow-sm);
   transition:all .2s;
 }
-.qcard:hover { box-shadow:var(--shadow-md); border-color:#cbd5e0; }
+.qcard:hover { box-shadow:var(--shadow-md); border-color:#c5bdb4; }
 .qcard-header {
   display:flex;
   align-items:center;
@@ -1027,10 +1025,10 @@ a { color:#1f1f1f; text-decoration:none; }
 .admin-hide-btn:hover { background:#fff0f0; }
 .hidden-badge {
   font-size:.75rem;
-  color:#9ca3af;
+  color:var(--muted);
   font-weight:600;
   padding:2px 6px;
-  background:#f3f4f6;
+  background:var(--bg);
   border-radius:4px;
 }
 
@@ -1049,8 +1047,8 @@ a { color:#1f1f1f; text-decoration:none; }
   align-self:flex-start;
   margin-top:4px;
 }
-.flag-btn:hover, .flag-btn:active { background:#e53e3e; color:#fff; border-color:#e53e3e; }
-.flag-btn.flagged { border-color:#e53e3e; color:#e53e3e; background:#fff5f5; cursor:default; }
+.flag-btn:hover, .flag-btn:active { background:#c53030; color:#fff; border-color:#c53030; }
+.flag-btn.flagged { border-color:#c53030; color:#c53030; background:#fff0f0; cursor:default; }
 
 /* ----- Save controls ----- */
 .save-btn {
@@ -1183,7 +1181,7 @@ a { color:#1f1f1f; text-decoration:none; }
   background: none;
   border: none;
   font-size: 1.1rem;
-  color: #999;
+  color: var(--muted);
   cursor: pointer;
   line-height: 1;
   padding: 4px;
@@ -1226,7 +1224,7 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 .ach-xp-label {
   font-size: .78rem;
-  color: #718096;
+  color: var(--muted);
 }
 
 /* Section wrapper */
@@ -1236,14 +1234,14 @@ a { color:#1f1f1f; text-decoration:none; }
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .06em;
-  color: #999;
+  color: var(--muted);
   margin-bottom: 10px;
 }
 
 /* Streak section */
 .ach-streak-row { display: flex; gap: 12px; }
 .ach-streak-stat {
-  background: #f5f7fa;
+  background: var(--bg);
   border-radius: 10px;
   padding: 12px 10px;
   flex: 1;
@@ -1257,13 +1255,13 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 .ach-streak-lbl {
   font-size: .7rem;
-  color: #718096;
+  color: var(--muted);
   margin-top: 3px;
   line-height: 1.3;
 }
 .ach-streak-hint {
   font-size: .73rem;
-  color: #999;
+  color: var(--muted);
   margin-top: 8px;
   line-height: 1.4;
 }
@@ -1306,7 +1304,7 @@ a { color:#1f1f1f; text-decoration:none; }
   bottom: -3px;
   right: -5px;
   line-height: 1;
-  color: #bbb;
+  color: #b5ada5;
 }
 .badge-name {
   font-size: .7rem;
@@ -1314,13 +1312,13 @@ a { color:#1f1f1f; text-decoration:none; }
   color: #2d2d2d;
   line-height: 1.25;
 }
-.badge-item.locked .badge-name { color: #aaa; }
+.badge-item.locked .badge-name { color: #a09890; }
 .badge-desc {
   font-size: .62rem;
-  color: #718096;
+  color: var(--muted);
   line-height: 1.25;
 }
-.badge-item.locked .badge-desc { color: #bbb; }
+.badge-item.locked .badge-desc { color: #b5ada5; }
 
 /* AOS badge list */
 .aos-badge-list { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
@@ -1337,10 +1335,10 @@ a { color:#1f1f1f; text-decoration:none; }
 .aos-badge-row.locked .aos-badge-row-icon { filter: grayscale(1); opacity: .35; }
 .aos-badge-row-text { flex: 1; }
 .aos-badge-row-name { font-size: .82rem; font-weight: 600; color: #2d2d2d; }
-.aos-badge-row.locked .aos-badge-row-name { color: #aaa; }
-.aos-badge-row-desc { font-size: .72rem; color: #718096; }
-.aos-badge-row.locked .aos-badge-row-desc { color: #bbb; }
-.aos-badge-row-lock { font-size: .75rem; color: #ccc; flex-shrink: 0; }
+.aos-badge-row.locked .aos-badge-row-name { color: #a09890; }
+.aos-badge-row-desc { font-size: .72rem; color: var(--muted); }
+.aos-badge-row.locked .aos-badge-row-desc { color: #b5ada5; }
+.aos-badge-row-lock { font-size: .75rem; color: #c5bdb4; flex-shrink: 0; }
 
 /* ----- Celebration toasts ----- */
 @keyframes toast-in {
@@ -1368,7 +1366,7 @@ a { color:#1f1f1f; text-decoration:none; }
   animation: toast-in .38s cubic-bezier(.22,1,.36,1) forwards;
 }
 #celebration-toast.toast-levelup {
-  background: #4a4a4a;
+  background: #2d2d2d;
   box-shadow: 0 4px 16px rgba(0,0,0,.12);
 }
 #celebration-toast.toast-levelup.visible {
@@ -1425,7 +1423,7 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 .celebration-dismiss-badge {
   font-size: .68rem;
-  color: #bbb;
+  color: #b5ada5;
   margin-top: 10px;
 }
 
@@ -1752,7 +1750,7 @@ const METHODS_TAG_STYLES = {
   6: { bg:'#e8e8e8', color:'#1f1f1f' },
   7: { bg:'#e8e8e8', color:'#1f1f1f' },
   8: { bg:'#e8e8e8', color:'#1f1f1f' },
-  9: { bg:'#f3f4f6', color:'#9ca3af' },
+  9: { bg:'#ede9e4', color:'#78716c' },
 };
 
 fetch('/api/questions?subject={{ subject }}').then(r => r.json()).then(data => {
@@ -2686,21 +2684,21 @@ function renderProgressView() {
 <!-- Jacaranda motivational modal -->
 <div id="mark-complete-prompt" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:14px;padding:24px;max-width:340px;width:90%;text-align:center;box-shadow:0 16px 48px rgba(0,0,0,.25);">
-    <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.95rem;font-weight:600;color:#1a202c;margin:0 0 6px;">Mark as done?</p>
-    <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.83rem;color:#6b7280;margin:0 0 20px;">Would you like to mark this question as completed?</p>
+    <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.95rem;font-weight:600;color:#1c1917;margin:0 0 6px;">Mark as done?</p>
+    <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.83rem;color:#78716c;margin:0 0 20px;">Would you like to mark this question as completed?</p>
     <div style="display:flex;gap:10px;justify-content:center;">
       <button onclick="markCompletePromptYes()" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-family:'DM Sans',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Mark as Done</button>
-      <button onclick="markCompletePromptNo()" style="background:#f3f4f6;color:#374151;border:none;border-radius:8px;padding:9px 22px;font-family:'DM Sans',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">No thanks</button>
+      <button onclick="markCompletePromptNo()" style="background:#f0ede8;color:#57534e;border:none;border-radius:8px;padding:9px 22px;font-family:'DM Sans',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">No thanks</button>
     </div>
   </div>
 </div>
 <div id="unsave-prompt" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:14px;padding:24px;max-width:340px;width:90%;text-align:center;box-shadow:0 16px 48px rgba(0,0,0,.25);">
-    <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.95rem;font-weight:600;color:#1a202c;margin:0 0 6px;">Unsave this question?</p>
-    <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.83rem;color:#6b7280;margin:0 0 20px;">You've marked this as done — would you like to remove it from your saved questions?</p>
+    <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.95rem;font-weight:600;color:#1c1917;margin:0 0 6px;">Unsave this question?</p>
+    <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.83rem;color:#78716c;margin:0 0 20px;">You've marked this as done — would you like to remove it from your saved questions?</p>
     <div style="display:flex;gap:10px;justify-content:center;">
       <button onclick="unsavePromptYes()" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-family:'DM Sans',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Unsave</button>
-      <button onclick="unsavePromptNo()" style="background:#f3f4f6;color:#374151;border:none;border-radius:8px;padding:9px 22px;font-family:'DM Sans',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Keep Saved</button>
+      <button onclick="unsavePromptNo()" style="background:#f0ede8;color:#57534e;border:none;border-radius:8px;padding:9px 22px;font-family:'DM Sans',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Keep Saved</button>
     </div>
   </div>
 </div>
@@ -2744,7 +2742,7 @@ function renderProgressView() {
       <h2 id="achievements-modal-title">Achievements</h2>
       <button class="achievements-modal-close" onclick="closeAchievementsModal()" aria-label="Close">✕</button>
     </div>
-    <div id="achievements-content"><span style="font-size:.85rem;color:#999">Loading…</span></div>
+    <div id="achievements-content"><span style="font-size:.85rem;color:var(--muted)">Loading…</span></div>
   </div>
 </div>
 
