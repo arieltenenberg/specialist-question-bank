@@ -690,6 +690,77 @@ a { color:#1f1f1f; text-decoration:none; }
 .leaderboard-name { flex:1; }
 .leaderboard-count { font-weight:600; color:#1f1f1f; }
 .leaderboard-tick { color:#4caf50; font-size:.75rem; margin-left:1px; }
+.leaderboard-level {
+  font-size: .7rem;
+  color: var(--muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ----- Sidebar progress widget ----- */
+.sidebar-progress {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  margin-bottom: 16px;
+  padding: 10px 12px;
+}
+.sidebar-progress-title {
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: #1f1f1f;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.sidebar-progress-level {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 7px;
+}
+.sidebar-level-pill {
+  font-size: .7rem;
+  font-weight: 700;
+  color: #fff;
+  background: #4a6f32;
+  border-radius: 20px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+.sidebar-level-name {
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.sidebar-xp-bar-wrap {
+  height: 5px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+.sidebar-xp-bar-fill {
+  height: 100%;
+  background: #8db370;
+  border-radius: 99px;
+  transition: width .4s ease;
+}
+.sidebar-xp-label {
+  font-size: .72rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.sidebar-streak-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: .75rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  padding-top: 7px;
+  margin-top: 2px;
+}
+.sidebar-streak-today { font-weight: 600; color: var(--text-secondary); }
 
 /* ----- Layout ----- */
 .layout { display:flex; min-height:calc(100vh - 96px); }
@@ -1529,6 +1600,19 @@ a { color:#1f1f1f; text-decoration:none; }
 
 <div class="layout">
   <div class="sidebar" id="sidebar">
+    <div class="sidebar-progress" id="sidebar-progress">
+      <div class="sidebar-progress-title">Progress</div>
+      <div class="sidebar-progress-level">
+        <span class="sidebar-level-pill" id="sp-level-pill">Lv 1</span>
+        <span class="sidebar-level-name" id="sp-level-name">Novice</span>
+      </div>
+      <div class="sidebar-xp-bar-wrap"><div class="sidebar-xp-bar-fill" id="sp-xp-bar" style="width:0%"></div></div>
+      <div class="sidebar-xp-label" id="sp-xp-label"></div>
+      <div class="sidebar-streak-row">
+        <span class="sidebar-streak-today" id="sp-today"></span>
+        <span id="sp-streak"></span>
+      </div>
+    </div>
     {% if show_leaderboard %}
     <div class="leaderboard-widget">
       <div class="leaderboard-widget-title" id="leaderboard-title">Leaderboard</div>
@@ -1641,6 +1725,7 @@ function loadLeaderboard(lbId, silent) {
         return `<div class="leaderboard-entry${entry.is_you ? ' you' : ''}">` +
           `<span class="leaderboard-rank">${i + 1}.</span>` +
           `<span class="leaderboard-name">${firstName}</span>` +
+          `<span class="leaderboard-level">Lv ${entry.level_num || 1}</span>` +
           `<span class="leaderboard-count">${entry.count}</span>` +
           `</div>`;
       }).join('');
@@ -1703,6 +1788,7 @@ fetch('/api/questions?subject={{ subject }}').then(r => r.json()).then(data => {
   applyFilters();
   loadSavedIds();
   loadCompletedIds();
+  initSidebarGamification();
   document.getElementById('hide-completed-btn').classList.toggle('active', hideCompleted);
   document.getElementById('hide-saved-btn').classList.toggle('active', hideSaved);
 });
@@ -2217,6 +2303,11 @@ function toggleCompleted(id, btn) {
         loadGamification();
       }
     }
+    if (data.new_xp !== undefined) {
+      fetch('/api/gamification?subject={{ subject }}').then(r => r.json()).then(g => {
+        updateSidebarGamification(g.xp, g.level_num, g.level_name, g.level_xp_min, g.next_level_xp, g.next_level_name, g.today_count, g.current_streak);
+      });
+    }
     if (typeof refreshLeaderboard === 'function') refreshLeaderboard();
   });
 }
@@ -2434,6 +2525,36 @@ function loadGamification() {
     .then(data => {
       _gamificationData = data;
       renderAchievements(data);
+      updateSidebarGamification(data.xp, data.level_num, data.level_name, data.level_xp_min, data.next_level_xp, data.next_level_name, data.today_count, data.current_streak);
+    });
+}
+
+function updateSidebarGamification(xp, levelNum, levelName, minXp, nextXp, nextName, todayCount, streak) {
+  document.getElementById('sp-level-pill').textContent = 'Lv ' + levelNum;
+  document.getElementById('sp-level-name').textContent = levelName;
+  let pct;
+  if (nextXp === null || nextXp === undefined) {
+    pct = 100;
+    document.getElementById('sp-xp-label').textContent = xp.toLocaleString() + ' XP · Max level';
+  } else {
+    pct = Math.max(2, Math.round(((xp - minXp) / (nextXp - minXp)) * 100));
+    document.getElementById('sp-xp-label').textContent = xp.toLocaleString() + ' / ' + nextXp.toLocaleString() + ' XP';
+  }
+  document.getElementById('sp-xp-bar').style.width = pct + '%';
+  document.getElementById('sp-today').textContent = todayCount + ' done today';
+  const spStreak = document.getElementById('sp-streak');
+  if (streak > 0) {
+    spStreak.textContent = streak + (streak === 1 ? ' day streak' : ' day streak');
+  } else {
+    spStreak.textContent = '';
+  }
+}
+
+function initSidebarGamification() {
+  fetch('/api/gamification?subject={{ subject }}')
+    .then(r => r.json())
+    .then(data => {
+      updateSidebarGamification(data.xp, data.level_num, data.level_name, data.level_xp_min, data.next_level_xp, data.next_level_name, data.today_count, data.current_streak);
     });
 }
 
@@ -4964,11 +5085,23 @@ def api_toggle_completed():
             badge_map = {b["id"]: b for b in QUESTION_BADGES + STREAK_BADGES + get_aos_badges_for_subject(subject)}
             newly_earned_badges = [badge_map[bid] for bid in new_badge_ids if bid in badge_map]
 
+    with get_db() as conn:
+        today = today_aest()
+        today_count = conn.execute(
+            "SELECT COUNT(*) FROM completed_questions WHERE user_id=? AND date(completed_at, '+10 hours') = ?",
+            (user_id, today)
+        ).fetchone()[0]
+        streak_row = conn.execute(
+            "SELECT current_streak FROM users WHERE google_id=?", (user_id,)
+        ).fetchone()
+        current_streak = streak_row["current_streak"] if streak_row else 0
+
     return jsonify({
         "ok": True, "marked": marked,
         "xp_gained": xp_gained, "new_xp": new_xp,
         "prev_level_num": prev_level_num, "new_level_num": new_level_num, "new_level_name": new_level_name,
-        "new_streak": new_streak,
+        "new_streak": new_streak, "current_streak": current_streak,
+        "today_count": today_count,
         "newly_earned_badges": newly_earned_badges,
     })
 
@@ -4996,6 +5129,11 @@ def api_gamification():
             (user_id, subject)
         ).fetchall()}
 
+        today_count = conn.execute(
+            "SELECT COUNT(*) FROM completed_questions WHERE user_id=? AND date(completed_at, '+10 hours') = ?",
+            (user_id, today_aest())
+        ).fetchone()[0]
+
     level = get_level(xp)
     next_lv = get_next_level(xp)
     earned = compute_earned_badge_ids(total_completed, longest_streak, completed_ids_subject, subject)
@@ -5010,6 +5148,7 @@ def api_gamification():
         "next_level_xp": next_lv[2] if next_lv else None,
         "current_streak": current_streak,
         "longest_streak": longest_streak,
+        "today_count": today_count,
         "total_completed": total_completed,
         "earned_badge_ids": list(earned),
         "question_badges": QUESTION_BADGES,
@@ -5036,7 +5175,7 @@ def api_leaderboard():
         lb = conn.execute("SELECT name FROM leaderboards WHERE id=?", (lb_id,)).fetchone()
         lb_name = lb["name"] if lb else None
         rows = conn.execute("""
-            SELECT u.name, u.nickname, u.google_id,
+            SELECT u.name, u.nickname, u.google_id, u.xp,
                    COUNT(DISTINCT cq.question_id) AS count
             FROM users u
             LEFT JOIN completed_questions cq
@@ -5045,7 +5184,8 @@ def api_leaderboard():
             GROUP BY u.google_id
             ORDER BY count DESC
         """, (subject, lb_id)).fetchall()
-    entries = [{"name": r["name"], "nickname": r["nickname"], "count": r["count"], "is_you": r["google_id"] == user_id} for r in rows]
+    entries = [{"name": r["name"], "nickname": r["nickname"], "count": r["count"],
+                "level_num": get_level(r["xp"] or 0)[0], "is_you": r["google_id"] == user_id} for r in rows]
     return jsonify({"leaderboard_name": lb_name, "entries": entries})
 
 @app.route("/api/admin/publishers/toggle", methods=["POST"])
