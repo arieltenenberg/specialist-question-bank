@@ -35,7 +35,8 @@ Questions are classified into Areas of Study (AOS) per subject.
 | `POST /api/saved` | Toggle a question saved/unsaved (subject in POST body) |
 | `GET /api/completed?subject=specialist\|methods` | Get current user's completed question IDs |
 | `POST /api/completed` | Toggle a question completed/uncompleted (subject in POST body) |
-| `GET /api/leaderboard?subject=specialist\|methods[&leaderboard_id=N]` | Entries for a leaderboard group; returns `{leaderboard_name, entries}` |
+| `GET /api/leaderboard?subject=specialist\|methods[&leaderboard_id=N]` | Entries for a leaderboard group; returns `{leaderboard_name, entries}` (each entry includes `level_num`) |
+| `GET /api/gamification?subject=specialist\|methods` | XP, level, streak, today's count, badge state for current user |
 | `GET /api/admin/leaderboards` | List all leaderboards (admin only) |
 | `POST /api/admin/leaderboards` | Create a leaderboard `{name}` (admin only) |
 | `PUT /api/admin/leaderboards/<id>` | Rename a leaderboard (admin only) |
@@ -348,10 +349,10 @@ Named leaderboard groups — students see their own group's completion rankings 
 - `get_show_leaderboard(user)` determines this; always `True` in DEV_MODE.
 
 ### Browse page widget
-- Sits at the top of the sidebar. Title updates dynamically to the leaderboard's name.
+- Sits below the sidebar progress widget (see Gamification Feature). Title updates dynamically to the leaderboard's name.
 - Admin gets a `<select>` dropdown populated via `GET /api/admin/leaderboards` to pick which group to view.
 - `loadLeaderboard(lbId)` fetches `/api/leaderboard?subject=<subject>[&leaderboard_id=N]` and renders into `#leaderboard-entries`.
-- API returns `{leaderboard_name, entries: [{name, nickname, count, is_you}]}`. Display uses `nickname` if set, otherwise first name.
+- API returns `{leaderboard_name, entries: [{name, nickname, count, level_num, is_you}]}`. Display uses `nickname` if set, otherwise first name. Level is not shown in the leaderboard widget.
 
 ### Admin management (`/admin/users`)
 - **⚙ gear button** per student opens a settings modal to assign leaderboard, nickname, and Easter Egg.
@@ -365,6 +366,74 @@ Named leaderboard groups — students see their own group's completion rankings 
 - Data fetched from `GET /api/admin/users/<google_id>/progress` — server-side breakdown by AOS + section type for both subjects.
 - Same visual style as the student-facing progress modal (`.progress-card`, `.progress-bar-*` CSS).
 - Hidden AOS: Specialist hides 0, 8, 9 — Methods hides 0, 9.
+
+## Gamification Feature
+
+Students earn XP for completing questions, level up through named tiers, maintain daily streaks, and unlock badges.
+
+### XP Rates
+| Section type | XP |
+|---|---|
+| Multiple Choice | 5 |
+| Short Answer | 10 |
+| Extended Response | 25 |
+
+Both subjects combined for all XP, streaks, and levels.
+
+### Levels
+| # | Name | XP threshold |
+|---|------|-------------|
+| 1 | Novice | 0 |
+| 2 | Student | 200 |
+| 3 | Practitioner | 600 |
+| 4 | Scholar | 1,400 |
+| 5 | Analyst | 3,000 |
+| 6 | Expert | 6,000 |
+| 7 | Master | 11,000 |
+| 8 | Grandmaster | 17,000 |
+
+### Streaks
+- 5+ questions/day (AEST, UTC+10) keeps the streak alive — counted via `date(completed_at, '+10 hours')` in SQLite
+- Missing a day resets streak to 0 (no grace period)
+- `longest_streak` is tracked separately; never decreases
+
+### Badges
+Three categories shown in the Achievements modal:
+1. **Question milestones** — 1, 10, 50, 100, 250, 500, 1000, 1500 total completions (both subjects)
+2. **Streak milestones** — 7, 30, 100 day longest streak
+3. **AOS completion** — 100% of visible questions in a given AOS + subject (e.g. `aos_specialist_7`). Uses `apply_overrides()` dynamically so hidden questions don't inflate the target.
+
+Locked badges are shown greyed out with an SVG lock pip. First question badge uses footprints icon instead of star.
+
+### DB columns (on `users` table)
+- `xp INTEGER DEFAULT 0`
+- `current_streak INTEGER DEFAULT 0`
+- `longest_streak INTEGER DEFAULT 0`
+- `last_streak_date TEXT`
+
+### Key server functions
+- `get_level(xp)` — returns `(level_num, level_name, xp_min)`
+- `compute_earned_badge_ids(total_completed, longest_streak, completed_ids_subject, subject)` — returns set of earned badge IDs
+- `migrate_xp_for_existing_users()` — backfills XP for questions completed before gamification was added; runs at startup
+- `AEST = datetime.timezone(datetime.timedelta(hours=10))` — used for streak day calculation
+
+### POST /api/completed response (additional fields)
+Returns `prev_level_num`, `new_level_num`, `new_level_name`, `newly_earned_badges`, `today_count`, `current_streak` — used by the client to trigger celebration popups and update the sidebar widget.
+
+### Achievements modal
+- Opened via trophy SVG button in the topbar brand row (same row as progress and settings icons)
+- `openAchievementsModal()` / `loadGamification()` / `renderAchievements(data)`
+- Canvas confetti fires on level-up celebration
+- Celebration toast has two variants: level-up (with level name) and badge unlock
+
+### Sidebar progress widget
+- `.sidebar-progress` div sits at the very top of the sidebar (above the leaderboard widget)
+- Shows: level pill (`Level N`, `border-radius:6px` matching card style), level name, sage green XP bar, XP label, today's count, current streak
+- Initialised via `initSidebarGamification()` on page load; updated via `updateSidebarGamification(...)` after each `toggleCompleted`
+- Widget starts visible with placeholder "Level 1" text (not hidden) — placeholder is accurate for new users
+
+### Colour scheme
+All gamification UI uses the existing sage green palette (`#8db370`, `#4a6f32`) — no amber/gold anywhere.
 
 ## Known Issues
 _(none)_
