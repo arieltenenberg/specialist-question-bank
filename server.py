@@ -1591,21 +1591,6 @@ a { color:#1f1f1f; text-decoration:none; }
 
 <div class="layout">
   <div class="sidebar" id="sidebar">
-    <div class="sidebar-progress">
-      <div class="sidebar-progress-title">Progress</div>
-      <div class="sidebar-progress-level">
-        <span class="sidebar-level-pill" id="sp-level-pill">Level 1</span>
-        <span class="sidebar-level-name" id="sp-level-name">Novice</span>
-      </div>
-      <div class="sidebar-xp-bar-wrap">
-        <div class="sidebar-xp-bar-fill" id="sp-xp-bar" style="width:2%"></div>
-      </div>
-      <div class="sidebar-xp-label" id="sp-xp-label">0 / 200 XP</div>
-      <div class="sidebar-streak-row">
-        <span class="sidebar-streak-today" id="sp-today">0 done today</span>
-        <span id="sp-streak"></span>
-      </div>
-    </div>
     {% if show_leaderboard %}
     <div class="leaderboard-widget">
       <div class="leaderboard-widget-title" id="leaderboard-title">Leaderboard</div>
