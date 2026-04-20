@@ -1628,7 +1628,7 @@ fetch('/api/admin/leaderboards')
     });
   });
 {% endif %}
-function loadLeaderboard(lbId) {
+function loadLeaderboard(lbId, silent) {
   const el = document.getElementById('leaderboard-entries');
   if (!el) return;
   {% if is_admin %}
@@ -1641,7 +1641,7 @@ function loadLeaderboard(lbId) {
   {% else %}
   const url = '/api/leaderboard?subject={{ subject }}';
   {% endif %}
-  el.innerHTML = '<span style="font-size:.8rem;color:var(--muted)">Loading…</span>';
+  if (!silent) el.innerHTML = '<span style="font-size:.8rem;color:var(--muted)">Loading…</span>';
   fetch(url)
     .then(r => r.json())
     .then(data => {
@@ -1667,9 +1667,9 @@ function loadLeaderboard(lbId) {
 function refreshLeaderboard() {
   {% if is_admin %}
   const picker = document.getElementById('leaderboard-picker');
-  if (picker && picker.value) loadLeaderboard(picker.value);
+  if (picker && picker.value) loadLeaderboard(picker.value, true);
   {% else %}
-  loadLeaderboard();
+  loadLeaderboard(undefined, true);
   {% endif %}
 }
 {% endif %}
