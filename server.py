@@ -1788,11 +1788,6 @@ function toggleFilter(key, value, btn) {
 function clearAll() {
   filters = { aos: new Set(), tag: new Set(), extended: new Set(), year: new Set(), publisher: new Set(), exam_type: new Set(), section: new Set() };
   document.querySelectorAll('.filter-btn.active').forEach(b => b.classList.remove('active'));
-  savedOnly = false;
-  completedOnly = false;
-  document.getElementById('tab-saved').classList.remove('active');
-  document.getElementById('tab-completed').classList.remove('active');
-  document.getElementById('tab-questions').classList.add('active');
   page = 0;
   applyFilters();
 }
