@@ -1087,7 +1087,7 @@ a { color:#1f1f1f; text-decoration:none; }
   margin-top:4px;
 }
 .complete-btn:hover { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
-.qcard.completed { border-left:5px solid #8db370; }
+.qcard.completed { background:#f6fbf3; border-color:#b8d4a0; }
 .bookmark-icon { display:none; color:#1f1f1f; font-size:.85rem; flex-shrink:0; margin-left:6px; line-height:1; }
 .qcard.saved .bookmark-icon { display:inline; }
 .card-actions {
@@ -1388,7 +1388,6 @@ a { color:#1f1f1f; text-decoration:none; }
 #celebration-toast.toast-badge {
   background: #fff;
   box-shadow: 0 8px 36px rgba(0,0,0,.14);
-  border-left: 5px solid #8db370;
 }
 .celebration-levelup-eyebrow {
   font-size: .68rem;
