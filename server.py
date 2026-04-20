@@ -1087,7 +1087,7 @@ a { color:#1f1f1f; text-decoration:none; }
   margin-top:4px;
 }
 .complete-btn:hover { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
-.qcard.completed { background:#edf7e6; border-color:#8db370; }
+.qcard.completed { background:#f4faf0; border-color:#8db370; }
 .bookmark-icon { display:none; color:#1f1f1f; font-size:.85rem; flex-shrink:0; margin-left:6px; line-height:1; }
 .qcard.saved .bookmark-icon { display:inline; }
 .card-actions {
@@ -1220,16 +1220,10 @@ a { color:#1f1f1f; text-decoration:none; }
   overflow: hidden;
   margin-bottom: 8px;
 }
-@keyframes xp-shimmer {
-  0%   { background-position: 200% center; }
-  100% { background-position: -200% center; }
-}
 .ach-xp-bar-fill {
   height: 100%;
   border-radius: 99px;
-  background: linear-gradient(90deg, #8db370, #b8d4a0, #8db370, #b8d4a0);
-  background-size: 300% 100%;
-  animation: xp-shimmer 2s linear infinite;
+  background: #8db370;
 }
 .ach-xp-label {
   font-size: .78rem;
@@ -1379,8 +1373,8 @@ a { color:#1f1f1f; text-decoration:none; }
   animation: toast-in .38s cubic-bezier(.22,1,.36,1) forwards;
 }
 #celebration-toast.toast-levelup {
-  background: linear-gradient(135deg, #8db370, #5a7a45);
-  box-shadow: 0 8px 36px rgba(90,122,69,.4);
+  background: #4a6f32;
+  box-shadow: 0 8px 24px rgba(0,0,0,.15);
 }
 #celebration-toast.toast-levelup.visible {
   animation: toast-in .38s cubic-bezier(.22,1,.36,1) forwards, levelup-pulse 2s ease-in-out .4s infinite;
