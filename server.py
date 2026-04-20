@@ -691,9 +691,12 @@ a { color:#1f1f1f; text-decoration:none; }
 .leaderboard-count { font-weight:600; color:#1f1f1f; }
 .leaderboard-tick { color:#4caf50; font-size:.75rem; margin-left:1px; }
 .leaderboard-level {
-  font-size: .7rem;
-  color: var(--muted);
-  font-weight: 500;
+  font-size: .65rem;
+  font-weight: 700;
+  color: #fff;
+  background: #4a6f32;
+  border-radius: 20px;
+  padding: 1px 6px;
   white-space: nowrap;
 }
 
@@ -1601,7 +1604,6 @@ a { color:#1f1f1f; text-decoration:none; }
 <div class="layout">
   <div class="sidebar" id="sidebar">
     <div class="sidebar-progress" id="sidebar-progress">
-      <div class="sidebar-progress-title">Progress</div>
       <div class="sidebar-progress-level">
         <span class="sidebar-level-pill" id="sp-level-pill">Lv 1</span>
         <span class="sidebar-level-name" id="sp-level-name">Novice</span>
@@ -1725,7 +1727,7 @@ function loadLeaderboard(lbId, silent) {
         return `<div class="leaderboard-entry${entry.is_you ? ' you' : ''}">` +
           `<span class="leaderboard-rank">${i + 1}.</span>` +
           `<span class="leaderboard-name">${firstName}</span>` +
-          `<span class="leaderboard-level">Lv ${entry.level_num || 1}</span>` +
+          `<span class="leaderboard-level">Level ${entry.level_num || 1}</span>` +
           `<span class="leaderboard-count">${entry.count}</span>` +
           `</div>`;
       }).join('');
@@ -2530,7 +2532,7 @@ function loadGamification() {
 }
 
 function updateSidebarGamification(xp, levelNum, levelName, minXp, nextXp, nextName, todayCount, streak) {
-  document.getElementById('sp-level-pill').textContent = 'Lv ' + levelNum;
+  document.getElementById('sp-level-pill').textContent = 'Level ' + levelNum;
   document.getElementById('sp-level-name').textContent = levelName;
   let pct;
   if (nextXp === null || nextXp === undefined) {
