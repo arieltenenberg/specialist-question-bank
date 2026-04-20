@@ -3859,7 +3859,6 @@ body { font-family:'DM Sans',system-ui,sans-serif; background:var(--bg); color:v
   <h1>VCE Mathematics Question Bank</h1>
   <div class="tabs">
     <a class="tab" href="/">← Subjects</a>
-    <a class="tab active" href="/admin/users">Users</a>
   </div>
   <div class="spacer"></div>
   <a class="signout" href="/logout">Sign out</a>
