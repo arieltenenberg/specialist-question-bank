@@ -440,7 +440,7 @@ BROWSE_HTML = r"""<!DOCTYPE html>
 <link rel="icon" type="image/x-icon" href="/static/favicon.ico"/>
 <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #f5f7fa;
@@ -460,7 +460,7 @@ BROWSE_HTML = r"""<!DOCTYPE html>
   --radius: 12px;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Poppins','Lato',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+body { font-family:'Manrope',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
 a { color:#1f1f1f; text-decoration:none; }
 
 /* ----- Top bar ----- */
@@ -2709,51 +2709,51 @@ function renderProgressView() {
 <!-- Jacaranda motivational modal -->
 <div id="mark-complete-prompt" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:14px;padding:24px;max-width:340px;width:90%;text-align:center;box-shadow:0 16px 48px rgba(0,0,0,.25);">
-    <p style="font-family:'Poppins',system-ui,sans-serif;font-size:.95rem;font-weight:600;color:#1a202c;margin:0 0 6px;">Mark as done?</p>
-    <p style="font-family:'Poppins',system-ui,sans-serif;font-size:.83rem;color:#6b7280;margin:0 0 20px;">Would you like to mark this question as completed?</p>
+    <p style="font-family:'Manrope',system-ui,sans-serif;font-size:.95rem;font-weight:600;color:#1a202c;margin:0 0 6px;">Mark as done?</p>
+    <p style="font-family:'Manrope',system-ui,sans-serif;font-size:.83rem;color:#6b7280;margin:0 0 20px;">Would you like to mark this question as completed?</p>
     <div style="display:flex;gap:10px;justify-content:center;">
-      <button onclick="markCompletePromptYes()" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-family:'Poppins',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Mark as Done</button>
-      <button onclick="markCompletePromptNo()" style="background:#f3f4f6;color:#374151;border:none;border-radius:8px;padding:9px 22px;font-family:'Poppins',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">No thanks</button>
+      <button onclick="markCompletePromptYes()" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-family:'Manrope',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Mark as Done</button>
+      <button onclick="markCompletePromptNo()" style="background:#f3f4f6;color:#374151;border:none;border-radius:8px;padding:9px 22px;font-family:'Manrope',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">No thanks</button>
     </div>
   </div>
 </div>
 <div id="unsave-prompt" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:14px;padding:24px;max-width:340px;width:90%;text-align:center;box-shadow:0 16px 48px rgba(0,0,0,.25);">
-    <p style="font-family:'Poppins',system-ui,sans-serif;font-size:.95rem;font-weight:600;color:#1a202c;margin:0 0 6px;">Unsave this question?</p>
-    <p style="font-family:'Poppins',system-ui,sans-serif;font-size:.83rem;color:#6b7280;margin:0 0 20px;">You've marked this as done — would you like to remove it from your saved questions?</p>
+    <p style="font-family:'Manrope',system-ui,sans-serif;font-size:.95rem;font-weight:600;color:#1a202c;margin:0 0 6px;">Unsave this question?</p>
+    <p style="font-family:'Manrope',system-ui,sans-serif;font-size:.83rem;color:#6b7280;margin:0 0 20px;">You've marked this as done — would you like to remove it from your saved questions?</p>
     <div style="display:flex;gap:10px;justify-content:center;">
-      <button onclick="unsavePromptYes()" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-family:'Poppins',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Unsave</button>
-      <button onclick="unsavePromptNo()" style="background:#f3f4f6;color:#374151;border:none;border-radius:8px;padding:9px 22px;font-family:'Poppins',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Keep Saved</button>
+      <button onclick="unsavePromptYes()" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-family:'Manrope',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Unsave</button>
+      <button onclick="unsavePromptNo()" style="background:#f3f4f6;color:#374151;border:none;border-radius:8px;padding:9px 22px;font-family:'Manrope',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Keep Saved</button>
     </div>
   </div>
 </div>
 <div id="jacaranda-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);">
     <img src="/static/jacaranda_moses.jpeg" alt="Motivation" style="width:100%;border-radius:10px;margin-bottom:18px;">
-    <p style="font-family:'Poppins',system-ui,sans-serif;font-size:.9rem;font-weight:500;color:#1a202c;line-height:1.6;margin-bottom:20px;">
+    <p style="font-family:'Manrope',system-ui,sans-serif;font-size:.9rem;font-weight:500;color:#1a202c;line-height:1.6;margin-bottom:20px;">
       Be like a Jacaranda in exam season — bloom unexpectedly and confuse everyone, including yourself
     </p>
-    <button onclick="document.getElementById('jacaranda-modal').style.display='none'" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-family:'Poppins',system-ui,sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;">Got it</button>
+    <button onclick="document.getElementById('jacaranda-modal').style.display='none'" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-family:'Manrope',system-ui,sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;">Got it</button>
   </div>
 </div>
 <!-- Cordo modal -->
 <div id="cordo-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);">
     <img src="/static/cordo.jpeg" alt="Cordo" style="width:100%;border-radius:10px;margin-bottom:18px;">
-    <p style="font-family:'Poppins',system-ui,sans-serif;font-size:.9rem;font-weight:500;color:#1a202c;line-height:1.6;margin-bottom:20px;">
+    <p style="font-family:'Manrope',system-ui,sans-serif;font-size:.9rem;font-weight:500;color:#1a202c;line-height:1.6;margin-bottom:20px;">
       Not Bad
     </p>
-    <button onclick="document.getElementById('cordo-modal').style.display='none'" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-family:'Poppins',system-ui,sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;">Thanks Cordo!</button>
+    <button onclick="document.getElementById('cordo-modal').style.display='none'" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-family:'Manrope',system-ui,sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;">Thanks Cordo!</button>
   </div>
 </div>
 <!-- Mr Levick modal -->
 <div id="levick-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);">
     <img src="/static/levick.jpeg" alt="Mr Levick" style="width:100%;border-radius:10px;margin-bottom:18px;">
-    <p style="font-family:'Poppins',system-ui,sans-serif;font-size:.9rem;font-weight:500;color:#1a202c;line-height:1.6;margin-bottom:20px;">
+    <p style="font-family:'Manrope',system-ui,sans-serif;font-size:.9rem;font-weight:500;color:#1a202c;line-height:1.6;margin-bottom:20px;">
       He is watching...
     </p>
-    <button onclick="document.getElementById('levick-modal').style.display='none'" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-family:'Poppins',system-ui,sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;">Got it</button>
+    <button onclick="document.getElementById('levick-modal').style.display='none'" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-family:'Manrope',system-ui,sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;">Got it</button>
   </div>
 </div>
 <div id="celebration-toast" onclick="hideCelebration()">
@@ -2808,10 +2808,10 @@ CLASSIFY_HTML = r"""<!DOCTYPE html>
 <title>{% if flagged_mode %}Classify — Flagged{% elif unsorted_mode %}Classify — Unsorted{% else %}Classify — {{ publisher }} {{ year }}{% endif %}</title>
 <link rel="icon" type="image/x-icon" href="/static/favicon.ico"/>
 <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png"/>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Poppins',system-ui,sans-serif; background:#0f1117; color:#e2e8f0; min-height:100vh; }
+body { font-family:'Manrope',system-ui,sans-serif; background:#0f1117; color:#e2e8f0; min-height:100vh; }
 
 .topbar {
   background:#2d2d2d;
@@ -3590,10 +3590,10 @@ HOME_HTML = r"""<!DOCTYPE html>
 <link rel="icon" type="image/x-icon" href="/static/favicon.ico"/>
 <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Poppins',system-ui,sans-serif; background:#f5f7fa; color:#1a202c; min-height:100vh; }
+body { font-family:'Manrope',system-ui,sans-serif; background:#f5f7fa; color:#1a202c; min-height:100vh; }
 .topbar {
   background:#2d2d2d;
   position:sticky; top:0; z-index:100;
@@ -3703,10 +3703,10 @@ LOGIN_HTML = """<!DOCTYPE html>
 <title>Sign In — VCE Mathematics Question Bank</title>
 <link rel="icon" type="image/x-icon" href="/static/favicon.ico"/>
 <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png"/>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Poppins',system-ui,sans-serif; background:#0f1117; min-height:100vh; display:flex; align-items:center; justify-content:center; }
+body { font-family:'Manrope',system-ui,sans-serif; background:#0f1117; min-height:100vh; display:flex; align-items:center; justify-content:center; }
 .card { background:#1a1d27; border:1px solid #2d3148; border-radius:16px; padding:40px 36px; width:100%; max-width:380px; text-align:center; }
 h1 { color:#e2e8f0; font-size:1.2rem; font-weight:600; margin-bottom:8px; }
 p { color:#718096; font-size:.85rem; margin-bottom:32px; line-height:1.6; }
@@ -3751,10 +3751,10 @@ PENDING_HTML = """<!DOCTYPE html>
 <title>Awaiting Approval — VCE Mathematics Question Bank</title>
 <link rel="icon" type="image/x-icon" href="/static/favicon.ico"/>
 <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png"/>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Poppins',system-ui,sans-serif; background:#0f1117; min-height:100vh; display:flex; align-items:center; justify-content:center; }
+body { font-family:'Manrope',system-ui,sans-serif; background:#0f1117; min-height:100vh; display:flex; align-items:center; justify-content:center; }
 .card { background:#1a1d27; border:1px solid #2d3148; border-radius:16px; padding:48px 36px; width:100%; max-width:420px; text-align:center; }
 .icon { font-size:2.8rem; margin-bottom:20px; }
 h1 { color:#e2e8f0; font-size:1.15rem; font-weight:600; margin-bottom:10px; }
@@ -3783,7 +3783,7 @@ USERS_HTML = r"""<!DOCTYPE html>
 <title>Users — VCE Mathematics Question Bank</title>
 <link rel="icon" type="image/x-icon" href="/static/favicon.ico"/>
 <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png"/>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg:#f0f0f0; --surface:#fff; --border:#e4e4e4; --text:#1a202c;
@@ -3791,7 +3791,7 @@ USERS_HTML = r"""<!DOCTYPE html>
   --shadow-sm:0 1px 3px rgba(0,0,0,.06); --radius:12px;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Poppins',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+body { font-family:'Manrope',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
 .topbar { background:#2d2d2d; padding:0 32px; display:flex; align-items:center; gap:16px; position:sticky; top:0; z-index:100; height:60px; }
 .topbar h1 { font-size:1.05rem; font-weight:600; color:#fff; white-space:nowrap; }
 .tabs { display:flex; gap:4px; margin-left:24px; }
@@ -4274,7 +4274,7 @@ ADMIN_HTML = r"""<!DOCTYPE html>
 <link rel="icon" type="image/x-icon" href="/static/favicon.ico"/>
 <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #f5f7fa;
@@ -4294,7 +4294,7 @@ ADMIN_HTML = r"""<!DOCTYPE html>
   --radius: 12px;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Poppins','Lato',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+body { font-family:'Manrope',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
 a { color:#1f1f1f; text-decoration:none; }
 
 .topbar {
