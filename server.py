@@ -346,45 +346,22 @@ def compute_earned_badge_ids(total_completed, longest_streak, completed_ids_subj
     for b in STREAK_BADGES:
         if longest_streak >= b["threshold"]:
             earned.add(b["id"])
-    counts = AOS_QUESTION_COUNTS.get(subject, {})
-    for aos_id, total in counts.items():
-        done = sum(1 for qid in completed_ids_subject if _question_lookup.get(qid) is not None and _get_aos_for_id(qid, subject) == aos_id)
-        if total > 0 and done >= total:
-            earned.add(f"aos_{subject}_{aos_id}")
-    return earned
-
-def _get_aos_for_id(question_id, subject):
-    data = questions_data if subject == "specialist" else methods_data
-    for q in data:
-        if q["id"] == question_id:
-            return q.get("aos")
-    return None
-
-# Build per-subject question_id → aos lookup for fast badge checking
-_specialist_aos_lookup = {q["id"]: q.get("aos") for q in questions_data}
-_methods_aos_lookup    = {q["id"]: q.get("aos") for q in methods_data}
-
-def _fast_get_aos(question_id, subject):
-    if subject == "specialist":
-        return _specialist_aos_lookup.get(question_id)
-    return _methods_aos_lookup.get(question_id)
-
-def compute_earned_badge_ids(total_completed, longest_streak, completed_ids_subject, subject):
-    earned = set()
-    for b in QUESTION_BADGES:
-        if total_completed >= b["threshold"]:
-            earned.add(b["id"])
-    for b in STREAK_BADGES:
-        if longest_streak >= b["threshold"]:
-            earned.add(b["id"])
-    counts = AOS_QUESTION_COUNTS.get(subject, {})
+    # Use effective questions (overrides applied) so hidden questions don't inflate the target count
     hidden = SPECIALIST_HIDDEN_AOS if subject == "specialist" else METHODS_HIDDEN_AOS
+    effective_qs = apply_overrides(get_subject_config(subject)["data"](), subject)
+    effective_aos_counts = {}
+    effective_qid_aos = {}
+    for q in effective_qs:
+        aos = q.get("aos")
+        effective_qid_aos[q["id"]] = aos
+        if aos not in hidden:
+            effective_aos_counts[aos] = effective_aos_counts.get(aos, 0) + 1
     aos_done = {}
     for qid in completed_ids_subject:
-        aos = _fast_get_aos(qid, subject)
+        aos = effective_qid_aos.get(qid)
         if aos is not None and aos not in hidden:
             aos_done[aos] = aos_done.get(aos, 0) + 1
-    for aos_id, total in counts.items():
+    for aos_id, total in effective_aos_counts.items():
         if total > 0 and aos_done.get(aos_id, 0) >= total:
             earned.add(f"aos_{subject}_{aos_id}")
     return earned
@@ -408,6 +385,14 @@ def migrate_xp_for_existing_users():
         conn.commit()
 
 migrate_xp_for_existing_users()
+
+if DEV_MODE:
+    with get_db() as conn:
+        conn.execute("""INSERT OR IGNORE INTO users
+            (google_id, email, name, status, created_at, xp, current_streak, longest_streak)
+            VALUES ('dev_user','dev@localhost','Dev User','approved',?,0,0,0)""",
+            (datetime.datetime.utcnow().isoformat(),))
+        conn.commit()
 
 # AOS maps per subject
 SPECIALIST_AOS = {0: "Unsorted", 1: "Logic and Proof", 2: "Functions, Relations and Graphs", 3: "Complex Numbers", 4: "Calculus", 5: "Vectors, Lines and Planes", 6: "Probability and Statistics", 7: "Pseudocode", 8: "Mechanics", 9: "Hidden"}
@@ -1169,7 +1154,7 @@ a { color:#1f1f1f; text-decoration:none; }
   border-radius: 99px;
   background: linear-gradient(90deg, #f59e0b, #fbbf24, #f59e0b, #fbbf24);
   background-size: 300% 100%;
-  animation: xp-shimmer 2.5s ease-in-out forwards;
+  animation: xp-shimmer 2s linear infinite;
 }
 .ach-xp-label {
   font-size: .78rem;
@@ -4844,60 +4829,57 @@ def api_toggle_completed():
                 (user_id, question_id, subject)
             )
             marked = False
-            if user_id != "dev_user":
-                xp_lost = get_xp_for_question(question_id)
-                conn.execute("UPDATE users SET xp = MAX(0, xp - ?) WHERE google_id=?", (xp_lost, user_id))
+            xp_lost = get_xp_for_question(question_id)
+            conn.execute("UPDATE users SET xp = MAX(0, xp - ?) WHERE google_id=?", (xp_lost, user_id))
         else:
             marked = True
-            if user_id != "dev_user":
-                # Snapshot state BEFORE this completion so we can diff
-                prev_row = conn.execute(
-                    "SELECT xp, longest_streak FROM users WHERE google_id=?", (user_id,)
-                ).fetchone()
-                prev_xp = prev_row["xp"] if prev_row else 0
-                prev_longest = prev_row["longest_streak"] if prev_row else 0
-                prev_level_num = get_level(prev_xp)[0]
-                prev_total = conn.execute(
-                    "SELECT COUNT(*) FROM completed_questions WHERE user_id=?", (user_id,)
-                ).fetchone()[0]
-                prev_completed_subject = {r["question_id"] for r in conn.execute(
-                    "SELECT question_id FROM completed_questions WHERE user_id=? AND subject=?",
-                    (user_id, subject)
-                ).fetchall()}
-                prev_earned = compute_earned_badge_ids(prev_total, prev_longest, prev_completed_subject, subject)
+            # Snapshot state BEFORE this completion so we can diff
+            prev_row = conn.execute(
+                "SELECT xp, longest_streak FROM users WHERE google_id=?", (user_id,)
+            ).fetchone()
+            prev_xp = prev_row["xp"] if prev_row else 0
+            prev_longest = prev_row["longest_streak"] if prev_row else 0
+            prev_level_num = get_level(prev_xp)[0]
+            prev_total = conn.execute(
+                "SELECT COUNT(*) FROM completed_questions WHERE user_id=?", (user_id,)
+            ).fetchone()[0]
+            prev_completed_subject = {r["question_id"] for r in conn.execute(
+                "SELECT question_id FROM completed_questions WHERE user_id=? AND subject=?",
+                (user_id, subject)
+            ).fetchall()}
+            prev_earned = compute_earned_badge_ids(prev_total, prev_longest, prev_completed_subject, subject)
 
             conn.execute(
                 "INSERT INTO completed_questions (user_id, question_id, subject, completed_at) VALUES (?,?,?,?)",
                 (user_id, question_id, subject, datetime.datetime.utcnow().isoformat())
             )
 
-            if user_id != "dev_user":
-                xp_gained = get_xp_for_question(question_id)
-                conn.execute("UPDATE users SET xp = xp + ? WHERE google_id=?", (xp_gained, user_id))
-                # Streak logic
-                today = today_aest()
-                yesterday = yesterday_aest()
-                today_count = conn.execute(
-                    "SELECT COUNT(*) FROM completed_questions WHERE user_id=? AND date(completed_at, '+10 hours') = ?",
-                    (user_id, today)
-                ).fetchone()[0]
-                user_row = conn.execute(
-                    "SELECT current_streak, longest_streak, last_streak_date FROM users WHERE google_id=?", (user_id,)
-                ).fetchone()
-                if user_row and today_count >= 5 and user_row["last_streak_date"] != today:
-                    last = user_row["last_streak_date"]
-                    streak = (user_row["current_streak"] + 1) if last == yesterday else 1
-                    longest = max(user_row["longest_streak"] or 0, streak)
-                    conn.execute(
-                        "UPDATE users SET current_streak=?, longest_streak=?, last_streak_date=? WHERE google_id=?",
-                        (streak, longest, today, user_id)
-                    )
-                    new_streak = streak
+            xp_gained = get_xp_for_question(question_id)
+            conn.execute("UPDATE users SET xp = xp + ? WHERE google_id=?", (xp_gained, user_id))
+            # Streak logic
+            today = today_aest()
+            yesterday = yesterday_aest()
+            today_count = conn.execute(
+                "SELECT COUNT(*) FROM completed_questions WHERE user_id=? AND date(completed_at, '+10 hours') = ?",
+                (user_id, today)
+            ).fetchone()[0]
+            user_row = conn.execute(
+                "SELECT current_streak, longest_streak, last_streak_date FROM users WHERE google_id=?", (user_id,)
+            ).fetchone()
+            if user_row and today_count >= 5 and user_row["last_streak_date"] != today:
+                last = user_row["last_streak_date"]
+                streak = (user_row["current_streak"] + 1) if last == yesterday else 1
+                longest = max(user_row["longest_streak"] or 0, streak)
+                conn.execute(
+                    "UPDATE users SET current_streak=?, longest_streak=?, last_streak_date=? WHERE google_id=?",
+                    (streak, longest, today, user_id)
+                )
+                new_streak = streak
 
         conn.commit()
 
         # Compute new state and diff for celebrations
-        if user_id != "dev_user" and marked:
+        if marked:
             new_row = conn.execute("SELECT xp, longest_streak FROM users WHERE google_id=?", (user_id,)).fetchone()
             new_xp = new_row["xp"] if new_row else 0
             new_longest = new_row["longest_streak"] if new_row else 0
@@ -4930,16 +4912,6 @@ def api_gamification():
     if r: return r
     user_id = get_current_user_id()
     subject = request.args.get("subject", "specialist")
-
-    if user_id == "dev_user":
-        # Return stub data in dev mode
-        return jsonify({
-            "xp": 0, "level_num": 1, "level_name": "Novice", "level_xp_min": 0,
-            "next_level_num": 2, "next_level_name": "Student", "next_level_xp": 200,
-            "current_streak": 0, "longest_streak": 0, "total_completed": 0,
-            "earned_badge_ids": [], "question_badges": QUESTION_BADGES,
-            "streak_badges": STREAK_BADGES, "aos_badges": get_aos_badges_for_subject(subject),
-        })
 
     with get_db() as conn:
         user_row = conn.execute(
