@@ -3681,23 +3681,23 @@ LOGIN_HTML = """<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'DM Sans',system-ui,sans-serif; background:#f5f7fa; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+body { font-family:'DM Sans',system-ui,sans-serif; background:#f6f3ee; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; }
 .topbar-strip { background:#2d2d2d; width:100%; height:4px; position:fixed; top:0; left:0; }
-.card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:40px 36px; width:100%; max-width:380px; text-align:center; box-shadow:0 1px 3px rgba(0,0,0,.06); }
-h1 { color:#1a202c; font-size:1.1rem; font-weight:700; margin-bottom:8px; }
-p { color:#718096; font-size:.85rem; margin-bottom:28px; line-height:1.6; }
+.card { background:#fdfaf6; border:1px solid #e3ddd4; border-radius:12px; padding:40px 36px; width:100%; max-width:380px; text-align:center; box-shadow:0 1px 3px rgba(60,44,28,.07); }
+h1 { color:#1c1917; font-size:1.1rem; font-weight:700; margin-bottom:8px; }
+p { color:#78716c; font-size:.85rem; margin-bottom:28px; line-height:1.6; }
 .google-btn {
   display:flex; align-items:center; justify-content:center; gap:12px;
-  background:#fff; color:#3c4043; border:1px solid #e2e8f0; border-radius:8px;
+  background:#fdfaf6; color:#1c1917; border:1px solid #e3ddd4; border-radius:8px;
   padding:12px 24px; width:100%; font-family:inherit; font-size:.9rem; font-weight:500;
   cursor:pointer; text-decoration:none; transition:border-color .15s, box-shadow .15s;
-  box-shadow:0 1px 3px rgba(0,0,0,.06);
+  box-shadow:0 1px 3px rgba(60,44,28,.07);
 }
-.google-btn:hover { border-color:#cbd5e0; box-shadow:0 2px 8px rgba(0,0,0,.1); }
+.google-btn:hover { border-color:#c5bdb4; box-shadow:0 2px 8px rgba(60,44,28,.1); }
 .google-btn svg { width:20px; height:20px; flex-shrink:0; }
 .msg { font-size:.82rem; margin-bottom:20px; padding:10px 14px; border-radius:8px; }
-.msg.error { color:#c53030; background:#fff5f5; border:1px solid #fed7d7; }
-.msg.info { color:#2b6cb0; background:#ebf8ff; border:1px solid #bee3f8; }
+.msg.error { color:#c53030; background:#fff0f0; border:1px solid #e8c4c4; }
+.msg.info { color:#78716c; background:#f0ede8; border:1px solid #e3ddd4; }
 </style>
 </head>
 <body>
@@ -3731,15 +3731,15 @@ PENDING_HTML = """<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'DM Sans',system-ui,sans-serif; background:#f5f7fa; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+body { font-family:'DM Sans',system-ui,sans-serif; background:#f6f3ee; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; }
 .topbar-strip { background:#2d2d2d; width:100%; height:4px; position:fixed; top:0; left:0; }
-.card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:48px 36px; width:100%; max-width:420px; text-align:center; box-shadow:0 1px 3px rgba(0,0,0,.06); }
+.card { background:#fdfaf6; border:1px solid #e3ddd4; border-radius:12px; padding:48px 36px; width:100%; max-width:420px; text-align:center; box-shadow:0 1px 3px rgba(60,44,28,.07); }
 .icon { font-size:2.4rem; margin-bottom:16px; }
-h1 { color:#1a202c; font-size:1.1rem; font-weight:700; margin-bottom:10px; }
-p { color:#718096; font-size:.875rem; line-height:1.7; margin-bottom:28px; }
+h1 { color:#1c1917; font-size:1.1rem; font-weight:700; margin-bottom:10px; }
+p { color:#78716c; font-size:.875rem; line-height:1.7; margin-bottom:28px; }
 .email { color:#2d2d2d; font-weight:600; }
-a { color:#718096; font-size:.82rem; text-decoration:underline; }
-a:hover { color:#1a202c; }
+a { color:#78716c; font-size:.82rem; text-decoration:underline; }
+a:hover { color:#1c1917; }
 </style>
 </head>
 <body>
