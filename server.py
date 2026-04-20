@@ -1210,7 +1210,7 @@ a { color:#1f1f1f; text-decoration:none; }
 .ach-level-name {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #8db370;
+  color: #2d2d2d;
   margin: 4px 0 14px;
 }
 .ach-xp-bar-wrap {
@@ -1312,7 +1312,7 @@ a { color:#1f1f1f; text-decoration:none; }
 .badge-name {
   font-size: .7rem;
   font-weight: 600;
-  color: #8db370;
+  color: #2d2d2d;
   line-height: 1.25;
 }
 .badge-item.locked .badge-name { color: #aaa; }
@@ -1337,7 +1337,7 @@ a { color:#1f1f1f; text-decoration:none; }
 .aos-badge-row-icon { font-size: 1.3rem; flex-shrink: 0; }
 .aos-badge-row.locked .aos-badge-row-icon { filter: grayscale(1); opacity: .35; }
 .aos-badge-row-text { flex: 1; }
-.aos-badge-row-name { font-size: .82rem; font-weight: 600; color: #8db370; }
+.aos-badge-row-name { font-size: .82rem; font-weight: 600; color: #2d2d2d; }
 .aos-badge-row.locked .aos-badge-row-name { color: #aaa; }
 .aos-badge-row-desc { font-size: .72rem; color: #718096; }
 .aos-badge-row.locked .aos-badge-row-desc { color: #bbb; }
@@ -1416,7 +1416,7 @@ a { color:#1f1f1f; text-decoration:none; }
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .06em;
-  color: #8db370;
+  color: #2d2d2d;
 }
 .celebration-badge-name { font-size: .88rem; font-weight: 600; color: #1f1f1f; }
 .celebration-dismiss-levelup {
