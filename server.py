@@ -719,7 +719,7 @@ a { color:#1f1f1f; text-decoration:none; }
 .sidebar-progress-level {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 5px;
   margin-bottom: 7px;
 }
 .sidebar-level-pill {
@@ -727,12 +727,12 @@ a { color:#1f1f1f; text-decoration:none; }
   font-weight: 700;
   color: #fff;
   background: #4a6f32;
-  border-radius: 20px;
+  border-radius: 6px;
   padding: 2px 8px;
   white-space: nowrap;
 }
 .sidebar-level-name {
-  font-size: .82rem;
+  font-size: .78rem;
   font-weight: 600;
   color: var(--text-secondary);
 }
@@ -1727,7 +1727,6 @@ function loadLeaderboard(lbId, silent) {
         return `<div class="leaderboard-entry${entry.is_you ? ' you' : ''}">` +
           `<span class="leaderboard-rank">${i + 1}.</span>` +
           `<span class="leaderboard-name">${firstName}</span>` +
-          `<span class="leaderboard-level">Level ${entry.level_num || 1}</span>` +
           `<span class="leaderboard-count">${entry.count}</span>` +
           `</div>`;
       }).join('');
