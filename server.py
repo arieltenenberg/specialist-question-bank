@@ -1200,7 +1200,7 @@ a { color:#1f1f1f; text-decoration:none; }
   margin-bottom: 8px;
 }
 .ach-level-num {
-  font-size: 3rem;
+  font-size: 2.2rem;
   font-weight: 800;
   color: #2d2d2d;
   line-height: 1;
@@ -2579,7 +2579,7 @@ function renderAchievements(data) {
   const levelSection = `
     <div class="ach-section">
       <div class="ach-level-card">
-        <div class="ach-level-num">${data.level_num}</div>
+        <div class="ach-level-num">Level ${data.level_num}</div>
         <div class="ach-level-name">${data.level_name}</div>
         <div class="ach-xp-bar-wrap"><div class="ach-xp-bar-fill" style="width:${barPct}%"></div></div>
         <div class="ach-xp-label">${xpLabel}</div>
