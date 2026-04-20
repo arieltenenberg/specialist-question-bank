@@ -1131,7 +1131,53 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 .achievements-modal-close:hover { color: var(--text); }
 
-/* Level section */
+/* Level hero card */
+.ach-level-card {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1.5px solid #fcd34d;
+  border-radius: 14px;
+  padding: 20px 20px 16px;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.ach-level-num {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #92400e;
+  line-height: 1;
+  letter-spacing: -.03em;
+}
+.ach-level-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #78350f;
+  margin: 4px 0 14px;
+}
+.ach-xp-bar-wrap {
+  height: 10px;
+  background: rgba(0,0,0,.08);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+@keyframes xp-shimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+.ach-xp-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #f59e0b, #fbbf24, #f59e0b, #fbbf24);
+  background-size: 300% 100%;
+  animation: xp-shimmer 2.5s ease-in-out forwards;
+}
+.ach-xp-label {
+  font-size: .78rem;
+  color: #92400e;
+  opacity: .75;
+}
+
+/* Section wrapper */
 .ach-section { margin-bottom: 24px; }
 .ach-section-title {
   font-size: .72rem;
@@ -1141,53 +1187,13 @@ a { color:#1f1f1f; text-decoration:none; }
   color: #999;
   margin-bottom: 10px;
 }
-.ach-level-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-.ach-level-badge {
-  background: #1f1f1f;
-  color: #fff;
-  font-size: .75rem;
-  font-weight: 700;
-  padding: 5px 12px;
-  border-radius: 20px;
-  white-space: nowrap;
-}
-.ach-level-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #1f1f1f;
-}
-.ach-xp-bar-wrap {
-  height: 8px;
-  background: #e8e8e8;
-  border-radius: 99px;
-  overflow: hidden;
-  margin-bottom: 6px;
-}
-.ach-xp-bar-fill {
-  height: 100%;
-  background: #1f1f1f;
-  border-radius: 99px;
-  transition: width .5s;
-}
-.ach-xp-label {
-  font-size: .78rem;
-  color: #718096;
-}
 
 /* Streak section */
-.ach-streak-row {
-  display: flex;
-  gap: 20px;
-}
+.ach-streak-row { display: flex; gap: 12px; }
 .ach-streak-stat {
   background: #f5f7fa;
   border-radius: 10px;
-  padding: 12px 16px;
+  padding: 12px 10px;
   flex: 1;
   text-align: center;
 }
@@ -1198,20 +1204,22 @@ a { color:#1f1f1f; text-decoration:none; }
   line-height: 1.1;
 }
 .ach-streak-lbl {
-  font-size: .72rem;
+  font-size: .7rem;
   color: #718096;
   margin-top: 3px;
+  line-height: 1.3;
 }
 .ach-streak-hint {
-  font-size: .75rem;
+  font-size: .73rem;
   color: #999;
   margin-top: 8px;
+  line-height: 1.4;
 }
 
-/* Badge grid */
+/* Badge grid (questions + streaks) */
 .badge-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
   margin-top: 4px;
 }
@@ -1220,83 +1228,131 @@ a { color:#1f1f1f; text-decoration:none; }
   flex-direction: column;
   align-items: center;
   gap: 5px;
-  padding: 10px 6px 8px;
-  border-radius: 10px;
+  padding: 12px 8px 10px;
+  border-radius: 12px;
   text-align: center;
-  transition: background .15s;
 }
 .badge-item.earned {
-  background: #f0f7f0;
-  border: 1.5px solid #c6dfc6;
+  background: #fffbeb;
+  border: 1.5px solid #fcd34d;
 }
 .badge-item.locked {
   background: #f8f8f8;
   border: 1.5px solid #e8e8e8;
-  opacity: 0.5;
 }
-.badge-icon {
-  font-size: 1.6rem;
+.badge-icon-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.badge-icon { font-size: 1.8rem; line-height: 1; }
+.badge-item.locked .badge-icon { filter: grayscale(1); opacity: .35; }
+.badge-lock-pip {
+  position: absolute;
+  bottom: -3px;
+  right: -5px;
+  font-size: .65rem;
   line-height: 1;
 }
 .badge-name {
-  font-size: .68rem;
+  font-size: .7rem;
   font-weight: 600;
-  color: #1f1f1f;
-  line-height: 1.2;
+  color: #78350f;
+  line-height: 1.25;
 }
-.badge-item.locked .badge-name { color: #999; }
+.badge-item.locked .badge-name { color: #aaa; }
 .badge-desc {
   font-size: .62rem;
-  color: #718096;
-  line-height: 1.2;
+  color: #92400e;
+  opacity: .65;
+  line-height: 1.25;
 }
-.badge-item.locked .badge-desc { color: #bbb; }
+.badge-item.locked .badge-desc { color: #bbb; opacity: 1; }
 
-/* ----- Celebration toast ----- */
+/* AOS badge list */
+.aos-badge-list { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+.aos-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+}
+.aos-badge-row.earned { background: #fffbeb; border: 1.5px solid #fcd34d; }
+.aos-badge-row.locked { background: #f8f8f8; border: 1.5px solid #e8e8e8; }
+.aos-badge-row-icon { font-size: 1.3rem; flex-shrink: 0; }
+.aos-badge-row.locked .aos-badge-row-icon { filter: grayscale(1); opacity: .35; }
+.aos-badge-row-text { flex: 1; }
+.aos-badge-row-name { font-size: .82rem; font-weight: 600; color: #78350f; }
+.aos-badge-row.locked .aos-badge-row-name { color: #aaa; }
+.aos-badge-row-desc { font-size: .72rem; color: #92400e; opacity: .65; }
+.aos-badge-row.locked .aos-badge-row-desc { color: #bbb; opacity: 1; }
+.aos-badge-row-lock { font-size: .75rem; color: #ccc; flex-shrink: 0; }
+
+/* ----- Celebration toasts ----- */
+@keyframes toast-in {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(-16px) scale(.92); }
+  60%  { transform: translateX(-50%) translateY(3px) scale(1.01); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+@keyframes levelup-pulse {
+  0%, 100% { box-shadow: 0 8px 36px rgba(245,158,11,.35); }
+  50%       { box-shadow: 0 8px 48px rgba(245,158,11,.6); }
+}
 #celebration-toast {
   position: fixed;
   top: 108px;
   left: 50%;
-  transform: translateX(-50%) translateY(-12px);
-  background: #fff;
-  border-radius: 14px;
-  padding: 16px 22px;
-  box-shadow: 0 8px 36px rgba(0,0,0,.18);
+  transform: translateX(-50%) translateY(-16px) scale(.92);
+  border-radius: 16px;
+  padding: 18px 24px 14px;
   z-index: 3000;
   cursor: pointer;
   opacity: 0;
-  transition: opacity .3s ease, transform .3s ease;
   pointer-events: none;
-  min-width: 260px;
+  min-width: 270px;
   max-width: 380px;
   text-align: center;
 }
 #celebration-toast.visible {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
   pointer-events: auto;
+  animation: toast-in .38s cubic-bezier(.22,1,.36,1) forwards;
 }
-.celebration-levelup {
-  font-size: .72rem;
+#celebration-toast.toast-levelup {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  box-shadow: 0 8px 36px rgba(245,158,11,.4);
+}
+#celebration-toast.toast-levelup.visible {
+  animation: toast-in .38s cubic-bezier(.22,1,.36,1) forwards, levelup-pulse 2s ease-in-out .4s infinite;
+}
+#celebration-toast.toast-badge {
+  background: #fff;
+  box-shadow: 0 8px 36px rgba(0,0,0,.14);
+  border-left: 5px solid #f59e0b;
+}
+.celebration-levelup-eyebrow {
+  font-size: .68rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: .07em;
-  color: #999;
+  letter-spacing: .1em;
+  color: rgba(255,255,255,.75);
   margin-bottom: 4px;
 }
 .celebration-levelup-name {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #1f1f1f;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #fff;
   margin-bottom: 2px;
 }
 .celebration-levelup-sub {
   font-size: .8rem;
-  color: #718096;
+  color: rgba(255,255,255,.8);
 }
 .celebration-divider {
   border: none;
-  border-top: 1px solid #eee;
+  border-top: 1px solid rgba(255,255,255,.25);
   margin: 12px 0 10px;
 }
 .celebration-badge-row {
@@ -1304,24 +1360,25 @@ a { color:#1f1f1f; text-decoration:none; }
   align-items: center;
   gap: 10px;
   text-align: left;
-  padding: 4px 0;
+  padding: 3px 0;
 }
 .celebration-badge-icon { font-size: 1.4rem; flex-shrink: 0; }
 .celebration-badge-info { flex: 1; }
 .celebration-badge-label {
-  font-size: .68rem;
+  font-size: .65rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .06em;
-  color: #999;
+  color: #b45309;
 }
-.celebration-badge-name {
-  font-size: .88rem;
-  font-weight: 600;
-  color: #1f1f1f;
+.celebration-badge-name { font-size: .88rem; font-weight: 600; color: #1f1f1f; }
+.celebration-dismiss-levelup {
+  font-size: .68rem;
+  color: rgba(255,255,255,.55);
+  margin-top: 10px;
 }
-.celebration-dismiss {
-  font-size: .7rem;
+.celebration-dismiss-badge {
+  font-size: .68rem;
   color: #bbb;
   margin-top: 10px;
 }
@@ -1447,7 +1504,9 @@ a { color:#1f1f1f; text-decoration:none; }
     <a class="back-link" href="/">← Subjects</a>
     <h1>{{ subject_name }}</h1>
     <div class="topbar-right">
-      <button class="achievements-btn-topbar" onclick="openAchievementsModal()" title="Achievements" aria-label="Achievements">🏆</button>
+      <button class="achievements-btn-topbar" onclick="openAchievementsModal()" title="Achievements" aria-label="Achievements">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
+      </button>
       <button class="progress-btn-topbar" onclick="openProgressModal()" title="View Progress" aria-label="View Progress">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="6" width="4" height="15"/><rect x="17" y="2" width="4" height="19"/></svg>
       </button>
@@ -2242,41 +2301,65 @@ let _celebrationTimer = null;
 
 function showCelebration(levelUp, newLevelName, newLevelNum, newBadges) {
   clearTimeout(_celebrationTimer);
-  const parts = [];
+  const toast = document.getElementById('celebration-toast');
+  // Reset state
+  toast.classList.remove('visible', 'toast-levelup', 'toast-badge');
+  // Force reflow so animation re-triggers
+  void toast.offsetWidth;
 
   if (levelUp) {
-    parts.push(`
-      <div class="celebration-levelup">🎉 Level Up!</div>
+    // Level-up gets its own dramatic gold toast
+    const badgeSection = (newBadges && newBadges.length > 0) ? `
+      <hr class="celebration-divider">
+      ${newBadges.map(b => {
+        const icon = b.id.startsWith('aos_') ? '✅' : (BADGE_ICONS[b.id] || '🏆');
+        return `<div class="celebration-badge-row">
+          <div class="celebration-badge-icon">${icon}</div>
+          <div class="celebration-badge-info">
+            <div class="celebration-badge-label" style="color:rgba(255,255,255,.7)">Achievement Unlocked</div>
+            <div class="celebration-badge-name" style="color:#fff">${b.name}</div>
+          </div>
+        </div>`;
+      }).join('')}` : '';
+    document.getElementById('celebration-content').innerHTML = `
+      <div class="celebration-levelup-eyebrow">🎉 Level Up!</div>
       <div class="celebration-levelup-name">Lv ${newLevelNum} — ${newLevelName}</div>
-      <div class="celebration-levelup-sub">Keep going!</div>`);
-  }
-
-  if (newBadges && newBadges.length > 0) {
-    if (levelUp) parts.push('<hr class="celebration-divider">');
-    newBadges.forEach(b => {
-      const icon = b.id.startsWith('aos_') ? '✅' : (BADGE_ICONS[b.id] || '🏆');
-      parts.push(`
-        <div class="celebration-badge-row">
+      <div class="celebration-levelup-sub">Keep it up!</div>
+      ${badgeSection}`;
+    document.getElementById('celebration-toast').insertAdjacentHTML('beforeend',
+      '<div class="celebration-dismiss-levelup" id="cel-dismiss">Tap to dismiss</div>');
+    toast.classList.add('toast-levelup', 'visible');
+    _celebrationTimer = setTimeout(hideCelebration, 5000);
+  } else if (newBadges && newBadges.length > 0) {
+    // Badge-only: smaller neutral card
+    document.getElementById('celebration-content').innerHTML =
+      newBadges.map(b => {
+        const icon = b.id.startsWith('aos_') ? '✅' : (BADGE_ICONS[b.id] || '🏆');
+        return `<div class="celebration-badge-row">
           <div class="celebration-badge-icon">${icon}</div>
           <div class="celebration-badge-info">
             <div class="celebration-badge-label">Achievement Unlocked</div>
             <div class="celebration-badge-name">${b.name}</div>
           </div>
-        </div>`);
-    });
+        </div>`;
+      }).join('');
+    toast.classList.add('toast-badge', 'visible');
+    _celebrationTimer = setTimeout(hideCelebration, 4000);
   }
-
-  if (parts.length === 0) return;
-
-  document.getElementById('celebration-content').innerHTML = parts.join('');
-  const toast = document.getElementById('celebration-toast');
-  toast.classList.add('visible');
-  _celebrationTimer = setTimeout(hideCelebration, 4000);
 }
 
 function hideCelebration() {
   clearTimeout(_celebrationTimer);
-  document.getElementById('celebration-toast').classList.remove('visible');
+  const toast = document.getElementById('celebration-toast');
+  toast.style.transition = 'opacity .25s';
+  toast.style.opacity = '0';
+  setTimeout(() => {
+    toast.classList.remove('visible', 'toast-levelup', 'toast-badge');
+    toast.style.transition = '';
+    toast.style.opacity = '';
+    const d = document.getElementById('cel-dismiss');
+    if (d) d.remove();
+  }, 260);
 }
 
 // ---------------------------------------------------------------------------
@@ -2310,39 +2393,53 @@ function loadGamification() {
 
 function renderAchievements(data) {
   const earned = new Set(data.earned_badge_ids);
-  const AOS_ICON = '✅';
 
   function badgeHtml(badge, icon) {
     const isEarned = earned.has(badge.id);
     return `<div class="badge-item ${isEarned ? 'earned' : 'locked'}" title="${badge.desc}">
-      <div class="badge-icon">${isEarned ? icon : '🔒'}</div>
+      <div class="badge-icon-wrap">
+        <span class="badge-icon">${icon}</span>
+        ${!isEarned ? '<span class="badge-lock-pip">🔒</span>' : ''}
+      </div>
       <div class="badge-name">${badge.name}</div>
       <div class="badge-desc">${badge.desc}</div>
     </div>`;
   }
 
-  // Level bar
+  function aosBadgeHtml(badge) {
+    const isEarned = earned.has(badge.id);
+    return `<div class="aos-badge-row ${isEarned ? 'earned' : 'locked'}">
+      <div class="aos-badge-row-icon">✅</div>
+      <div class="aos-badge-row-text">
+        <div class="aos-badge-row-name">${badge.name}</div>
+        <div class="aos-badge-row-desc">${badge.desc}</div>
+      </div>
+      ${!isEarned ? '<div class="aos-badge-row-lock">🔒</div>' : ''}
+    </div>`;
+  }
+
+  // Level hero card
   const xp = data.xp;
   const minXp = data.level_xp_min;
   const maxXp = data.next_level_xp;
   let barPct, xpLabel;
   if (maxXp === null) {
     barPct = 100;
-    xpLabel = `${xp.toLocaleString()} XP — Max level reached`;
+    xpLabel = `${xp.toLocaleString()} XP · Max level reached`;
   } else {
-    barPct = Math.round(((xp - minXp) / (maxXp - minXp)) * 100);
-    xpLabel = `${xp.toLocaleString()} / ${maxXp.toLocaleString()} XP`;
+    barPct = Math.max(2, Math.round(((xp - minXp) / (maxXp - minXp)) * 100));
+    const remaining = (maxXp - xp).toLocaleString();
+    xpLabel = `${xp.toLocaleString()} / ${maxXp.toLocaleString()} XP · ${remaining} to ${data.next_level_name}`;
   }
 
   const levelSection = `
     <div class="ach-section">
-      <div class="ach-section-title">Level</div>
-      <div class="ach-level-row">
-        <div class="ach-level-badge">Lv ${data.level_num}</div>
+      <div class="ach-level-card">
+        <div class="ach-level-num">${data.level_num}</div>
         <div class="ach-level-name">${data.level_name}</div>
+        <div class="ach-xp-bar-wrap"><div class="ach-xp-bar-fill" style="width:${barPct}%"></div></div>
+        <div class="ach-xp-label">${xpLabel}</div>
       </div>
-      <div class="ach-xp-bar-wrap"><div class="ach-xp-bar-fill" style="width:${barPct}%"></div></div>
-      <div class="ach-xp-label">${xpLabel}${maxXp !== null ? ` &nbsp;·&nbsp; Next: ${data.next_level_name}` : ''}</div>
     </div>`;
 
   const streakSection = `
@@ -2351,15 +2448,15 @@ function renderAchievements(data) {
       <div class="ach-streak-row">
         <div class="ach-streak-stat">
           <div class="ach-streak-val">${data.current_streak}</div>
-          <div class="ach-streak-lbl">Current streak (days)</div>
+          <div class="ach-streak-lbl">Current<br>streak (days)</div>
         </div>
         <div class="ach-streak-stat">
           <div class="ach-streak-val">${data.longest_streak}</div>
-          <div class="ach-streak-lbl">Best streak (days)</div>
+          <div class="ach-streak-lbl">Best<br>streak (days)</div>
         </div>
         <div class="ach-streak-stat">
           <div class="ach-streak-val">${data.total_completed.toLocaleString()}</div>
-          <div class="ach-streak-lbl">Questions done</div>
+          <div class="ach-streak-lbl">Questions<br>completed</div>
         </div>
       </div>
       <div class="ach-streak-hint">Complete 5 questions per day to maintain your streak. Missing a day resets it to 0.</div>
@@ -2367,7 +2464,7 @@ function renderAchievements(data) {
 
   const qBadgesHtml = data.question_badges.map(b => badgeHtml(b, BADGE_ICONS[b.id] || '🏆')).join('');
   const sBadgesHtml = data.streak_badges.map(b => badgeHtml(b, BADGE_ICONS[b.id] || '🔥')).join('');
-  const aosBadgesHtml = data.aos_badges.map(b => badgeHtml(b, AOS_ICON)).join('');
+  const aosBadgesHtml = data.aos_badges.map(b => aosBadgeHtml(b)).join('');
 
   const badgesSection = `
     <div class="ach-section">
@@ -2376,11 +2473,11 @@ function renderAchievements(data) {
     </div>
     <div class="ach-section">
       <div class="ach-section-title">Streaks</div>
-      <div class="badge-grid">${sBadgesHtml}</div>
+      <div class="badge-grid" style="grid-template-columns:repeat(3,1fr)">${sBadgesHtml}</div>
     </div>
     <div class="ach-section">
       <div class="ach-section-title">Areas of Study</div>
-      <div class="badge-grid">${aosBadgesHtml}</div>
+      <div class="aos-badge-list">${aosBadgesHtml}</div>
     </div>`;
 
   document.getElementById('achievements-content').innerHTML = levelSection + streakSection + badgesSection;
@@ -2494,7 +2591,6 @@ function renderProgressView() {
 </div>
 <div id="celebration-toast" onclick="hideCelebration()">
   <div id="celebration-content"></div>
-  <div class="celebration-dismiss">Tap to dismiss</div>
 </div>
 
 <div id="achievements-modal" role="dialog" aria-modal="true" aria-labelledby="achievements-modal-title">
