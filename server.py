@@ -666,8 +666,8 @@ a { color:#1f1f1f; text-decoration:none; }
   border:1px solid var(--border);
   border-radius:8px;
   background:var(--bg);
-  margin-bottom:16px;
-  padding:10px 12px;
+  margin-bottom:20px;
+  padding:12px 14px;
 }
 .leaderboard-widget-title {
   font-size:.75rem;
@@ -705,8 +705,8 @@ a { color:#1f1f1f; text-decoration:none; }
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--bg);
-  margin-bottom: 16px;
-  padding: 10px 12px;
+  margin-bottom: 20px;
+  padding: 12px 14px;
 }
 .sidebar-progress-title {
   font-size: .75rem;
@@ -785,11 +785,10 @@ a { color:#1f1f1f; text-decoration:none; }
   text-transform:uppercase;
   letter-spacing:.1em;
   color:var(--muted);
-  margin:20px 0 8px;
+  margin:20px 0 5px;
   font-weight:600;
 }
-.sidebar h3:first-child { margin-top:4px; }
-.filter-group { display:flex; flex-direction:column; gap:2px; }
+.filter-group { display:flex; flex-direction:column; gap:3px; }
 .filter-btn {
   background:none;
   border:none;
@@ -855,7 +854,7 @@ a { color:#1f1f1f; text-decoration:none; }
 .qcard-header {
   display:flex;
   align-items:center;
-  padding:14px 20px;
+  padding:16px 20px;
   gap:12px;
   cursor:pointer;
   user-select:none;
@@ -869,9 +868,9 @@ a { color:#1f1f1f; text-decoration:none; }
 
 .qcard-body-outer { display:none; }
 .qcard.open .qcard-body-outer { display:block; }
-.qcard-body { padding:0 20px 20px; }
+.qcard-body { padding:12px 20px 24px; }
 
-.qimages { display:flex; gap:20px; flex-wrap:wrap; }
+.qimages { display:flex; gap:16px; flex-wrap:wrap; }
 .qimg-wrap { flex:1; min-width:280px; }
 .qimg-wrap h4 {
   font-size:.75rem;
@@ -963,9 +962,9 @@ a { color:#1f1f1f; text-decoration:none; }
     height:calc(100vh - 84px);
     box-shadow:4px 0 24px rgba(0,0,0,.2);
   }
-  .qcard-header { padding:12px 14px; gap:8px; }
+  .qcard-header { padding:14px 16px; gap:8px; }
   .qcard-header .marks { font-size:.75rem; }
-  .qcard-body { padding:0 12px 16px; }
+  .qcard-body { padding:12px 14px 20px; }
   .qimages { flex-direction:column; }
   .qimg-wrap { min-width:0; width:100%; }
   .card-actions { flex-wrap:wrap; }
@@ -1592,6 +1591,21 @@ a { color:#1f1f1f; text-decoration:none; }
 
 <div class="layout">
   <div class="sidebar" id="sidebar">
+    <div class="sidebar-progress">
+      <div class="sidebar-progress-title">Progress</div>
+      <div class="sidebar-progress-level">
+        <span class="sidebar-level-pill" id="sp-level-pill">Level 1</span>
+        <span class="sidebar-level-name" id="sp-level-name">Novice</span>
+      </div>
+      <div class="sidebar-xp-bar-wrap">
+        <div class="sidebar-xp-bar-fill" id="sp-xp-bar" style="width:2%"></div>
+      </div>
+      <div class="sidebar-xp-label" id="sp-xp-label">0 / 200 XP</div>
+      <div class="sidebar-streak-row">
+        <span class="sidebar-streak-today" id="sp-today">0 done today</span>
+        <span id="sp-streak"></span>
+      </div>
+    </div>
     {% if show_leaderboard %}
     <div class="leaderboard-widget">
       <div class="leaderboard-widget-title" id="leaderboard-title">Leaderboard</div>
