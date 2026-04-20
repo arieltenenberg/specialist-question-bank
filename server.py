@@ -774,7 +774,7 @@ a { color:#1f1f1f; text-decoration:none; }
   min-width:280px;
   background:var(--surface);
   border-right:1px solid var(--border);
-  padding:20px 16px;
+  padding:8px 16px 16px;
   overflow-y:auto;
   position:sticky;
   top:96px;
@@ -810,8 +810,8 @@ a { color:#1f1f1f; text-decoration:none; }
 .filter-btn .badge { font-size:.75rem; color:var(--muted); min-width:24px; text-align:right; }
 
 /* ----- Main ----- */
-.main { flex:1; padding:28px 32px; }
-.main .toolbar { display:flex; gap:12px; align-items:center; margin-bottom:20px; flex-wrap:wrap; }
+.main { flex:1; padding:16px 32px; }
+.main .toolbar { display:flex; gap:12px; align-items:center; margin-bottom:12px; flex-wrap:wrap; }
 .main .toolbar .active-filters { display:flex; gap:6px; flex-wrap:wrap; }
 .chip {
   background:#f0f0f0;
