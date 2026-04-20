@@ -2437,7 +2437,7 @@ function showCelebration(levelUp, newLevelName, newLevelNum, newBadges) {
         </div>`;
       }).join('')}` : '';
     document.getElementById('celebration-content').innerHTML = `
-      <div class="celebration-levelup-eyebrow">🎉 Level Up!</div>
+      <div class="celebration-levelup-eyebrow">Level Up</div>
       <div class="celebration-levelup-name">Lv ${newLevelNum} — ${newLevelName}</div>
       <div class="celebration-levelup-sub">Keep it up!</div>
       ${badgeSection}`;
