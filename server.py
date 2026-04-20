@@ -1605,6 +1605,14 @@ function loadLeaderboard(lbId) {
     .catch(() => { el.innerHTML = '<span style="font-size:.8rem;color:var(--muted)">—</span>'; });
 }
 {% if not is_admin %}loadLeaderboard();{% endif %}
+function refreshLeaderboard() {
+  {% if is_admin %}
+  const picker = document.getElementById('leaderboard-picker');
+  if (picker && picker.value) loadLeaderboard(picker.value);
+  {% else %}
+  loadLeaderboard();
+  {% endif %}
+}
 {% endif %}
 
 (function() {
@@ -2171,6 +2179,7 @@ function toggleCompleted(id, btn) {
         loadGamification();
       }
     }
+    if (typeof refreshLeaderboard === 'function') refreshLeaderboard();
   });
 }
 
