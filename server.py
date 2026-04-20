@@ -1092,6 +1092,7 @@ a { color:#1f1f1f; text-decoration:none; }
   max-width: 560px;
   max-height: calc(100vh - 120px);
   overflow-y: auto;
+  overscroll-behavior: none;
   padding: 28px 28px 24px;
 }
 #achievements-modal-header {
