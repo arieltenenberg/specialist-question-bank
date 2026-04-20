@@ -1270,10 +1270,10 @@ a { color:#1f1f1f; text-decoration:none; }
 .aos-badge-row-icon { font-size: 1.3rem; flex-shrink: 0; }
 .aos-badge-row.locked .aos-badge-row-icon { filter: grayscale(1); opacity: .35; }
 .aos-badge-row-text { flex: 1; }
-.aos-badge-row-name { font-size: .82rem; font-weight: 600; color: #78350f; }
+.aos-badge-row-name { font-size: .82rem; font-weight: 600; color: #4a6f32; }
 .aos-badge-row.locked .aos-badge-row-name { color: #aaa; }
-.aos-badge-row-desc { font-size: .72rem; color: #92400e; opacity: .65; }
-.aos-badge-row.locked .aos-badge-row-desc { color: #bbb; opacity: 1; }
+.aos-badge-row-desc { font-size: .72rem; color: #718096; }
+.aos-badge-row.locked .aos-badge-row-desc { color: #bbb; }
 .aos-badge-row-lock { font-size: .75rem; color: #ccc; flex-shrink: 0; }
 
 /* ----- Celebration toasts ----- */
