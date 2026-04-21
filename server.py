@@ -2211,7 +2211,7 @@ function toggleSaved(id, btn) {
       savedIds.delete(id);
     }
     markSaveBtn(btn, data.marked);
-    if (isUnsaving) {
+    if (isUnsaving && !completedIds.has(id)) {
       showMarkCompletePrompt(id);
     } else {
       if (savedOnly || (hideSaved && !completedOnly && data.marked)) applyFilters();
