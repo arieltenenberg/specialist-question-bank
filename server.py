@@ -873,7 +873,7 @@ a { color:#1f1f1f; text-decoration:none; }
 
 .qimages { display:flex; gap:16px; flex-wrap:wrap; }
 .qimg-wrap { flex:1; min-width:280px; }
-.sol-wrap .qimg-wrap { border-top:1px solid var(--border); padding-top:14px; }
+.sol-wrap .qimg-wrap { border-top:1px solid var(--border); padding-top:16px; }
 .qimg-wrap img {
   width:100%;
   border-radius:8px;
