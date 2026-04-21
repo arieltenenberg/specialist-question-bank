@@ -869,7 +869,7 @@ a { color:#1f1f1f; text-decoration:none; }
 
 .qcard-body-outer { display:none; }
 .qcard.open .qcard-body-outer { display:block; }
-.qcard-body { padding:12px 20px 24px; }
+.qcard-body { padding:8px 20px 24px; }
 
 .qimages { display:flex; gap:16px; flex-wrap:wrap; }
 .qimg-wrap { flex:1; min-width:280px; }
