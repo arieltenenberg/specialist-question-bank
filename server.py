@@ -2437,7 +2437,6 @@ const BADGE_ICONS = {
 
 let _celebrationTimer = null;
 let _xpCardTimer = null;
-let _fireworksActive = false;
 
 function showXpCard(xpGained, newXp, levelName, levelXpMin, nextLevelXp, nextLevelName) {
   if (!xpGained) return;
@@ -2488,190 +2487,46 @@ const CELEBRATION_COLORS = [
   '#ffffff','#fff8f0','#ffecd2',
 ];
 
-function randColor() { return CELEBRATION_COLORS[Math.floor(Math.random() * CELEBRATION_COLORS.length)]; }
-
 function launchConfetti() {
   const colors = CELEBRATION_COLORS;
-  const shared = { colors, zIndex: 9997, disableForReducedMotion: true };
-  // Centre top burst
-  confetti({ ...shared, particleCount: 150, spread: 80, origin: { x: 0.5, y: 0.05 }, startVelocity: 55 });
-  // Left cannon
-  confetti({ ...shared, particleCount: 80, angle: 60, spread: 55, origin: { x: 0.0, y: 0.55 }, startVelocity: 60 });
-  // Right cannon
-  confetti({ ...shared, particleCount: 80, angle: 120, spread: 55, origin: { x: 1.0, y: 0.55 }, startVelocity: 60 });
-  // Second burst at 380ms
+  const shared = {
+    colors,
+    zIndex: 9997,
+    disableForReducedMotion: true,
+    shapes: ['star', 'circle', 'square'],
+    scalar: 1.3,
+    ticks: 400,
+    gravity: 0.75,
+    decay: 0.93,
+  };
+
+  // Wave 1 — immediate: big centre top + both sides
+  confetti({ ...shared, particleCount: 140, spread: 100, origin: { x: 0.5, y: 0.0 }, startVelocity: 68 });
+  confetti({ ...shared, particleCount: 90, angle: 55, spread: 65, origin: { x: 0.0, y: 0.6 }, startVelocity: 68 });
+  confetti({ ...shared, particleCount: 90, angle: 125, spread: 65, origin: { x: 1.0, y: 0.6 }, startVelocity: 68 });
+
+  // Wave 2 — 280ms: inner cannons
   setTimeout(() => {
-    confetti({ ...shared, particleCount: 70, angle: 75, spread: 50, origin: { x: 0.2, y: 0.38 }, startVelocity: 52 });
-    confetti({ ...shared, particleCount: 70, angle: 105, spread: 50, origin: { x: 0.8, y: 0.38 }, startVelocity: 52 });
-  }, 380);
-}
+    confetti({ ...shared, particleCount: 90, angle: 68, spread: 58, origin: { x: 0.15, y: 0.42 }, startVelocity: 62 });
+    confetti({ ...shared, particleCount: 90, angle: 112, spread: 58, origin: { x: 0.85, y: 0.42 }, startVelocity: 62 });
+  }, 280);
 
-function launchFireworks() {
-  if (_fireworksActive) return;
-  _fireworksActive = true;
-  const canvas = document.createElement('canvas');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  canvas.style.cssText = 'position:fixed;inset:0;z-index:9998;pointer-events:none';
-  document.body.appendChild(canvas);
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
+  // Wave 3 — 560ms: second centre top blast
+  setTimeout(() => {
+    confetti({ ...shared, particleCount: 120, spread: 120, origin: { x: 0.5, y: 0.0 }, startVelocity: 62, scalar: 1.1 });
+  }, 560);
 
-  const rockets = [];
-  const burstParticles = [];
-  const sparks = [];
+  // Wave 4 — 850ms: wide sides again
+  setTimeout(() => {
+    confetti({ ...shared, particleCount: 70, angle: 60, spread: 55, origin: { x: 0.0, y: 0.5 }, startVelocity: 58 });
+    confetti({ ...shared, particleCount: 70, angle: 120, spread: 55, origin: { x: 1.0, y: 0.5 }, startVelocity: 58 });
+  }, 850);
 
-  const schedule = [0, 140, 290, 450, 620, 800, 990, 1190, 1410, 1650];
-  schedule.forEach(delay => {
-    setTimeout(() => {
-      const x = W * (0.1 + Math.random() * 0.8);
-      const targetY = H * (0.07 + Math.random() * 0.42);
-      const dist = (H - 30) - targetY;
-      const vy0 = -Math.sqrt(2 * 0.38 * dist);
-      const trailColor = randColor();
-      const type = Math.random() < 0.5 ? 0 : 1;
-      rockets.push({ x, y: H - 30, vx: (Math.random() - 0.5) * 1.4, vy: vy0, trailColor, trail: [], exploded: false, type });
-    }, delay);
-  });
-
-  function explode(x, y, type) {
-    const count = type === 0 ? 80 + Math.floor(Math.random() * 20) : 55 + Math.floor(Math.random() * 25);
-    for (let i = 0; i < count; i++) {
-      const angle = (i / count) * Math.PI * 2 + (Math.random() - 0.5) * (type === 0 ? 0.12 : 0.45);
-      const speed = type === 0 ? 3.5 + Math.random() * 4.5 : 1.2 + Math.random() * 7.5;
-      burstParticles.push({
-        x, y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 0.5,
-        color: randColor(),
-        size: type === 0 ? 1.5 + Math.random() * 1.8 : 2 + Math.random() * 2.5,
-        life: 1,
-        twinkleOffset: Math.random() * Math.PI * 2,
-        decay: type === 0 ? 0.007 + Math.random() * 0.007 : 0.010 + Math.random() * 0.010,
-        grav: 0.05 + Math.random() * 0.04,
-        trail: [],
-      });
-    }
-    for (let i = 0; i < 14; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const speed = 5 + Math.random() * 10;
-      burstParticles.push({
-        x, y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        color: '#ffffff',
-        size: 1.5,
-        life: 1,
-        twinkleOffset: 0,
-        decay: 0.04 + Math.random() * 0.03,
-        grav: 0.04,
-        trail: [],
-      });
-    }
-  }
-
-  const start = performance.now();
-  const DURATION = 7800;
-
-  function frame(now) {
-    const elapsed = now - start;
-    ctx.clearRect(0, 0, W, H);
-    ctx.shadowBlur = 0;
-
-    rockets.forEach(r => {
-      if (r.exploded) return;
-      r.trail.unshift({ x: r.x, y: r.y });
-      if (r.trail.length > 14) r.trail.pop();
-      r.vy += 0.38;
-      r.x += r.vx;
-      r.y += r.vy;
-      if (r.vy >= 0) { r.exploded = true; explode(r.x, r.y, r.type); return; }
-      if (Math.random() < 0.6) {
-        sparks.push({
-          x: r.x + (Math.random() - 0.5) * 3,
-          y: r.y + (Math.random() - 0.5) * 3,
-          vx: (Math.random() - 0.5) * 1.8,
-          vy: Math.random() * 1.5,
-          life: 0.6 + Math.random() * 0.4,
-          decay: 0.06 + Math.random() * 0.06,
-          color: r.trailColor,
-        });
-      }
-      ctx.shadowBlur = 0;
-      for (let i = 0; i < r.trail.length - 1; i++) {
-        ctx.beginPath();
-        ctx.globalAlpha = (1 - i / r.trail.length) * 0.9;
-        ctx.strokeStyle = r.trailColor;
-        ctx.lineWidth = Math.max(0.5, 2.5 - i * 0.15);
-        ctx.lineCap = 'round';
-        ctx.moveTo(r.trail[i].x, r.trail[i].y);
-        ctx.lineTo(r.trail[i + 1].x, r.trail[i + 1].y);
-        ctx.stroke();
-      }
-      ctx.globalAlpha = 1;
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = r.trailColor;
-      ctx.beginPath();
-      ctx.fillStyle = '#ffffff';
-      ctx.arc(r.x, r.y, 2.5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.shadowBlur = 0;
-    });
-
-    for (let i = sparks.length - 1; i >= 0; i--) {
-      const s = sparks[i];
-      s.x += s.vx; s.y += s.vy; s.vy += 0.08; s.life -= s.decay;
-      if (s.life <= 0) { sparks.splice(i, 1); continue; }
-      ctx.globalAlpha = s.life * 0.8;
-      ctx.beginPath();
-      ctx.fillStyle = s.color;
-      ctx.arc(s.x, s.y, 1.2, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    for (let i = burstParticles.length - 1; i >= 0; i--) {
-      const p = burstParticles[i];
-      p.trail.unshift({ x: p.x, y: p.y });
-      if (p.trail.length > 8) p.trail.pop();
-      p.vx *= 0.975;
-      p.vy += p.grav;
-      p.x += p.vx;
-      p.y += p.vy;
-      p.life -= p.decay;
-      if (p.life <= 0) { burstParticles.splice(i, 1); continue; }
-      const twinkle = p.life > 0.3 ? 1 : 0.5 + 0.5 * Math.sin(elapsed * 0.035 + p.twinkleOffset);
-      const baseAlpha = p.life * twinkle;
-      ctx.shadowBlur = 0;
-      for (let j = 0; j < p.trail.length - 1; j++) {
-        ctx.beginPath();
-        ctx.globalAlpha = (1 - j / p.trail.length) * baseAlpha * 0.65;
-        ctx.strokeStyle = p.color;
-        ctx.lineWidth = p.size * (1 - j / p.trail.length);
-        ctx.lineCap = 'round';
-        ctx.moveTo(p.trail[j].x, p.trail[j].y);
-        ctx.lineTo(p.trail[j + 1].x, p.trail[j + 1].y);
-        ctx.stroke();
-      }
-      ctx.globalAlpha = baseAlpha;
-      ctx.shadowBlur = 8;
-      ctx.shadowColor = p.color;
-      ctx.beginPath();
-      ctx.fillStyle = p.color;
-      ctx.arc(p.x, p.y, p.size * 0.75, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.shadowBlur = 0;
-    }
-
-    ctx.globalAlpha = 1;
-    ctx.shadowBlur = 0;
-    if (elapsed < DURATION) {
-      requestAnimationFrame(frame);
-    } else {
-      canvas.remove();
-      _fireworksActive = false;
-    }
-  }
-  requestAnimationFrame(frame);
+  // Wave 5 — 1150ms: upper-left and upper-right finish
+  setTimeout(() => {
+    confetti({ ...shared, particleCount: 80, spread: 90, origin: { x: 0.25, y: 0.08 }, startVelocity: 55 });
+    confetti({ ...shared, particleCount: 80, spread: 90, origin: { x: 0.75, y: 0.08 }, startVelocity: 55 });
+  }, 1150);
 }
 
 function showCelebration(levelUp, newLevelName, newLevelNum, newBadges) {
@@ -2683,7 +2538,6 @@ function showCelebration(levelUp, newLevelName, newLevelNum, newBadges) {
   void toast.offsetWidth;
 
   if (levelUp) {
-    launchFireworks();
     launchConfetti();
     // Level-up gets its own dramatic green toast
     const badgeSection = (newBadges && newBadges.length > 0) ? `
