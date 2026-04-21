@@ -2437,6 +2437,7 @@ const BADGE_ICONS = {
 
 let _celebrationTimer = null;
 let _xpCardTimer = null;
+let _fireworksActive = false;
 
 function showXpCard(xpGained, newXp, levelName, levelXpMin, nextLevelXp, nextLevelName) {
   if (!xpGained) return;
@@ -2557,6 +2558,8 @@ function launchConfetti() {
 }
 
 function launchFireworks() {
+  if (_fireworksActive) return;
+  _fireworksActive = true;
   const canvas = document.createElement('canvas');
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -2686,6 +2689,7 @@ function launchFireworks() {
       requestAnimationFrame(frame);
     } else {
       canvas.remove();
+      _fireworksActive = false;
     }
   }
   requestAnimationFrame(frame);
