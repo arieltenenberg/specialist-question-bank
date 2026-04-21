@@ -1374,7 +1374,7 @@ a { color:#1f1f1f; text-decoration:none; }
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 @keyframes xp-card-out {
-  to { opacity: 0; transform: translateY(-10px) scale(.92); }
+  to { opacity: 0; transform: translateY(-8px) scale(.95); }
 }
 #xp-card {
   position: fixed;
@@ -1392,7 +1392,7 @@ a { color:#1f1f1f; text-decoration:none; }
   max-width: 230px;
 }
 #xp-card.card-in  { animation: xp-card-in  .35s cubic-bezier(.22,1,.36,1) forwards; }
-#xp-card.card-out { animation: xp-card-out .28s ease-in forwards; }
+#xp-card.card-out { animation: xp-card-out .5s ease-in forwards; }
 .xp-card-gain {
   font-size: .82rem;
   font-weight: 700;
@@ -2482,7 +2482,7 @@ function showXpCard(xpGained, newXp, levelName, levelXpMin, nextLevelXp, nextLev
     card.classList.remove('card-in');
     card.classList.add('card-out');
     _xpCardTimer = setTimeout(() => card.classList.remove('card-out'), 300);
-  }, 3200);
+  }, 5000);
 }
 
 const CELEBRATION_COLORS = [
@@ -2586,14 +2586,14 @@ function showCelebration(levelUp, newLevelName, newLevelNum, newBadges) {
       }).join('');
     lucide.createIcons();
     toast.classList.add('toast-badge', 'visible');
-    _celebrationTimer = setTimeout(hideCelebration, 4000);
+    _celebrationTimer = setTimeout(hideCelebration, 5000);
   }
 }
 
 function hideCelebration() {
   clearTimeout(_celebrationTimer);
   const toast = document.getElementById('celebration-toast');
-  toast.style.transition = 'opacity .25s';
+  toast.style.transition = 'opacity .5s';
   toast.style.opacity = '0';
   setTimeout(() => {
     toast.classList.remove('visible', 'toast-levelup', 'toast-badge');
@@ -2601,7 +2601,7 @@ function hideCelebration() {
     toast.style.opacity = '';
     const d = document.getElementById('cel-dismiss');
     if (d) d.remove();
-  }, 260);
+  }, 520);
 }
 
 // ---------------------------------------------------------------------------
