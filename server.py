@@ -674,7 +674,7 @@ a { color:#1f1f1f; text-decoration:none; }
   letter-spacing:.1em;
   color:#1f1f1f;
   font-weight:700;
-  margin-bottom:8px;
+  margin-bottom:12px;
 }
 .leaderboard-entry {
   display:flex;
