@@ -2573,8 +2573,8 @@ function launchFireworks() {
 
   const rockets = [];
   const burstParticles = [];
+  const sparks = [];
 
-  // 10 rockets staggered over ~2.6s
   const schedule = [0, 140, 290, 450, 620, 800, 990, 1190, 1410, 1650];
   schedule.forEach(delay => {
     setTimeout(() => {
@@ -2583,28 +2583,33 @@ function launchFireworks() {
       const dist = (H - 30) - targetY;
       const vy0 = -Math.sqrt(2 * 0.38 * dist);
       const trailColor = randColor();
-      rockets.push({ x, y: H - 30, vx: (Math.random() - 0.5) * 1.4, vy: vy0, trailColor, trail: [], exploded: false });
+      // type: 0 = chrysanthemum (tight/fast), 1 = peony (wide/scattered)
+      const type = Math.random() < 0.5 ? 0 : 1;
+      rockets.push({ x, y: H - 30, vx: (Math.random() - 0.5) * 1.4, vy: vy0, trailColor, trail: [], exploded: false, type });
     }, delay);
   });
 
-  function explode(x, y) {
-    const count = 65 + Math.floor(Math.random() * 30);
+  function explode(x, y, type) {
+    const count = type === 0 ? 80 + Math.floor(Math.random() * 20) : 55 + Math.floor(Math.random() * 25);
     for (let i = 0; i < count; i++) {
-      const angle = (i / count) * Math.PI * 2 + (Math.random() - 0.5) * 0.25;
-      const speed = 1.5 + Math.random() * 6;
+      const angle = (i / count) * Math.PI * 2 + (Math.random() - 0.5) * (type === 0 ? 0.12 : 0.45);
+      const speed = type === 0
+        ? 3.5 + Math.random() * 4.5   // chrysanthemum: faster, tighter spread
+        : 1.2 + Math.random() * 7.5;  // peony: wider speed range, looser
       burstParticles.push({
         x, y,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed - 0.5,
         color: randColor(),
-        size: 1.8 + Math.random() * 2.2,
+        size: type === 0 ? 1.5 + Math.random() * 1.8 : 2 + Math.random() * 2.5,
         life: 1,
-        decay: 0.009 + Math.random() * 0.009,
+        twinkleOffset: Math.random() * Math.PI * 2,
+        decay: type === 0 ? 0.007 + Math.random() * 0.007 : 0.010 + Math.random() * 0.010,
         grav: 0.05 + Math.random() * 0.04,
         trail: [],
       });
     }
-    // Bright white flash particles
+    // White flash core
     for (let i = 0; i < 14; i++) {
       const angle = Math.random() * Math.PI * 2;
       const speed = 5 + Math.random() * 10;
@@ -2615,6 +2620,7 @@ function launchFireworks() {
         color: '#ffffff',
         size: 1.5,
         life: 1,
+        twinkleOffset: 0,
         decay: 0.04 + Math.random() * 0.03,
         grav: 0.04,
         trail: [],
@@ -2628,6 +2634,7 @@ function launchFireworks() {
   function frame(now) {
     const elapsed = now - start;
     ctx.clearRect(0, 0, W, H);
+    ctx.shadowBlur = 0;
 
     // Rockets
     rockets.forEach(r => {
@@ -2637,8 +2644,23 @@ function launchFireworks() {
       r.vy += 0.38;
       r.x += r.vx;
       r.y += r.vy;
-      if (r.vy >= 0) { r.exploded = true; explode(r.x, r.y); return; }
-      // Trail
+      if (r.vy >= 0) { r.exploded = true; explode(r.x, r.y, r.type); return; }
+
+      // Shed sparks off the rocket trail
+      if (Math.random() < 0.6) {
+        sparks.push({
+          x: r.x + (Math.random() - 0.5) * 3,
+          y: r.y + (Math.random() - 0.5) * 3,
+          vx: (Math.random() - 0.5) * 1.8,
+          vy: Math.random() * 1.5,
+          life: 0.6 + Math.random() * 0.4,
+          decay: 0.06 + Math.random() * 0.06,
+          color: r.trailColor,
+        });
+      }
+
+      // Trail (no glow — performance)
+      ctx.shadowBlur = 0;
       for (let i = 0; i < r.trail.length - 1; i++) {
         ctx.beginPath();
         ctx.globalAlpha = (1 - i / r.trail.length) * 0.9;
@@ -2649,13 +2671,28 @@ function launchFireworks() {
         ctx.lineTo(r.trail[i + 1].x, r.trail[i + 1].y);
         ctx.stroke();
       }
-      // Head
+      // Head — glow
       ctx.globalAlpha = 1;
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = r.trailColor;
       ctx.beginPath();
       ctx.fillStyle = '#ffffff';
       ctx.arc(r.x, r.y, 2.5, 0, Math.PI * 2);
       ctx.fill();
+      ctx.shadowBlur = 0;
     });
+
+    // Sparks
+    for (let i = sparks.length - 1; i >= 0; i--) {
+      const s = sparks[i];
+      s.x += s.vx; s.y += s.vy; s.vy += 0.08; s.life -= s.decay;
+      if (s.life <= 0) { sparks.splice(i, 1); continue; }
+      ctx.globalAlpha = s.life * 0.8;
+      ctx.beginPath();
+      ctx.fillStyle = s.color;
+      ctx.arc(s.x, s.y, 1.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     // Burst particles
     for (let i = burstParticles.length - 1; i >= 0; i--) {
@@ -2668,10 +2705,16 @@ function launchFireworks() {
       p.y += p.vy;
       p.life -= p.decay;
       if (p.life <= 0) { burstParticles.splice(i, 1); continue; }
-      // Trail
+
+      // Twinkle: flicker alpha as particle ages
+      const twinkle = p.life > 0.3 ? 1 : 0.5 + 0.5 * Math.sin(elapsed * 0.035 + p.twinkleOffset);
+      const baseAlpha = p.life * twinkle;
+
+      // Trail (no glow)
+      ctx.shadowBlur = 0;
       for (let j = 0; j < p.trail.length - 1; j++) {
         ctx.beginPath();
-        ctx.globalAlpha = (1 - j / p.trail.length) * p.life * 0.65;
+        ctx.globalAlpha = (1 - j / p.trail.length) * baseAlpha * 0.65;
         ctx.strokeStyle = p.color;
         ctx.lineWidth = p.size * (1 - j / p.trail.length);
         ctx.lineCap = 'round';
@@ -2679,15 +2722,19 @@ function launchFireworks() {
         ctx.lineTo(p.trail[j + 1].x, p.trail[j + 1].y);
         ctx.stroke();
       }
-      // Head
-      ctx.globalAlpha = p.life;
+      // Head — glow on heads only
+      ctx.globalAlpha = baseAlpha;
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = p.color;
       ctx.beginPath();
       ctx.fillStyle = p.color;
       ctx.arc(p.x, p.y, p.size * 0.75, 0, Math.PI * 2);
       ctx.fill();
+      ctx.shadowBlur = 0;
     }
 
     ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
     if (elapsed < DURATION) {
       requestAnimationFrame(frame);
     } else {
