@@ -889,7 +889,7 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 
 .sol-hidden { display:none; }
-.sol-wrap { margin-top:10px; }
+.sol-wrap { margin-top:14px; }
 .show-sol-btn {
   font-family:inherit;
   background:#2d2d2d;
@@ -1097,7 +1097,7 @@ a { color:#1f1f1f; text-decoration:none; }
   justify-content:space-between;
   gap:8px;
   margin-top:16px;
-  margin-bottom:4px;
+  margin-bottom:0;
   padding-top:14px;
   border-top:1px solid var(--border);
 }
