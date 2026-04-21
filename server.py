@@ -902,7 +902,6 @@ a { color:#1f1f1f; text-decoration:none; }
   font-weight:500;
   transition:all .15s;
   align-self:flex-start;
-  margin-top:4px;
 }
 .show-sol-btn:hover { background:#444; border-color:#444; }
 
@@ -1049,7 +1048,6 @@ a { color:#1f1f1f; text-decoration:none; }
   cursor:pointer;
   transition:all .15s;
   align-self:flex-start;
-  margin-top:4px;
 }
 .flag-btn:hover, .flag-btn:active { background:#c53030; color:#fff; border-color:#c53030; }
 .flag-btn.flagged { border-color:#c53030; color:#c53030; background:#fff0f0; cursor:default; }
@@ -1067,7 +1065,6 @@ a { color:#1f1f1f; text-decoration:none; }
   cursor:pointer;
   transition:all .15s;
   align-self:flex-start;
-  margin-top:4px;
 }
 .save-btn:hover { background:#2d2d2d; color:#fff; }
 .save-btn.saved { background:#2d2d2d; color:#fff; }
@@ -1085,7 +1082,6 @@ a { color:#1f1f1f; text-decoration:none; }
   cursor:pointer;
   transition:all .15s;
   align-self:flex-start;
-  margin-top:4px;
 }
 .complete-btn:hover { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
 .qcard.completed { background:#f0f7eb; border-color:#8db370; }
