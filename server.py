@@ -1434,7 +1434,7 @@ a { color:#1f1f1f; text-decoration:none; }
   transform: translateX(-50%) translateY(-16px) scale(.92);
   border-radius: 16px;
   padding: 18px 24px 14px;
-  z-index: 3000;
+  z-index: 10000;
   cursor: pointer;
   opacity: 0;
   pointer-events: none;
