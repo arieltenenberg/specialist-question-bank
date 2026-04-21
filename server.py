@@ -1096,7 +1096,7 @@ a { color:#1f1f1f; text-decoration:none; }
   justify-content:space-between;
   gap:8px;
   margin-top:16px;
-  margin-bottom:4px;
+  margin-bottom:14px;
   padding-top:14px;
   border-top:1px solid var(--border);
 }
