@@ -3983,6 +3983,16 @@ body { font-family:'DM Sans',system-ui,sans-serif; background:var(--bg); color:v
 .modal-new-lb { margin-top:8px; display:none; flex-direction:column; gap:6px; }
 .modal-new-lb input { font-family:inherit; font-size:.875rem; padding:8px 10px; border:1px solid var(--border); border-radius:8px; width:100%; }
 .modal-new-lb.visible { display:flex; }
+.modal-toggle-field { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.modal-toggle-label { display:flex; flex-direction:column; gap:2px; }
+.modal-toggle-title { font-size:.875rem; color:var(--text); font-weight:500; }
+.modal-toggle-desc { font-size:.78rem; color:#a09890; }
+.modal-toggle-switch { position:relative; display:inline-block; width:36px; height:20px; flex-shrink:0; cursor:pointer; }
+.modal-toggle-switch input { opacity:0; width:0; height:0; }
+.modal-toggle-knob { position:absolute; inset:0; background:#c5bdb4; border-radius:20px; transition:background .2s; }
+.modal-toggle-knob::before { content:''; position:absolute; width:14px; height:14px; left:3px; top:3px; background:#fff; border-radius:50%; transition:transform .2s; }
+.modal-toggle-switch input:checked + .modal-toggle-knob { background:#2d2d2d; }
+.modal-toggle-switch input:checked + .modal-toggle-knob::before { transform:translateX(16px); }
 .modal-actions { display:flex; gap:8px; margin-top:22px; justify-content:flex-end; }
 .btn-modal-cancel { padding:8px 18px; border-radius:8px; border:1px solid var(--border); background:none; color:var(--muted); cursor:pointer; font-family:inherit; font-size:.85rem; }
 .btn-modal-cancel:hover { border-color:#2d2d2d; color:#1c1917; }
@@ -4141,9 +4151,15 @@ body { font-family:'DM Sans',system-ui,sans-serif; background:var(--bg); color:v
         <option value="cordo">Cordo</option>
       </select>
     </div>
-    <div class="modal-field" style="flex-direction:row;align-items:center;gap:10px">
-      <input type="checkbox" id="modal-shabbat" style="width:16px;height:16px;accent-color:#2d2d2d;cursor:pointer;flex-shrink:0">
-      <label for="modal-shabbat" style="cursor:pointer;margin:0">Shabbat Proof <span style="font-weight:400;color:#a09890">(Saturdays don't break or advance streak)</span></label>
+    <div class="modal-field modal-toggle-field">
+      <div class="modal-toggle-label">
+        <span class="modal-toggle-title">Shabbat Proof</span>
+        <span class="modal-toggle-desc">Saturdays don't break or advance streak</span>
+      </div>
+      <label class="modal-toggle-switch">
+        <input type="checkbox" id="modal-shabbat">
+        <span class="modal-toggle-knob"></span>
+      </label>
     </div>
     <div class="modal-actions">
       <button class="btn-modal-cancel" onclick="closeSettings()">Cancel</button>
