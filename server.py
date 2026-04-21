@@ -1250,19 +1250,11 @@ a { color:#1f1f1f; text-decoration:none; }
   flex: 1;
   text-align: center;
 }
-.ach-streak-icon { display: flex; align-items: center; justify-content: center; margin-bottom: 6px; }
-.ach-streak-icon svg { width: 18px; height: 18px; stroke: #8db370; stroke-width: 2; fill: none; }
 .ach-streak-val {
   font-size: 1.6rem;
   font-weight: 700;
   color: #1f1f1f;
   line-height: 1.1;
-}
-.ach-streak-unit {
-  font-size: .8rem;
-  font-weight: 500;
-  color: var(--muted);
-  margin-left: 2px;
 }
 .ach-streak-lbl {
   font-size: .7rem;
@@ -2621,13 +2613,11 @@ function renderAchievements(data) {
       <div class="ach-section-title">Streak</div>
       <div class="ach-streak-row">
         <div class="ach-streak-stat">
-          <div class="ach-streak-icon"><i data-lucide="flame"></i></div>
-          <div class="ach-streak-val">${data.current_streak} <span class="ach-streak-unit">days</span></div>
+          <div class="ach-streak-val">${data.current_streak} days</div>
           <div class="ach-streak-lbl">Current streak</div>
         </div>
         <div class="ach-streak-stat">
-          <div class="ach-streak-icon"><i data-lucide="trophy"></i></div>
-          <div class="ach-streak-val">${data.longest_streak} <span class="ach-streak-unit">days</span></div>
+          <div class="ach-streak-val">${data.longest_streak} days</div>
           <div class="ach-streak-lbl">Best streak</div>
         </div>
       </div>
