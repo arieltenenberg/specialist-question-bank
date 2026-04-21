@@ -1449,7 +1449,7 @@ a { color:#1f1f1f; text-decoration:none; }
 #celebration-toast.toast-levelup {
   background: #2d2d2d;
   box-shadow: 0 4px 24px rgba(60,44,28,.18);
-  border-top: 3px solid #8db370;
+  border: 2px solid #8db370;
 }
 #celebration-toast.toast-levelup.visible {
   animation: toast-in .38s cubic-bezier(.22,1,.36,1) forwards;
