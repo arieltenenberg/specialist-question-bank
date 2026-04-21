@@ -1449,7 +1449,6 @@ a { color:#1f1f1f; text-decoration:none; }
 #celebration-toast.toast-levelup {
   background: #2d2d2d;
   box-shadow: 0 4px 24px rgba(60,44,28,.18);
-  border: 2px solid #8db370;
 }
 #celebration-toast.toast-levelup.visible {
   animation: toast-in .38s cubic-bezier(.22,1,.36,1) forwards;
@@ -1458,11 +1457,6 @@ a { color:#1f1f1f; text-decoration:none; }
   background: var(--surface);
   box-shadow: 0 8px 36px rgba(60,44,28,.14);
 }
-.celebration-levelup-icon {
-  color: #8db370;
-  margin-bottom: 6px;
-}
-.celebration-levelup-icon svg { width: 22px; height: 22px; stroke: #8db370; stroke-width: 2; fill: none; }
 .celebration-levelup-eyebrow {
   font-size: .68rem;
   font-weight: 700;
@@ -2443,13 +2437,36 @@ const BADGE_ICONS = {
   s_100:  '<i data-lucide="medal"></i>',
 };
 
-let _celebrationTimer = null;
-let _xpCardTimer = null;
+let _popupTimer = null;
+
+function hideAllPopups() {
+  clearTimeout(_popupTimer);
+  // Fade out XP card
+  const card = document.getElementById('xp-card');
+  card.classList.remove('card-in');
+  card.classList.add('card-out');
+  setTimeout(() => card.classList.remove('card-out'), 520);
+  // Fade out celebration toast
+  const toast = document.getElementById('celebration-toast');
+  toast.style.transition = 'opacity .5s';
+  toast.style.opacity = '0';
+  setTimeout(() => {
+    toast.classList.remove('visible', 'toast-levelup', 'toast-badge');
+    toast.style.transition = '';
+    toast.style.opacity = '';
+    const d = document.getElementById('cel-dismiss');
+    if (d) d.remove();
+  }, 520);
+}
+
+function _resetPopupTimer() {
+  clearTimeout(_popupTimer);
+  _popupTimer = setTimeout(hideAllPopups, 5000);
+}
 
 function showXpCard(xpGained, newXp, levelName, levelXpMin, nextLevelXp, nextLevelName) {
   if (!xpGained) return;
   const card = document.getElementById('xp-card');
-  clearTimeout(_xpCardTimer);
   card.classList.remove('card-in', 'card-out');
   void card.offsetWidth;
 
@@ -2465,7 +2482,6 @@ function showXpCard(xpGained, newXp, levelName, levelXpMin, nextLevelXp, nextLev
     xpLabel.textContent = remaining + ' XP to ' + nextLevelName;
     bar.style.transition = 'none';
     bar.style.width = prevFill + '%';
-    // Trigger fill animation on next frame
     requestAnimationFrame(() => requestAnimationFrame(() => {
       bar.style.transition = 'width .65s cubic-bezier(.22,1,.36,1)';
       bar.style.width = newFill + '%';
@@ -2478,11 +2494,7 @@ function showXpCard(xpGained, newXp, levelName, levelXpMin, nextLevelXp, nextLev
   }
 
   card.classList.add('card-in');
-  _xpCardTimer = setTimeout(() => {
-    card.classList.remove('card-in');
-    card.classList.add('card-out');
-    _xpCardTimer = setTimeout(() => card.classList.remove('card-out'), 300);
-  }, 5000);
+  _resetPopupTimer();
 }
 
 const CELEBRATION_COLORS = [
@@ -2538,16 +2550,12 @@ function launchConfetti() {
 }
 
 function showCelebration(levelUp, newLevelName, newLevelNum, newBadges) {
-  clearTimeout(_celebrationTimer);
   const toast = document.getElementById('celebration-toast');
-  // Reset state
   toast.classList.remove('visible', 'toast-levelup', 'toast-badge');
-  // Force reflow so animation re-triggers
   void toast.offsetWidth;
 
   if (levelUp) {
     launchConfetti();
-    // Level-up gets its own dramatic green toast
     const badgeSection = (newBadges && newBadges.length > 0) ? `
       <hr class="celebration-divider">
       ${newBadges.map(b => {
@@ -2561,7 +2569,6 @@ function showCelebration(levelUp, newLevelName, newLevelNum, newBadges) {
         </div>`;
       }).join('')}` : '';
     document.getElementById('celebration-content').innerHTML = `
-      <div class="celebration-levelup-icon"><i data-lucide="trophy"></i></div>
       <div class="celebration-levelup-eyebrow">Level Up</div>
       <div class="celebration-levelup-num">Level ${newLevelNum}</div>
       <div class="celebration-levelup-name">${newLevelName}</div>
@@ -2570,9 +2577,7 @@ function showCelebration(levelUp, newLevelName, newLevelNum, newBadges) {
     document.getElementById('celebration-toast').insertAdjacentHTML('beforeend',
       '<div class="celebration-dismiss-levelup" id="cel-dismiss">Tap to dismiss</div>');
     toast.classList.add('toast-levelup', 'visible');
-    _celebrationTimer = setTimeout(hideCelebration, 5000);
   } else if (newBadges && newBadges.length > 0) {
-    // Badge-only: smaller neutral card
     document.getElementById('celebration-content').innerHTML =
       newBadges.map(b => {
         const icon = b.id.startsWith('aos_') ? '<i data-lucide="circle-check"></i>' : (BADGE_ICONS[b.id] || '<i data-lucide="trophy"></i>');
@@ -2586,22 +2591,8 @@ function showCelebration(levelUp, newLevelName, newLevelNum, newBadges) {
       }).join('');
     lucide.createIcons();
     toast.classList.add('toast-badge', 'visible');
-    _celebrationTimer = setTimeout(hideCelebration, 5000);
   }
-}
-
-function hideCelebration() {
-  clearTimeout(_celebrationTimer);
-  const toast = document.getElementById('celebration-toast');
-  toast.style.transition = 'opacity .5s';
-  toast.style.opacity = '0';
-  setTimeout(() => {
-    toast.classList.remove('visible', 'toast-levelup', 'toast-badge');
-    toast.style.transition = '';
-    toast.style.opacity = '';
-    const d = document.getElementById('cel-dismiss');
-    if (d) d.remove();
-  }, 520);
+  _resetPopupTimer();
 }
 
 // ---------------------------------------------------------------------------
@@ -2888,7 +2879,7 @@ function renderProgressView() {
   </div>
   <div class="xp-card-bar-wrap"><div class="xp-card-bar-fill" id="xp-card-bar"></div></div>
 </div>
-<div id="celebration-toast" onclick="hideCelebration()">
+<div id="celebration-toast" onclick="hideAllPopups()">
   <div id="celebration-content"></div>
 </div>
 
