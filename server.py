@@ -2479,10 +2479,13 @@ function showXpCard(xpGained, newXp, levelName, levelXpMin, nextLevelXp, nextLev
 }
 
 const CELEBRATION_COLORS = [
-  '#f94144','#f3722c','#f9c74f','#90be6d','#43aa8b','#4d908e',
-  '#277da1','#a8dadc','#e9c46a','#f4a261','#e76f51',
-  '#c77dff','#ff6b9d','#ffffff','#8db370','#ffd166','#06d6a0',
-  '#ff9f1c','#cbf3f0','#ffbfb7','#b5ead7','#ffd700','#00e5ff',
+  '#e63946','#ff6b6b','#e76f51',
+  '#f4a261','#ff9f1c','#ffb703',
+  '#ffd166','#f9c74f','#ffd700',
+  '#8db370','#6a994e','#a7c957',
+  '#ff6b9d','#e5989b','#ffb3c6',
+  '#b5838d','#c9b1bd',
+  '#ffffff','#fff8f0','#ffecd2',
 ];
 
 function randColor() { return CELEBRATION_COLORS[Math.floor(Math.random() * CELEBRATION_COLORS.length)]; }
