@@ -2718,11 +2718,11 @@ function renderAchievements(data) {
       <div class="ach-section-title">Streak</div>
       <div class="ach-streak-row">
         <div class="ach-streak-stat">
-          <div class="ach-streak-val">${data.current_streak} days</div>
+          <div class="ach-streak-val">${data.current_streak} ${data.current_streak === 1 ? 'day' : 'days'}</div>
           <div class="ach-streak-lbl">Current streak</div>
         </div>
         <div class="ach-streak-stat">
-          <div class="ach-streak-val">${data.longest_streak} days</div>
+          <div class="ach-streak-val">${data.longest_streak} ${data.longest_streak === 1 ? 'day' : 'days'}</div>
           <div class="ach-streak-lbl">Best streak</div>
         </div>
       </div>
