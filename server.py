@@ -1250,11 +1250,19 @@ a { color:#1f1f1f; text-decoration:none; }
   flex: 1;
   text-align: center;
 }
+.ach-streak-icon { display: flex; align-items: center; justify-content: center; margin-bottom: 6px; }
+.ach-streak-icon svg { width: 18px; height: 18px; stroke: #8db370; stroke-width: 2; fill: none; }
 .ach-streak-val {
   font-size: 1.6rem;
   font-weight: 700;
   color: #1f1f1f;
   line-height: 1.1;
+}
+.ach-streak-unit {
+  font-size: .8rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin-left: 2px;
 }
 .ach-streak-lbl {
   font-size: .7rem;
@@ -1267,6 +1275,11 @@ a { color:#1f1f1f; text-decoration:none; }
   color: var(--muted);
   margin-top: 8px;
   line-height: 1.4;
+}
+.ach-questions-count {
+  font-size: .78rem;
+  color: var(--muted);
+  margin-top: 6px;
 }
 
 /* Badge grid (questions + streaks) */
@@ -2599,6 +2612,7 @@ function renderAchievements(data) {
         <div class="ach-level-name">${data.level_name}</div>
         <div class="ach-xp-bar-wrap"><div class="ach-xp-bar-fill" style="width:${barPct}%"></div></div>
         <div class="ach-xp-label">${xpLabel}</div>
+        <div class="ach-questions-count">${data.total_completed.toLocaleString()} questions completed</div>
       </div>
     </div>`;
 
@@ -2607,16 +2621,14 @@ function renderAchievements(data) {
       <div class="ach-section-title">Streak</div>
       <div class="ach-streak-row">
         <div class="ach-streak-stat">
-          <div class="ach-streak-val">${data.current_streak}</div>
-          <div class="ach-streak-lbl">Current<br>streak (days)</div>
+          <div class="ach-streak-icon"><i data-lucide="flame"></i></div>
+          <div class="ach-streak-val">${data.current_streak} <span class="ach-streak-unit">days</span></div>
+          <div class="ach-streak-lbl">Current streak</div>
         </div>
         <div class="ach-streak-stat">
-          <div class="ach-streak-val">${data.longest_streak}</div>
-          <div class="ach-streak-lbl">Best<br>streak (days)</div>
-        </div>
-        <div class="ach-streak-stat">
-          <div class="ach-streak-val">${data.total_completed.toLocaleString()}</div>
-          <div class="ach-streak-lbl">Questions<br>completed</div>
+          <div class="ach-streak-icon"><i data-lucide="trophy"></i></div>
+          <div class="ach-streak-val">${data.longest_streak} <span class="ach-streak-unit">days</span></div>
+          <div class="ach-streak-lbl">Best streak</div>
         </div>
       </div>
       <div class="ach-streak-hint">Complete 5 questions per day to maintain your streak. Missing a day resets it to 0.</div>
