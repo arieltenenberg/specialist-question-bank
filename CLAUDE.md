@@ -42,7 +42,7 @@ Questions are classified into Areas of Study (AOS) per subject.
 | `POST /api/admin/leaderboards` | Create a leaderboard `{name}` (admin only) |
 | `PUT /api/admin/leaderboards/<id>` | Rename a leaderboard (admin only) |
 | `DELETE /api/admin/leaderboards/<id>` | Delete a leaderboard — unassigns all members (admin only) |
-| `POST /admin/users/<google_id>/settings` | Set `leaderboard_id`, `funny_popup`, `nickname` for a student (admin only) |
+| `POST /admin/users/<google_id>/settings` | Set `leaderboard_id`, `funny_popup`, `nickname`, `shabbat_proof` for a student (admin only) |
 | `GET /api/admin/users/<google_id>/progress` | Per-student progress breakdown by AOS + section type, both subjects (admin only) |
 
 ### Data & Config
@@ -244,7 +244,7 @@ When asked, Claude Code will delete all AOS 9 questions from both base JSON file
 ## Saved Questions Feature
 Students can save questions from the browse page for easy access later.
 - **UI:** "Save" button toggles to filled dark "Saved" state; "Saved" tab in the topbar toggles a saved-only filter
-- **Popup:** unsaving any saved question (regardless of active tab) prompts "Mark as done?" — `showMarkCompletePrompt(id)`
+- **Popup:** unsaving any saved question (regardless of active tab) prompts "Mark as done?" — `showMarkCompletePrompt(id)` — skipped if the question is already completed
 - **Storage:** `difficult_questions` table in `users.db` (column name is historical; feature is called "Saved Questions" in the UI)
 - **Schema:** `user_id TEXT, question_id TEXT, subject TEXT, created_at TEXT, PRIMARY KEY (user_id, question_id, subject)`
 - **Saved indicator:** ★ star icon in card header (see Completed Questions section for details) — no left border
@@ -398,8 +398,8 @@ Named leaderboard groups — students see their own group's completion rankings 
 ### Admin management (`/admin/users`)
 - **⚙ gear button** per student opens a settings modal to assign leaderboard, nickname, and Easter Egg.
 - **Leaderboards section** at the bottom of the page lists all groups with inline Rename/Delete and a member list (dot-bulleted, nickname or name).
-- **Settings modal** uses `data-*` attributes on the gear button (never `onclick` parameters) to avoid HTML quoting issues — `data-lb`, `data-popup`, `data-nickname` are updated in-place after saving so reopening shows current values.
-- Saving calls `POST /admin/users/<id>/settings` with `{leaderboard_id, funny_popup, nickname}`.
+- **Settings modal** uses `data-*` attributes on the gear button (never `onclick` parameters) to avoid HTML quoting issues — `data-lb`, `data-popup`, `data-nickname`, `data-shabbat` are updated in-place after saving so reopening shows current values.
+- Saving calls `POST /admin/users/<id>/settings` with `{leaderboard_id, funny_popup, nickname, shabbat_proof}`.
 - Creating a new leaderboard inline (via "＋ Create new…" option) triggers a page reload to refresh all dropdowns.
 
 ### Per-student progress modal (`/admin/users`)
@@ -437,6 +437,13 @@ Both subjects combined for all XP, streaks, and levels.
 - 5+ questions/day (AEST, UTC+10) keeps the streak alive — counted via `date(completed_at, '+10 hours')` in SQLite
 - Missing a day resets streak to 0 (no grace period)
 - `longest_streak` is tracked separately; never decreases
+- Streaks are only ever updated when a question is marked complete — there is no passive reset job
+
+### Shabbat-Proof Streaks
+- Per-student toggle (`shabbat_proof INTEGER` on `users` table, default 0) — set via the student settings modal in `/admin/users`
+- **Saturday:** runs the normal streak logic. If the student completes 5+ questions, Saturday counts as a streak day. If they do nothing, `last_streak_date` is untouched — streak is not broken.
+- **Sunday:** accepts either Friday or Saturday as "yesterday" (`last in (friday, saturday)`), so the streak continues regardless of whether the student worked on Saturday.
+- All other days behave identically to non-Shabbat-proof students.
 
 ### Badges
 Three categories shown in the Achievements modal:
@@ -451,6 +458,7 @@ All badge icons use Lucide (`<i data-lucide="...">`) — no emoji. Icon mapping:
 - `current_streak INTEGER DEFAULT 0`
 - `longest_streak INTEGER DEFAULT 0`
 - `last_streak_date TEXT`
+- `shabbat_proof INTEGER DEFAULT 0`
 
 ### Key server functions
 - `get_level(xp)` — returns `(level_num, level_name, xp_min)`
