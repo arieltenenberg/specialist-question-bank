@@ -1448,7 +1448,8 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 #celebration-toast.toast-levelup {
   background: #2d2d2d;
-  box-shadow: 0 4px 16px rgba(60,44,28,.12);
+  box-shadow: 0 4px 24px rgba(60,44,28,.18);
+  border-top: 3px solid #8db370;
 }
 #celebration-toast.toast-levelup.visible {
   animation: toast-in .38s cubic-bezier(.22,1,.36,1) forwards;
@@ -1457,23 +1458,30 @@ a { color:#1f1f1f; text-decoration:none; }
   background: var(--surface);
   box-shadow: 0 8px 36px rgba(60,44,28,.14);
 }
+.celebration-levelup-icon {
+  color: #8db370;
+  margin-bottom: 6px;
+}
+.celebration-levelup-icon svg { width: 22px; height: 22px; stroke: #8db370; stroke-width: 2; fill: none; }
 .celebration-levelup-eyebrow {
   font-size: .68rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .1em;
-  color: rgba(255,255,255,.75);
-  margin-bottom: 4px;
+  color: rgba(255,255,255,.55);
+  margin-bottom: 8px;
+}
+.celebration-levelup-num {
+  font-size: .85rem;
+  font-weight: 600;
+  color: rgba(255,255,255,.5);
+  margin-bottom: 2px;
 }
 .celebration-levelup-name {
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: #fff;
   margin-bottom: 2px;
-}
-.celebration-levelup-sub {
-  font-size: .8rem;
-  color: rgba(255,255,255,.8);
 }
 .celebration-divider {
   border: none;
@@ -2553,9 +2561,10 @@ function showCelebration(levelUp, newLevelName, newLevelNum, newBadges) {
         </div>`;
       }).join('')}` : '';
     document.getElementById('celebration-content').innerHTML = `
+      <div class="celebration-levelup-icon"><i data-lucide="trophy"></i></div>
       <div class="celebration-levelup-eyebrow">Level Up</div>
-      <div class="celebration-levelup-name">Level ${newLevelNum} — ${newLevelName}</div>
-      <div class="celebration-levelup-sub">Keep it up!</div>
+      <div class="celebration-levelup-num">Level ${newLevelNum}</div>
+      <div class="celebration-levelup-name">${newLevelName}</div>
       ${badgeSection}`;
     lucide.createIcons();
     document.getElementById('celebration-toast').insertAdjacentHTML('beforeend',
