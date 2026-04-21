@@ -5183,30 +5183,28 @@ def api_toggle_completed():
             today_weekday = now_aest.weekday()  # 5=Saturday, 6=Sunday
             shabbat_row = conn.execute("SELECT shabbat_proof FROM users WHERE google_id=?", (user_id,)).fetchone()
             shabbat_proof = bool(shabbat_row and shabbat_row["shabbat_proof"])
-            # Shabbat-proof: Saturday is a neutral day — skip streak update entirely
-            skip_streak = shabbat_proof and today_weekday == 5
-            if not skip_streak:
-                # For Shabbat-proof students, Sunday's "yesterday" is Friday (skipping Saturday)
-                if shabbat_proof and today_weekday == 6:
-                    yesterday = (now_aest - datetime.timedelta(days=2)).strftime("%Y-%m-%d")
-                else:
-                    yesterday = yesterday_aest()
-                today_count = conn.execute(
+            today_count = conn.execute(
                     "SELECT COUNT(*) FROM completed_questions WHERE user_id=? AND date(completed_at, '+10 hours') = ?",
                     (user_id, today)
                 ).fetchone()[0]
-                user_row = conn.execute(
-                    "SELECT current_streak, longest_streak, last_streak_date FROM users WHERE google_id=?", (user_id,)
-                ).fetchone()
-                if user_row and today_count >= 5 and user_row["last_streak_date"] != today:
-                    last = user_row["last_streak_date"]
-                    streak = (user_row["current_streak"] + 1) if last == yesterday else 1
-                    longest = max(user_row["longest_streak"] or 0, streak)
-                    conn.execute(
-                        "UPDATE users SET current_streak=?, longest_streak=?, last_streak_date=? WHERE google_id=?",
-                        (streak, longest, today, user_id)
-                    )
-                    new_streak = streak
+            user_row = conn.execute(
+                "SELECT current_streak, longest_streak, last_streak_date FROM users WHERE google_id=?", (user_id,)
+            ).fetchone()
+            if user_row and today_count >= 5 and user_row["last_streak_date"] != today:
+                last = user_row["last_streak_date"]
+                if shabbat_proof and today_weekday == 6:
+                    friday = (now_aest - datetime.timedelta(days=2)).strftime("%Y-%m-%d")
+                    saturday = (now_aest - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+                    streak_continues = last in (friday, saturday)
+                else:
+                    streak_continues = last == yesterday_aest()
+                streak = (user_row["current_streak"] + 1) if streak_continues else 1
+                longest = max(user_row["longest_streak"] or 0, streak)
+                conn.execute(
+                    "UPDATE users SET current_streak=?, longest_streak=?, last_streak_date=? WHERE google_id=?",
+                    (streak, longest, today, user_id)
+                )
+                new_streak = streak
 
         conn.commit()
 
