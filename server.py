@@ -2477,93 +2477,145 @@ function showXpCard(xpGained, newXp, levelName, levelXpMin, nextLevelXp, nextLev
   }, 3200);
 }
 
-function launchConfetti() {
+function launchFireworks() {
   const canvas = document.createElement('canvas');
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   canvas.style.cssText = 'position:fixed;inset:0;z-index:9998;pointer-events:none';
   document.body.appendChild(canvas);
   const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
 
-  const COLORS = [
-    '#f94144','#f3722c','#f9c74f','#90be6d','#43aa8b','#4d908e',
-    '#577590','#277da1','#a8dadc','#e9c46a','#f4a261','#e76f51',
-    '#c77dff','#ff6b9d','#ffffff','#8db370','#ffd166','#06d6a0',
-    '#ff9f1c','#cbf3f0','#ffbfb7','#b5ead7',
+  const PALETTES = [
+    ['#ffd700','#fff176','#ffb300','#ff8f00'],
+    ['#ff4444','#ff8a80','#ff1744','#ff6d00'],
+    ['#4488ff','#82b1ff','#2979ff','#00b0ff'],
+    ['#44ff88','#b9f6ca','#00e676','#69f0ae'],
+    ['#ff44ff','#ea80fc','#d500f9','#aa00ff'],
+    ['#ffffff','#f5f5f5','#e0e0e0','#bdbdbd'],
+    ['#00e5ff','#84ffff','#00b8d4','#0091ea'],
+    ['#ff6b9d','#f48fb1','#f06292','#e91e63'],
+    ['#c6ff00','#f4ff81','#76ff03','#aeea00'],
+    ['#ffab40','#ffd180','#ff9100','#ff6d00'],
   ];
 
-  function makeParticle(x, y, angleMin, angleMax, speedMin, speedMax, delay) {
-    const angle = (Math.random() * (angleMax - angleMin) + angleMin) * Math.PI / 180;
-    const speed = Math.random() * (speedMax - speedMin) + speedMin;
-    return {
-      x, y,
-      vx: Math.sin(angle) * speed,
-      vy: -Math.cos(angle) * speed,
-      size: Math.random() * 9 + 3,
-      color: COLORS[Math.floor(Math.random() * COLORS.length)],
-      rot: Math.random() * 360,
-      rotV: (Math.random() - 0.5) * 15,
-      shape: Math.random() > 0.3 ? 'rect' : 'circle',
-      aspect: Math.random() * 0.55 + 0.2,
-      delay: delay || 0,
-      born: false,
-    };
+  const rockets = [];
+  const burstParticles = [];
+
+  // 10 rockets staggered over ~2.6s
+  const schedule = [0, 220, 460, 720, 1000, 1290, 1600, 1930, 2280, 2640];
+  schedule.forEach((delay, i) => {
+    setTimeout(() => {
+      const palette = PALETTES[i % PALETTES.length];
+      const x = W * (0.1 + Math.random() * 0.8);
+      const targetY = H * (0.07 + Math.random() * 0.42);
+      const dist = (H - 30) - targetY;
+      const vy0 = -Math.sqrt(2 * 0.19 * dist);
+      rockets.push({ x, y: H - 30, vx: (Math.random() - 0.5) * 1.4, vy: vy0, palette, trail: [], exploded: false });
+    }, delay);
+  });
+
+  function explode(x, y, palette) {
+    const count = 65 + Math.floor(Math.random() * 30);
+    for (let i = 0; i < count; i++) {
+      const angle = (i / count) * Math.PI * 2 + (Math.random() - 0.5) * 0.25;
+      const speed = 1.5 + Math.random() * 6;
+      burstParticles.push({
+        x, y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 0.5,
+        color: palette[Math.floor(Math.random() * palette.length)],
+        size: 1.8 + Math.random() * 2.2,
+        life: 1,
+        decay: 0.009 + Math.random() * 0.009,
+        grav: 0.05 + Math.random() * 0.04,
+        trail: [],
+      });
+    }
+    // Bright white flash particles
+    for (let i = 0; i < 14; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 5 + Math.random() * 10;
+      burstParticles.push({
+        x, y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        color: '#ffffff',
+        size: 1.5,
+        life: 1,
+        decay: 0.04 + Math.random() * 0.03,
+        grav: 0.04,
+        trail: [],
+      });
+    }
   }
 
-  const W = canvas.width, H = canvas.height;
-  // Burst 1 — immediate: centre top + left/right sides
-  const cx = W / 2, cy = 105;
-  const lx = W * 0.12, ly = H * 0.52;
-  const rx = W * 0.88, ry = H * 0.52;
-  // Burst 2 — staggered ~420ms: inner-left + inner-right at mid-height
-  const lx2 = W * 0.28, ly2 = H * 0.35;
-  const rx2 = W * 0.72, ry2 = H * 0.35;
-
-  const particles = [
-    ...Array.from({length: 150}, () => makeParticle(cx + (Math.random()-0.5)*120, cy, -78, 78, 7, 22, 0)),
-    ...Array.from({length: 80},  () => makeParticle(lx, ly, -115, -25, 9, 24, 0)),
-    ...Array.from({length: 80},  () => makeParticle(rx, ry,  25,  115, 9, 24, 0)),
-    ...Array.from({length: 70},  () => makeParticle(lx2, ly2, -105, -35, 8, 20, 420)),
-    ...Array.from({length: 70},  () => makeParticle(rx2, ry2,  35,  105, 8, 20, 420)),
-  ];
-
   const start = performance.now();
-  const DURATION = 5800;
+  const DURATION = 7800;
 
   function frame(now) {
     const elapsed = now - start;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, W, H);
 
-    particles.forEach(p => {
-      if (elapsed < p.delay) return;
-      if (!p.born) {
-        // Re-sample start position slightly to scatter burst origins
-        p.born = true;
-      }
-      const age = elapsed - p.delay;
-      const progress = age / DURATION;
-      p.x  += p.vx;
-      p.y  += p.vy;
-      p.vy += 0.26;
-      p.vx *= 0.995;
-      p.rot += p.rotV;
-      const alpha = Math.max(0, 1 - Math.max(0, progress - 0.5) / 0.5);
-
-      ctx.save();
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = p.color;
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.rot * Math.PI / 180);
-      if (p.shape === 'rect') {
-        ctx.fillRect(-p.size / 2, -p.size * p.aspect / 2, p.size, p.size * p.aspect);
-      } else {
+    // Rockets
+    rockets.forEach(r => {
+      if (r.exploded) return;
+      r.trail.unshift({ x: r.x, y: r.y });
+      if (r.trail.length > 14) r.trail.pop();
+      r.vy += 0.19;
+      r.x += r.vx;
+      r.y += r.vy;
+      if (r.vy >= 0) { r.exploded = true; explode(r.x, r.y, r.palette); return; }
+      // Trail
+      for (let i = 0; i < r.trail.length - 1; i++) {
         ctx.beginPath();
-        ctx.ellipse(0, 0, p.size / 2, p.size * p.aspect / 2, 0, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.globalAlpha = (1 - i / r.trail.length) * 0.9;
+        ctx.strokeStyle = r.palette[0];
+        ctx.lineWidth = Math.max(0.5, 2.5 - i * 0.15);
+        ctx.lineCap = 'round';
+        ctx.moveTo(r.trail[i].x, r.trail[i].y);
+        ctx.lineTo(r.trail[i + 1].x, r.trail[i + 1].y);
+        ctx.stroke();
       }
-      ctx.restore();
+      // Head
+      ctx.globalAlpha = 1;
+      ctx.beginPath();
+      ctx.fillStyle = '#ffffff';
+      ctx.arc(r.x, r.y, 2.5, 0, Math.PI * 2);
+      ctx.fill();
     });
 
+    // Burst particles
+    for (let i = burstParticles.length - 1; i >= 0; i--) {
+      const p = burstParticles[i];
+      p.trail.unshift({ x: p.x, y: p.y });
+      if (p.trail.length > 8) p.trail.pop();
+      p.vx *= 0.975;
+      p.vy += p.grav;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.life -= p.decay;
+      if (p.life <= 0) { burstParticles.splice(i, 1); continue; }
+      // Trail
+      for (let j = 0; j < p.trail.length - 1; j++) {
+        ctx.beginPath();
+        ctx.globalAlpha = (1 - j / p.trail.length) * p.life * 0.65;
+        ctx.strokeStyle = p.color;
+        ctx.lineWidth = p.size * (1 - j / p.trail.length);
+        ctx.lineCap = 'round';
+        ctx.moveTo(p.trail[j].x, p.trail[j].y);
+        ctx.lineTo(p.trail[j + 1].x, p.trail[j + 1].y);
+        ctx.stroke();
+      }
+      // Head
+      ctx.globalAlpha = p.life;
+      ctx.beginPath();
+      ctx.fillStyle = p.color;
+      ctx.arc(p.x, p.y, p.size * 0.75, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.globalAlpha = 1;
     if (elapsed < DURATION) {
       requestAnimationFrame(frame);
     } else {
@@ -2582,7 +2634,7 @@ function showCelebration(levelUp, newLevelName, newLevelNum, newBadges) {
   void toast.offsetWidth;
 
   if (levelUp) {
-    launchConfetti();
+    launchFireworks();
     // Level-up gets its own dramatic green toast
     const badgeSection = (newBadges && newBadges.length > 0) ? `
       <hr class="celebration-divider">
