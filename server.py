@@ -285,8 +285,8 @@ QUESTION_BADGES = [
 ]
 
 STREAK_BADGES = [
-    {"id": "s_7",   "name": "Week Warrior", "desc": "Reach a 7-day streak",   "threshold": 7},
-    {"id": "s_30",  "name": "Month Grind",  "desc": "Reach a 30-day streak",  "threshold": 30},
+    {"id": "s_7",   "name": "Consistent",  "desc": "Reach a 7-day streak",   "threshold": 7},
+    {"id": "s_30",  "name": "Disciplined", "desc": "Reach a 30-day streak",  "threshold": 30},
     {"id": "s_100", "name": "Centurion",    "desc": "Reach a 100-day streak", "threshold": 100},
 ]
 
