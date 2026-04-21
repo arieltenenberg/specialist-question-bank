@@ -2856,7 +2856,7 @@ body { font-family:'DM Sans',system-ui,sans-serif; background:#0f1117; color:#e2
   display:flex;
   align-items:center;
   gap:20px;
-  height:56px;
+  height:52px;
   position:sticky;
   top:0;
   z-index:100;
@@ -3641,7 +3641,7 @@ body { font-family:'DM Sans',system-ui,sans-serif; background:#f6f3ee; color:#1c
   grid-template-columns:1fr auto 1fr;
   align-items:center;
   padding:0 28px;
-  height:56px;
+  height:52px;
 }
 .topbar h1 { font-size:1.05rem; font-weight:600; color:#fff; letter-spacing:-.01em; text-align:center; white-space:nowrap; }
 .user-avatar-wrap { position:relative; justify-self:end; }
@@ -3833,7 +3833,7 @@ USERS_HTML = r"""<!DOCTYPE html>
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:'DM Sans',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
-.topbar { background:#2d2d2d; padding:0 28px; display:grid; grid-template-columns:1fr auto 1fr; align-items:center; position:sticky; top:0; z-index:100; height:56px; box-shadow:0 2px 8px rgba(60,44,28,.15); }
+.topbar { background:#2d2d2d; padding:0 28px; display:grid; grid-template-columns:1fr auto 1fr; align-items:center; position:sticky; top:0; z-index:100; height:52px; box-shadow:0 2px 8px rgba(60,44,28,.15); }
 .topbar h1 { font-size:1.05rem; font-weight:600; color:#fff; white-space:nowrap; text-align:center; }
 .back-link { color:rgba(255,255,255,.65); font-size:.82rem; font-weight:500; text-decoration:none; white-space:nowrap; transition:color .15s; flex-shrink:0; }
 .back-link:hover { color:#fff; }
