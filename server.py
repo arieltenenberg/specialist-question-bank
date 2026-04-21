@@ -2443,16 +2443,21 @@ function hideAllPopups() {
   clearTimeout(_popupTimer);
   const card = document.getElementById('xp-card');
   const toast = document.getElementById('celebration-toast');
-  // Fade both with identical mechanism so they're perfectly in sync
+  // Pin opacity at 1 via inline style before removing animations,
+  // otherwise the base opacity:0 snaps in before the transition fires
+  card.style.opacity = '1';
+  toast.style.opacity = '1';
+  card.classList.remove('card-in', 'card-out');
+  toast.classList.remove('visible');
+  void card.offsetWidth; // force reflow so transition sees the change
   card.style.transition = 'opacity 1s ease-in-out';
-  card.style.opacity = '0';
   toast.style.transition = 'opacity 1s ease-in-out';
+  card.style.opacity = '0';
   toast.style.opacity = '0';
   setTimeout(() => {
-    card.classList.remove('card-in', 'card-out');
     card.style.transition = '';
     card.style.opacity = '';
-    toast.classList.remove('visible', 'toast-levelup', 'toast-badge');
+    toast.classList.remove('toast-levelup', 'toast-badge');
     toast.style.transition = '';
     toast.style.opacity = '';
     const d = document.getElementById('cel-dismiss');
