@@ -2575,13 +2575,13 @@ function launchFireworks() {
   const burstParticles = [];
 
   // 10 rockets staggered over ~2.6s
-  const schedule = [0, 180, 370, 570, 790, 1020, 1270, 1540, 1830, 2140];
+  const schedule = [0, 140, 290, 450, 620, 800, 990, 1190, 1410, 1650];
   schedule.forEach(delay => {
     setTimeout(() => {
       const x = W * (0.1 + Math.random() * 0.8);
       const targetY = H * (0.07 + Math.random() * 0.42);
       const dist = (H - 30) - targetY;
-      const vy0 = -Math.sqrt(2 * 0.25 * dist);
+      const vy0 = -Math.sqrt(2 * 0.38 * dist);
       const trailColor = randColor();
       rockets.push({ x, y: H - 30, vx: (Math.random() - 0.5) * 1.4, vy: vy0, trailColor, trail: [], exploded: false });
     }, delay);
@@ -2634,7 +2634,7 @@ function launchFireworks() {
       if (r.exploded) return;
       r.trail.unshift({ x: r.x, y: r.y });
       if (r.trail.length > 14) r.trail.pop();
-      r.vy += 0.25;
+      r.vy += 0.38;
       r.x += r.vx;
       r.y += r.vy;
       if (r.vy >= 0) { r.exploded = true; explode(r.x, r.y); return; }
