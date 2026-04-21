@@ -665,6 +665,7 @@ a { color:#1f1f1f; text-decoration:none; }
   border:1px solid var(--border);
   border-radius:8px;
   background:var(--bg);
+  margin-top:12px;
   margin-bottom:20px;
   padding:12px 14px;
 }
