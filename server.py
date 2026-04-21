@@ -889,7 +889,7 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 
 .sol-hidden { display:none; }
-.sol-wrap { margin-top:14px; }
+.sol-wrap { padding-top:14px; }
 .show-sol-btn {
   font-family:inherit;
   background:#2d2d2d;
