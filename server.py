@@ -812,8 +812,8 @@ a { color:#1f1f1f; text-decoration:none; }
 .main .toolbar { display:flex; gap:12px; align-items:center; margin-bottom:12px; flex-wrap:wrap; }
 .main .toolbar .active-filters { display:flex; gap:6px; flex-wrap:wrap; }
 .chip {
-  background:#f0f0f0;
-  color:#2d2d2d;
+  background:#2d2d2d;
+  color:#fff;
   font-size:.75rem;
   font-weight:500;
   padding:4px 12px;
@@ -822,11 +822,11 @@ a { color:#1f1f1f; text-decoration:none; }
   align-items:center;
   gap:6px;
   cursor:pointer;
-  border:1px solid #d5d5d5;
+  border:1px solid #2d2d2d;
   transition:background .15s;
 }
-.chip:hover { background:#e0e0e0; }
-.chip .x { font-size:.6rem; opacity:.5; }
+.chip:hover { background:#444; border-color:#444; }
+.chip .x { font-size:.6rem; opacity:.6; }
 .clear-btn {
   font-family:inherit;
   font-size:.78rem;
