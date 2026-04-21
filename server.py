@@ -1367,34 +1367,59 @@ a { color:#1f1f1f; text-decoration:none; }
 .aos-badge-row.locked .aos-badge-row-desc { color: #b5ada5; }
 .aos-badge-row-lock { font-size: .75rem; color: #c5bdb4; flex-shrink: 0; }
 
-/* ----- XP gain pill ----- */
-@keyframes xp-pill-in {
-  0%   { opacity: 0; transform: translateY(-10px) scale(.88); }
-  60%  { opacity: 1; transform: translateY(2px) scale(1.04); }
+/* ----- XP gain card ----- */
+@keyframes xp-card-in {
+  0%   { opacity: 0; transform: translateY(-14px) scale(.91); }
+  65%  { opacity: 1; transform: translateY(3px) scale(1.02); }
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
-@keyframes xp-pill-out {
-  to { opacity: 0; transform: translateY(-8px) scale(.9); }
+@keyframes xp-card-out {
+  to { opacity: 0; transform: translateY(-10px) scale(.92); }
 }
-#xp-pill {
+#xp-card {
   position: fixed;
   top: 108px;
   right: 20px;
   z-index: 9999;
   pointer-events: none;
   opacity: 0;
-  background: #8db370;
-  color: #fff;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(60,44,28,.13);
+  padding: 11px 16px 13px;
+  min-width: 190px;
+  max-width: 230px;
+}
+#xp-card.card-in  { animation: xp-card-in  .35s cubic-bezier(.22,1,.36,1) forwards; }
+#xp-card.card-out { animation: xp-card-out .28s ease-in forwards; }
+.xp-card-gain {
   font-size: .82rem;
   font-weight: 700;
+  color: #8db370;
   letter-spacing: .03em;
-  padding: 6px 14px;
-  border-radius: 99px;
-  box-shadow: 0 3px 10px rgba(60,44,28,.18);
-  white-space: nowrap;
+  margin-bottom: 7px;
 }
-#xp-pill.pill-in  { animation: xp-pill-in  .32s cubic-bezier(.22,1,.36,1) forwards; }
-#xp-pill.pill-out { animation: xp-pill-out .28s ease-in forwards; }
+.xp-card-label {
+  font-size: .7rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+}
+.xp-card-bar-wrap {
+  height: 5px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.xp-card-bar-fill {
+  height: 100%;
+  background: #8db370;
+  border-radius: 99px;
+  width: 0%;
+  transition: width .6s cubic-bezier(.22,1,.36,1);
+}
 
 /* ----- Celebration toasts ----- */
 @keyframes toast-in {
@@ -2328,7 +2353,7 @@ function toggleCompleted(id, btn) {
     if (data.marked && funnyPopup === 'levick' && Math.random() < 0.2) showLevickModal();
     if (data.marked && funnyPopup === 'cordo' && Math.random() < 0.2) showCorodoModal();
     if (data.marked) {
-      showXpPill(data.xp_gained);
+      showXpCard(data.xp_gained, data.new_xp, data.new_level_name, data.level_xp_min, data.next_level_xp, data.next_level_name);
       const leveledUp = data.new_level_num > data.prev_level_num;
       const newBadges = data.newly_earned_badges || [];
       if (leveledUp || newBadges.length > 0) {
@@ -2411,21 +2436,47 @@ const BADGE_ICONS = {
 };
 
 let _celebrationTimer = null;
-let _xpPillTimer = null;
+let _xpCardTimer = null;
 
-function showXpPill(xp) {
-  if (!xp) return;
-  const pill = document.getElementById('xp-pill');
-  clearTimeout(_xpPillTimer);
-  pill.classList.remove('pill-in', 'pill-out');
-  void pill.offsetWidth;
-  pill.textContent = '+' + xp + ' XP';
-  pill.classList.add('pill-in');
-  _xpPillTimer = setTimeout(() => {
-    pill.classList.remove('pill-in');
-    pill.classList.add('pill-out');
-    _xpPillTimer = setTimeout(() => pill.classList.remove('pill-out'), 300);
-  }, 1800);
+function showXpCard(xpGained, newXp, levelName, levelXpMin, nextLevelXp, nextLevelName) {
+  if (!xpGained) return;
+  const card = document.getElementById('xp-card');
+  clearTimeout(_xpCardTimer);
+  card.classList.remove('card-in', 'card-out');
+  void card.offsetWidth;
+
+  document.getElementById('xp-card-gain').textContent = '+' + xpGained + ' XP';
+  document.getElementById('xp-card-level').textContent = levelName;
+
+  const bar = document.getElementById('xp-card-bar');
+  const xpLabel = document.getElementById('xp-card-xp');
+
+  if (nextLevelXp) {
+    const range = nextLevelXp - levelXpMin;
+    const prevFill = Math.max(0, Math.min(100, ((newXp - xpGained - levelXpMin) / range) * 100));
+    const newFill  = Math.max(0, Math.min(100, ((newXp - levelXpMin) / range) * 100));
+    const remaining = nextLevelXp - newXp;
+    xpLabel.textContent = remaining + ' XP to ' + nextLevelName;
+    bar.style.transition = 'none';
+    bar.style.width = prevFill + '%';
+    // Trigger fill animation on next frame
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      bar.style.transition = 'width .65s cubic-bezier(.22,1,.36,1)';
+      bar.style.width = newFill + '%';
+    }));
+  } else {
+    // Max level
+    xpLabel.textContent = newXp + ' XP';
+    bar.style.transition = 'none';
+    bar.style.width = '100%';
+  }
+
+  card.classList.add('card-in');
+  _xpCardTimer = setTimeout(() => {
+    card.classList.remove('card-in');
+    card.classList.add('card-out');
+    _xpCardTimer = setTimeout(() => card.classList.remove('card-out'), 300);
+  }, 3200);
 }
 
 function launchConfetti() {
@@ -2440,50 +2491,65 @@ function launchConfetti() {
     '#f94144','#f3722c','#f9c74f','#90be6d','#43aa8b','#4d908e',
     '#577590','#277da1','#a8dadc','#e9c46a','#f4a261','#e76f51',
     '#c77dff','#ff6b9d','#ffffff','#8db370','#ffd166','#06d6a0',
+    '#ff9f1c','#cbf3f0','#ffbfb7','#b5ead7',
   ];
 
-  function makeParticle(x, y, angleMin, angleMax, speedMin, speedMax) {
+  function makeParticle(x, y, angleMin, angleMax, speedMin, speedMax, delay) {
     const angle = (Math.random() * (angleMax - angleMin) + angleMin) * Math.PI / 180;
     const speed = Math.random() * (speedMax - speedMin) + speedMin;
     return {
       x, y,
       vx: Math.sin(angle) * speed,
       vy: -Math.cos(angle) * speed,
-      size: Math.random() * 8 + 3,
+      size: Math.random() * 9 + 3,
       color: COLORS[Math.floor(Math.random() * COLORS.length)],
       rot: Math.random() * 360,
-      rotV: (Math.random() - 0.5) * 14,
-      shape: Math.random() > 0.35 ? 'rect' : 'circle',
-      aspect: Math.random() * 0.5 + 0.25,
+      rotV: (Math.random() - 0.5) * 15,
+      shape: Math.random() > 0.3 ? 'rect' : 'circle',
+      aspect: Math.random() * 0.55 + 0.2,
+      delay: delay || 0,
+      born: false,
     };
   }
 
-  // Three cannons: centre, left, right
-  const cx = canvas.width / 2, cy = 110;
-  const lx = canvas.width * 0.15, ly = canvas.height * 0.55;
-  const rx = canvas.width * 0.85, ry = canvas.height * 0.55;
+  const W = canvas.width, H = canvas.height;
+  // Burst 1 — immediate: centre top + left/right sides
+  const cx = W / 2, cy = 105;
+  const lx = W * 0.12, ly = H * 0.52;
+  const rx = W * 0.88, ry = H * 0.52;
+  // Burst 2 — staggered ~420ms: inner-left + inner-right at mid-height
+  const lx2 = W * 0.28, ly2 = H * 0.35;
+  const rx2 = W * 0.72, ry2 = H * 0.35;
+
   const particles = [
-    ...Array.from({length: 110}, () => makeParticle(cx + (Math.random()-0.5)*100, cy, -75, 75, 6, 20)),
-    ...Array.from({length: 55},  () => makeParticle(lx, ly, -110, -30, 8, 22)),
-    ...Array.from({length: 55},  () => makeParticle(rx, ry,  30,  110, 8, 22)),
+    ...Array.from({length: 150}, () => makeParticle(cx + (Math.random()-0.5)*120, cy, -78, 78, 7, 22, 0)),
+    ...Array.from({length: 80},  () => makeParticle(lx, ly, -115, -25, 9, 24, 0)),
+    ...Array.from({length: 80},  () => makeParticle(rx, ry,  25,  115, 9, 24, 0)),
+    ...Array.from({length: 70},  () => makeParticle(lx2, ly2, -105, -35, 8, 20, 420)),
+    ...Array.from({length: 70},  () => makeParticle(rx2, ry2,  35,  105, 8, 20, 420)),
   ];
 
   const start = performance.now();
-  const DURATION = 5000;
+  const DURATION = 5800;
 
   function frame(now) {
     const elapsed = now - start;
-    const progress = elapsed / DURATION;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     particles.forEach(p => {
+      if (elapsed < p.delay) return;
+      if (!p.born) {
+        // Re-sample start position slightly to scatter burst origins
+        p.born = true;
+      }
+      const age = elapsed - p.delay;
+      const progress = age / DURATION;
       p.x  += p.vx;
       p.y  += p.vy;
-      p.vy += 0.28;
-      p.vx *= 0.994;
+      p.vy += 0.26;
+      p.vx *= 0.995;
       p.rot += p.rotV;
-      // Hold full opacity until 55% through, then fade
-      const alpha = Math.max(0, 1 - Math.max(0, progress - 0.55) / 0.45);
+      const alpha = Math.max(0, 1 - Math.max(0, progress - 0.5) / 0.5);
 
       ctx.save();
       ctx.globalAlpha = alpha;
@@ -2852,7 +2918,14 @@ function renderProgressView() {
     <button onclick="document.getElementById('levick-modal').style.display='none'" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-family:'DM Sans',system-ui,sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;">Got it</button>
   </div>
 </div>
-<div id="xp-pill"></div>
+<div id="xp-card">
+  <div class="xp-card-gain" id="xp-card-gain"></div>
+  <div class="xp-card-label">
+    <span id="xp-card-level"></span>
+    <span id="xp-card-xp"></span>
+  </div>
+  <div class="xp-card-bar-wrap"><div class="xp-card-bar-fill" id="xp-card-bar"></div></div>
+</div>
 <div id="celebration-toast" onclick="hideCelebration()">
   <div id="celebration-content"></div>
 </div>
@@ -5192,10 +5265,15 @@ def api_toggle_completed():
         ).fetchone()
         current_streak = streak_row["current_streak"] if streak_row else 0
 
+    new_level_obj = get_level(new_xp)
+    next_level_obj = get_next_level(new_xp)
     return jsonify({
         "ok": True, "marked": marked,
         "xp_gained": xp_gained, "new_xp": new_xp,
         "prev_level_num": prev_level_num, "new_level_num": new_level_num, "new_level_name": new_level_name,
+        "level_xp_min": new_level_obj[2],
+        "next_level_xp": next_level_obj[2] if next_level_obj else None,
+        "next_level_name": next_level_obj[1] if next_level_obj else None,
         "new_streak": new_streak, "current_streak": current_streak,
         "today_count": today_count,
         "newly_earned_badges": newly_earned_badges,
