@@ -2491,258 +2491,57 @@ const CELEBRATION_COLORS = [
 function randColor() { return CELEBRATION_COLORS[Math.floor(Math.random() * CELEBRATION_COLORS.length)]; }
 
 function launchConfetti() {
-  const canvas = document.createElement('canvas');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  canvas.style.cssText = 'position:fixed;inset:0;z-index:9997;pointer-events:none';
-  document.body.appendChild(canvas);
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-
-  function makeParticle(x, y, angleMin, angleMax, speedMin, speedMax, delay) {
-    const angle = (Math.random() * (angleMax - angleMin) + angleMin) * Math.PI / 180;
-    const speed = Math.random() * (speedMax - speedMin) + speedMin;
-    return {
-      x, y,
-      vx: Math.sin(angle) * speed,
-      vy: -Math.cos(angle) * speed,
-      size: Math.random() * 9 + 3,
-      color: randColor(),
-      rot: Math.random() * 360,
-      rotV: (Math.random() - 0.5) * 15,
-      shape: Math.random() > 0.3 ? 'rect' : 'circle',
-      aspect: Math.random() * 0.55 + 0.2,
-      delay: delay || 0,
-    };
-  }
-
-  const cx = W / 2, cy = 105;
-  const lx = W * 0.12, ly = H * 0.52;
-  const rx = W * 0.88, ry = H * 0.52;
-  const lx2 = W * 0.28, ly2 = H * 0.35;
-  const rx2 = W * 0.72, ry2 = H * 0.35;
-
-  const particles = [
-    ...Array.from({length: 150}, () => makeParticle(cx + (Math.random()-0.5)*120, cy, -78, 78, 9, 27, 0)),
-    ...Array.from({length: 80},  () => makeParticle(lx, ly, -115, -25, 11, 29, 0)),
-    ...Array.from({length: 80},  () => makeParticle(rx, ry,  25,  115, 11, 29, 0)),
-    ...Array.from({length: 70},  () => makeParticle(lx2, ly2, -105, -35, 10, 25, 350)),
-    ...Array.from({length: 70},  () => makeParticle(rx2, ry2,  35,  105, 10, 25, 350)),
-  ];
-
-  const start = performance.now();
-  const DURATION = 5800;
-
-  function frame(now) {
-    const elapsed = now - start;
-    ctx.clearRect(0, 0, W, H);
-    particles.forEach(p => {
-      if (elapsed < p.delay) return;
-      const progress = (elapsed - p.delay) / DURATION;
-      p.x += p.vx; p.y += p.vy; p.vy += 0.26; p.vx *= 0.995; p.rot += p.rotV;
-      const alpha = Math.max(0, 1 - Math.max(0, progress - 0.5) / 0.5);
-      ctx.save();
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = p.color;
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.rot * Math.PI / 180);
-      if (p.shape === 'rect') {
-        ctx.fillRect(-p.size / 2, -p.size * p.aspect / 2, p.size, p.size * p.aspect);
-      } else {
-        ctx.beginPath();
-        ctx.ellipse(0, 0, p.size / 2, p.size * p.aspect / 2, 0, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.restore();
-    });
-    if (elapsed < DURATION) requestAnimationFrame(frame); else canvas.remove();
-  }
-  requestAnimationFrame(frame);
+  const colors = CELEBRATION_COLORS;
+  const shared = { colors, zIndex: 9997, disableForReducedMotion: true };
+  // Centre top burst
+  confetti({ ...shared, particleCount: 150, spread: 80, origin: { x: 0.5, y: 0.05 }, startVelocity: 55 });
+  // Left cannon
+  confetti({ ...shared, particleCount: 80, angle: 60, spread: 55, origin: { x: 0.0, y: 0.55 }, startVelocity: 60 });
+  // Right cannon
+  confetti({ ...shared, particleCount: 80, angle: 120, spread: 55, origin: { x: 1.0, y: 0.55 }, startVelocity: 60 });
+  // Second burst at 380ms
+  setTimeout(() => {
+    confetti({ ...shared, particleCount: 70, angle: 75, spread: 50, origin: { x: 0.2, y: 0.38 }, startVelocity: 52 });
+    confetti({ ...shared, particleCount: 70, angle: 105, spread: 50, origin: { x: 0.8, y: 0.38 }, startVelocity: 52 });
+  }, 380);
 }
 
 function launchFireworks() {
   if (_fireworksActive) return;
   _fireworksActive = true;
-  const canvas = document.createElement('canvas');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  canvas.style.cssText = 'position:fixed;inset:0;z-index:9998;pointer-events:none';
-  document.body.appendChild(canvas);
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
 
-  const rockets = [];
-  const burstParticles = [];
-  const sparks = [];
+  const container = document.createElement('div');
+  container.style.cssText = 'position:fixed;inset:0;z-index:9998;pointer-events:none';
+  document.body.appendChild(container);
 
-  const schedule = [0, 140, 290, 450, 620, 800, 990, 1190, 1410, 1650];
-  schedule.forEach(delay => {
-    setTimeout(() => {
-      const x = W * (0.1 + Math.random() * 0.8);
-      const targetY = H * (0.07 + Math.random() * 0.42);
-      const dist = (H - 30) - targetY;
-      const vy0 = -Math.sqrt(2 * 0.38 * dist);
-      const trailColor = randColor();
-      // type: 0 = chrysanthemum (tight/fast), 1 = peony (wide/scattered)
-      const type = Math.random() < 0.5 ? 0 : 1;
-      rockets.push({ x, y: H - 30, vx: (Math.random() - 0.5) * 1.4, vy: vy0, trailColor, trail: [], exploded: false, type });
-    }, delay);
+  const fw = new Fireworks.default(container, {
+    autoresize: true,
+    opacity: 0.6,
+    acceleration: 1.02,
+    friction: 0.96,
+    gravity: 1.8,
+    particles: 60,
+    traceLength: 4,
+    traceSpeed: 8,
+    explosion: 6,
+    intensity: 22,
+    flickering: 60,
+    lineStyle: 'round',
+    hue: { min: 0, max: 360 },
+    delay: { min: 18, max: 28 },
+    rocketsPoint: { min: 10, max: 90 },
+    lineWidth: { explosion: { min: 1, max: 3 }, trace: { min: 1, max: 2 } },
+    mouse: { click: false, move: false, max: 1 },
+    boundaries: { x: 0, y: 0, width: window.innerWidth, height: window.innerHeight },
+    sound: { enabled: false },
   });
 
-  function explode(x, y, type) {
-    const count = type === 0 ? 80 + Math.floor(Math.random() * 20) : 55 + Math.floor(Math.random() * 25);
-    for (let i = 0; i < count; i++) {
-      const angle = (i / count) * Math.PI * 2 + (Math.random() - 0.5) * (type === 0 ? 0.12 : 0.45);
-      const speed = type === 0
-        ? 3.5 + Math.random() * 4.5   // chrysanthemum: faster, tighter spread
-        : 1.2 + Math.random() * 7.5;  // peony: wider speed range, looser
-      burstParticles.push({
-        x, y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 0.5,
-        color: randColor(),
-        size: type === 0 ? 1.5 + Math.random() * 1.8 : 2 + Math.random() * 2.5,
-        life: 1,
-        twinkleOffset: Math.random() * Math.PI * 2,
-        decay: type === 0 ? 0.007 + Math.random() * 0.007 : 0.010 + Math.random() * 0.010,
-        grav: 0.05 + Math.random() * 0.04,
-        trail: [],
-      });
-    }
-    // White flash core
-    for (let i = 0; i < 14; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const speed = 5 + Math.random() * 10;
-      burstParticles.push({
-        x, y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        color: '#ffffff',
-        size: 1.5,
-        life: 1,
-        twinkleOffset: 0,
-        decay: 0.04 + Math.random() * 0.03,
-        grav: 0.04,
-        trail: [],
-      });
-    }
-  }
+  fw.start();
 
-  const start = performance.now();
-  const DURATION = 7800;
-
-  function frame(now) {
-    const elapsed = now - start;
-    ctx.clearRect(0, 0, W, H);
-    ctx.shadowBlur = 0;
-
-    // Rockets
-    rockets.forEach(r => {
-      if (r.exploded) return;
-      r.trail.unshift({ x: r.x, y: r.y });
-      if (r.trail.length > 14) r.trail.pop();
-      r.vy += 0.38;
-      r.x += r.vx;
-      r.y += r.vy;
-      if (r.vy >= 0) { r.exploded = true; explode(r.x, r.y, r.type); return; }
-
-      // Shed sparks off the rocket trail
-      if (Math.random() < 0.6) {
-        sparks.push({
-          x: r.x + (Math.random() - 0.5) * 3,
-          y: r.y + (Math.random() - 0.5) * 3,
-          vx: (Math.random() - 0.5) * 1.8,
-          vy: Math.random() * 1.5,
-          life: 0.6 + Math.random() * 0.4,
-          decay: 0.06 + Math.random() * 0.06,
-          color: r.trailColor,
-        });
-      }
-
-      // Trail (no glow — performance)
-      ctx.shadowBlur = 0;
-      for (let i = 0; i < r.trail.length - 1; i++) {
-        ctx.beginPath();
-        ctx.globalAlpha = (1 - i / r.trail.length) * 0.9;
-        ctx.strokeStyle = r.trailColor;
-        ctx.lineWidth = Math.max(0.5, 2.5 - i * 0.15);
-        ctx.lineCap = 'round';
-        ctx.moveTo(r.trail[i].x, r.trail[i].y);
-        ctx.lineTo(r.trail[i + 1].x, r.trail[i + 1].y);
-        ctx.stroke();
-      }
-      // Head — glow
-      ctx.globalAlpha = 1;
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = r.trailColor;
-      ctx.beginPath();
-      ctx.fillStyle = '#ffffff';
-      ctx.arc(r.x, r.y, 2.5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.shadowBlur = 0;
-    });
-
-    // Sparks
-    for (let i = sparks.length - 1; i >= 0; i--) {
-      const s = sparks[i];
-      s.x += s.vx; s.y += s.vy; s.vy += 0.08; s.life -= s.decay;
-      if (s.life <= 0) { sparks.splice(i, 1); continue; }
-      ctx.globalAlpha = s.life * 0.8;
-      ctx.beginPath();
-      ctx.fillStyle = s.color;
-      ctx.arc(s.x, s.y, 1.2, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    // Burst particles
-    for (let i = burstParticles.length - 1; i >= 0; i--) {
-      const p = burstParticles[i];
-      p.trail.unshift({ x: p.x, y: p.y });
-      if (p.trail.length > 8) p.trail.pop();
-      p.vx *= 0.975;
-      p.vy += p.grav;
-      p.x += p.vx;
-      p.y += p.vy;
-      p.life -= p.decay;
-      if (p.life <= 0) { burstParticles.splice(i, 1); continue; }
-
-      // Twinkle: flicker alpha as particle ages
-      const twinkle = p.life > 0.3 ? 1 : 0.5 + 0.5 * Math.sin(elapsed * 0.035 + p.twinkleOffset);
-      const baseAlpha = p.life * twinkle;
-
-      // Trail (no glow)
-      ctx.shadowBlur = 0;
-      for (let j = 0; j < p.trail.length - 1; j++) {
-        ctx.beginPath();
-        ctx.globalAlpha = (1 - j / p.trail.length) * baseAlpha * 0.65;
-        ctx.strokeStyle = p.color;
-        ctx.lineWidth = p.size * (1 - j / p.trail.length);
-        ctx.lineCap = 'round';
-        ctx.moveTo(p.trail[j].x, p.trail[j].y);
-        ctx.lineTo(p.trail[j + 1].x, p.trail[j + 1].y);
-        ctx.stroke();
-      }
-      // Head — glow on heads only
-      ctx.globalAlpha = baseAlpha;
-      ctx.shadowBlur = 8;
-      ctx.shadowColor = p.color;
-      ctx.beginPath();
-      ctx.fillStyle = p.color;
-      ctx.arc(p.x, p.y, p.size * 0.75, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.shadowBlur = 0;
-    }
-
-    ctx.globalAlpha = 1;
-    ctx.shadowBlur = 0;
-    if (elapsed < DURATION) {
-      requestAnimationFrame(frame);
-    } else {
-      canvas.remove();
-      _fireworksActive = false;
-    }
-  }
-  requestAnimationFrame(frame);
+  setTimeout(() => {
+    fw.stop();
+    setTimeout(() => { container.remove(); _fireworksActive = false; }, 3000);
+  }, 4500);
 }
 
 function showCelebration(levelUp, newLevelName, newLevelNum, newBadges) {
@@ -3134,6 +2933,8 @@ function showCorodoModal() {
 </script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script>lucide.createIcons();</script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.10.8/dist/index.umd.js"></script>
 </body>
 </html>"""
 
