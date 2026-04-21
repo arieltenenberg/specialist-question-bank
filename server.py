@@ -2519,11 +2519,11 @@ function launchConfetti() {
   const rx2 = W * 0.72, ry2 = H * 0.35;
 
   const particles = [
-    ...Array.from({length: 150}, () => makeParticle(cx + (Math.random()-0.5)*120, cy, -78, 78, 7, 22, 0)),
-    ...Array.from({length: 80},  () => makeParticle(lx, ly, -115, -25, 9, 24, 0)),
-    ...Array.from({length: 80},  () => makeParticle(rx, ry,  25,  115, 9, 24, 0)),
-    ...Array.from({length: 70},  () => makeParticle(lx2, ly2, -105, -35, 8, 20, 420)),
-    ...Array.from({length: 70},  () => makeParticle(rx2, ry2,  35,  105, 8, 20, 420)),
+    ...Array.from({length: 150}, () => makeParticle(cx + (Math.random()-0.5)*120, cy, -78, 78, 9, 27, 0)),
+    ...Array.from({length: 80},  () => makeParticle(lx, ly, -115, -25, 11, 29, 0)),
+    ...Array.from({length: 80},  () => makeParticle(rx, ry,  25,  115, 11, 29, 0)),
+    ...Array.from({length: 70},  () => makeParticle(lx2, ly2, -105, -35, 10, 25, 350)),
+    ...Array.from({length: 70},  () => makeParticle(rx2, ry2,  35,  105, 10, 25, 350)),
   ];
 
   const start = performance.now();
@@ -2569,13 +2569,13 @@ function launchFireworks() {
   const burstParticles = [];
 
   // 10 rockets staggered over ~2.6s
-  const schedule = [0, 220, 460, 720, 1000, 1290, 1600, 1930, 2280, 2640];
+  const schedule = [0, 180, 370, 570, 790, 1020, 1270, 1540, 1830, 2140];
   schedule.forEach(delay => {
     setTimeout(() => {
       const x = W * (0.1 + Math.random() * 0.8);
       const targetY = H * (0.07 + Math.random() * 0.42);
       const dist = (H - 30) - targetY;
-      const vy0 = -Math.sqrt(2 * 0.19 * dist);
+      const vy0 = -Math.sqrt(2 * 0.25 * dist);
       const trailColor = randColor();
       rockets.push({ x, y: H - 30, vx: (Math.random() - 0.5) * 1.4, vy: vy0, trailColor, trail: [], exploded: false });
     }, delay);
@@ -2628,7 +2628,7 @@ function launchFireworks() {
       if (r.exploded) return;
       r.trail.unshift({ x: r.x, y: r.y });
       if (r.trail.length > 14) r.trail.pop();
-      r.vy += 0.19;
+      r.vy += 0.25;
       r.x += r.vx;
       r.y += r.vy;
       if (r.vy >= 0) { r.exploded = true; explode(r.x, r.y); return; }
