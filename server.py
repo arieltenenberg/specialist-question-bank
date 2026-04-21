@@ -875,6 +875,7 @@ a { color:#1f1f1f; text-decoration:none; }
 .qimg-wrap { flex:1; min-width:280px; }
 .sol-wrap .qimg-wrap { border-top:1px solid var(--border); padding-top:16px; }
 .qimg-wrap img {
+  display:block;
   width:100%;
   border-radius:8px;
   border:1px solid var(--border);
