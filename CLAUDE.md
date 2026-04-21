@@ -13,6 +13,7 @@ Questions are classified into Areas of Study (AOS) per subject.
 - **Data:** `specialist_questions.json` (Specialist), `methods_questions.json` (Methods)
 - **Images:** `question_images/` — PNG crops of each question and solution (not in git)
 - **Pipeline:** `pipeline/` — docx → PDF → image crops → classification
+- **Icons:** [Lucide](https://lucide.dev/) — loaded via CDN (`unpkg.com/lucide`) at bottom of `BROWSE_HTML`. Call `lucide.createIcons()` after any dynamic `innerHTML` update that contains `<i data-lucide="...">` elements.
 - **Local dev:** `DEV_MODE=1 python3 server.py` (bypasses Google OAuth)
 - **Production:** `https://ariel.tenenberg.com` (AWS EC2, Sydney)
 
@@ -264,7 +265,7 @@ Students can mark questions as done. Completed questions are highlighted in emer
 Two-row topbar (96px total):
 - **Row 1 — brand row (52px):** CSS grid (`1fr auto 1fr`) with "← Subjects" back link left, subject name centred, and three icons right (progress, settings, avatar). Background: `#2d2d2d` (charcoal) for both subjects.
 - **Row 2 — tabs row (44px):** centred tabs (Questions, Saved, Completed, Admin) with underline active indicator. Background: `#1f1f1f` (darker charcoal).
-- **Right icon row (left→right):** progress bar-chart button → settings (filter sliders) button → avatar circle. All three are 34×34px circles with `rgba(255,255,255,.13)` background and `1.5px` white border. Spacing via `gap:6px` on `.topbar-right`.
+- **Right icon row (left→right):** achievements (trophy) → progress (bar-chart-2) → settings (sliders-horizontal) → avatar circle. All three icon buttons are 34×34px circles with `rgba(255,255,255,.13)` background and `1.5px` white border. Icons use Lucide (`<i data-lucide="...">`) at 16×16px. Spacing via `gap:6px` on `.topbar-right`.
 - **Avatar:** initials derived from `{{ user_name }}`; click opens dropdown with "Signed in as X" + Sign out; closes on outside click
 - **All tabs are buttons** (no `<a>` links) — switching tabs is instant with no page reload
 - **Height references:** sidebar `top: 96px`, `height: calc(100vh - 96px)`; backdrop `inset: 96px 0 0 0`; mobile sidebar `top: 84px`
@@ -443,7 +444,7 @@ Three categories shown in the Achievements modal:
 2. **Streak milestones** — 7, 30, 100 day longest streak
 3. **AOS completion** — 100% of visible questions in a given AOS + subject (e.g. `aos_specialist_7`). Uses `apply_overrides()` dynamically so hidden questions don't inflate the target.
 
-Locked badges are shown greyed out with an SVG lock pip. First question badge uses footprints icon instead of star.
+All badge icons use Lucide (`<i data-lucide="...">`) — no emoji. Icon mapping: `q_1` footprints, `q_10` target, `q_50` key, `q_100` award, `q_250` zap, `q_500` flame, `q_1000` gem, `q_1500` crown, `s_7` calendar, `s_30` calendar-days, `s_100` medal, AOS badges circle-check. Locked badges are shown greyed out (opacity .35) with an SVG lock pip.
 
 ### DB columns (on `users` table)
 - `xp INTEGER DEFAULT 0`
@@ -461,10 +462,11 @@ Locked badges are shown greyed out with an SVG lock pip. First question badge us
 Returns `prev_level_num`, `new_level_num`, `new_level_name`, `newly_earned_badges`, `today_count`, `current_streak` — used by the client to trigger celebration popups and update the sidebar widget.
 
 ### Achievements modal
-- Opened via trophy SVG button in the topbar brand row (same row as progress and settings icons)
+- Opened via trophy Lucide button in the topbar brand row (same row as progress and settings icons)
 - `openAchievementsModal()` / `loadGamification()` / `renderAchievements(data)`
 - Canvas confetti fires on level-up celebration
 - Celebration toast has two variants: level-up (with level name) and badge unlock
+- Modal sections (top to bottom): Level card (XP bar) → Questions Completed (MC / SA / ER breakdown, computed client-side from `allQ` + `completedIds`) → Streak (current + best, "N days" format) → Question Milestones badges → Streak badges → AOS badges
 
 ### Sidebar progress widget
 - `.sidebar-progress` CSS and JS exist but the HTML widget is **intentionally excluded** from the sidebar — do not add it
