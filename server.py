@@ -1117,6 +1117,9 @@ a { color:#1f1f1f; text-decoration:none; }
   line-height: 1;
 }
 .progress-btn-topbar:hover { background: rgba(255,255,255,.25); }
+.progress-btn-topbar svg,
+.achievements-btn-topbar svg,
+.settings-icon-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* ----- Achievements button ----- */
 .achievements-btn-topbar {
@@ -1297,8 +1300,10 @@ a { color:#1f1f1f; text-decoration:none; }
   justify-content: center;
   line-height: 1;
 }
-.badge-icon { font-size: 1.8rem; line-height: 1; }
-.badge-item.locked .badge-icon { filter: grayscale(1); opacity: .35; }
+.badge-icon { display: flex; align-items: center; justify-content: center; line-height: 1; }
+.badge-icon svg { width: 28px; height: 28px; stroke: #2d2d2d; stroke-width: 2; fill: none; }
+.badge-item.earned .badge-icon svg { stroke: #4a6f32; }
+.badge-item.locked .badge-icon svg { opacity: .35; }
 .badge-lock-pip {
   position: absolute;
   bottom: -3px;
@@ -1331,8 +1336,9 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 .aos-badge-row.earned { background: #f0f7eb; border: 1.5px solid #b8d4a0; }
 .aos-badge-row.locked { background: #f8f8f8; border: 1.5px solid #e8e8e8; }
-.aos-badge-row-icon { font-size: 1.3rem; flex-shrink: 0; }
-.aos-badge-row.locked .aos-badge-row-icon { filter: grayscale(1); opacity: .35; }
+.aos-badge-row-icon { flex-shrink: 0; display: flex; align-items: center; }
+.aos-badge-row-icon svg { width: 18px; height: 18px; stroke: #4a6f32; stroke-width: 2; fill: none; }
+.aos-badge-row.locked .aos-badge-row-icon svg { opacity: .35; stroke: #2d2d2d; }
 .aos-badge-row-text { flex: 1; }
 .aos-badge-row-name { font-size: .82rem; font-weight: 600; color: #2d2d2d; }
 .aos-badge-row.locked .aos-badge-row-name { color: #a09890; }
@@ -1406,7 +1412,9 @@ a { color:#1f1f1f; text-decoration:none; }
   text-align: left;
   padding: 3px 0;
 }
-.celebration-badge-icon { font-size: 1.4rem; flex-shrink: 0; }
+.celebration-badge-icon { flex-shrink: 0; display: flex; align-items: center; }
+.celebration-badge-icon svg { width: 22px; height: 22px; stroke: #2d2d2d; stroke-width: 2; fill: none; }
+.toast-levelup .celebration-badge-icon svg { stroke: #fff; }
 .celebration-badge-info { flex: 1; }
 .celebration-badge-label {
   font-size: .65rem;
@@ -1549,14 +1557,14 @@ a { color:#1f1f1f; text-decoration:none; }
     <h1>{{ subject_name }}</h1>
     <div class="topbar-right">
       <button class="achievements-btn-topbar" onclick="openAchievementsModal()" title="Achievements" aria-label="Achievements">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
+        <i data-lucide="trophy"></i>
       </button>
       <button class="progress-btn-topbar" onclick="openProgressModal()" title="View Progress" aria-label="View Progress">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="6" width="4" height="15"/><rect x="17" y="2" width="4" height="19"/></svg>
+        <i data-lucide="bar-chart-2"></i>
       </button>
       <div class="settings-wrap" id="settings-btn">
         <button class="settings-icon-btn" onclick="toggleSettingsDropdown()" aria-label="View settings">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="9" cy="6" r="2.5" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="2.5" fill="currentColor" stroke="none"/><circle cx="9" cy="18" r="2.5" fill="currentColor" stroke="none"/></svg>
+          <i data-lucide="sliders-horizontal"></i>
         </button>
         <div class="settings-dropdown" id="settings-dropdown">
           <div class="settings-dropdown-title">View Options</div>
@@ -2337,9 +2345,17 @@ function progressModalKeyHandler(e) {
 // Celebration toast
 // ---------------------------------------------------------------------------
 const BADGE_ICONS = {
-  q_1: '👣', q_10: '🎯', q_50: '🔑', q_100: '💯',
-  q_250: '⚡', q_500: '🔥', q_1000: '💎', q_1500: '👑',
-  s_7: '📅', s_30: '🗓️', s_100: '🏅',
+  q_1:    '<i data-lucide="footprints"></i>',
+  q_10:   '<i data-lucide="target"></i>',
+  q_50:   '<i data-lucide="key"></i>',
+  q_100:  '<i data-lucide="award"></i>',
+  q_250:  '<i data-lucide="zap"></i>',
+  q_500:  '<i data-lucide="flame"></i>',
+  q_1000: '<i data-lucide="gem"></i>',
+  q_1500: '<i data-lucide="crown"></i>',
+  s_7:    '<i data-lucide="calendar"></i>',
+  s_30:   '<i data-lucide="calendar-days"></i>',
+  s_100:  '<i data-lucide="medal"></i>',
 };
 
 let _celebrationTimer = null;
@@ -2424,7 +2440,7 @@ function showCelebration(levelUp, newLevelName, newLevelNum, newBadges) {
     const badgeSection = (newBadges && newBadges.length > 0) ? `
       <hr class="celebration-divider">
       ${newBadges.map(b => {
-        const icon = b.id.startsWith('aos_') ? '✅' : (BADGE_ICONS[b.id] || '🏆');
+        const icon = b.id.startsWith('aos_') ? '<i data-lucide="circle-check"></i>' : (BADGE_ICONS[b.id] || '<i data-lucide="trophy"></i>');
         return `<div class="celebration-badge-row">
           <div class="celebration-badge-icon">${icon}</div>
           <div class="celebration-badge-info">
@@ -2438,6 +2454,7 @@ function showCelebration(levelUp, newLevelName, newLevelNum, newBadges) {
       <div class="celebration-levelup-name">Level ${newLevelNum} — ${newLevelName}</div>
       <div class="celebration-levelup-sub">Keep it up!</div>
       ${badgeSection}`;
+    lucide.createIcons();
     document.getElementById('celebration-toast').insertAdjacentHTML('beforeend',
       '<div class="celebration-dismiss-levelup" id="cel-dismiss">Tap to dismiss</div>');
     toast.classList.add('toast-levelup', 'visible');
@@ -2446,7 +2463,7 @@ function showCelebration(levelUp, newLevelName, newLevelNum, newBadges) {
     // Badge-only: smaller neutral card
     document.getElementById('celebration-content').innerHTML =
       newBadges.map(b => {
-        const icon = b.id.startsWith('aos_') ? '✅' : (BADGE_ICONS[b.id] || '🏆');
+        const icon = b.id.startsWith('aos_') ? '<i data-lucide="circle-check"></i>' : (BADGE_ICONS[b.id] || '<i data-lucide="trophy"></i>');
         return `<div class="celebration-badge-row">
           <div class="celebration-badge-icon">${icon}</div>
           <div class="celebration-badge-info">
@@ -2455,6 +2472,7 @@ function showCelebration(levelUp, newLevelName, newLevelNum, newBadges) {
           </div>
         </div>`;
       }).join('');
+    lucide.createIcons();
     toast.classList.add('toast-badge', 'visible');
     _celebrationTimer = setTimeout(hideCelebration, 4000);
   }
@@ -2551,7 +2569,7 @@ function renderAchievements(data) {
   function aosBadgeHtml(badge) {
     const isEarned = earned.has(badge.id);
     return `<div class="aos-badge-row ${isEarned ? 'earned' : 'locked'}">
-      <div class="aos-badge-row-icon">✅</div>
+      <div class="aos-badge-row-icon"><i data-lucide="circle-check"></i></div>
       <div class="aos-badge-row-text">
         <div class="aos-badge-row-name">${badge.name}</div>
         <div class="aos-badge-row-desc">${badge.desc}</div>
@@ -2623,6 +2641,7 @@ function renderAchievements(data) {
     </div>`;
 
   document.getElementById('achievements-content').innerHTML = levelSection + streakSection + badgesSection;
+  lucide.createIcons();
 }
 
 function renderProgressView() {
@@ -2767,6 +2786,8 @@ function showCorodoModal() {
   document.getElementById('cordo-modal').style.display = 'flex';
 }
 </script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
 </body>
 </html>"""
 
