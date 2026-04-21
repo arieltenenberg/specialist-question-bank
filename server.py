@@ -685,6 +685,7 @@ a { color:#1f1f1f; text-decoration:none; }
   color:var(--text-secondary);
 }
 .leaderboard-entry.you { font-weight:700; color:var(--text); }
+.leaderboard-entry:last-child { padding-bottom:0; }
 .leaderboard-rank { min-width:18px; font-size:.75rem; color:var(--muted); }
 .leaderboard-name { flex:1; }
 .leaderboard-count { font-weight:600; color:#1f1f1f; }
@@ -864,14 +865,13 @@ a { color:#1f1f1f; text-decoration:none; }
 .qcard-header .qsection { font-size:.82rem; color:var(--muted); white-space:nowrap; flex-shrink:0; }
 .qcard-header .toggle-icon { color:var(--muted); font-size:.8rem; transition:transform .2s; }
 .qcard.open .toggle-icon { transform:rotate(90deg); }
-.qcard.open .qcard-header { border-bottom:1px solid var(--border); }
 
 .qcard-body-outer { display:none; }
 .qcard.open .qcard-body-outer { display:block; }
-.qcard-body { padding:10px 20px 24px; }
+.qcard-body { padding:0 20px 24px; }
 
 .qimages { display:flex; gap:16px; flex-wrap:wrap; }
-.qimg-wrap { flex:1; min-width:280px; }
+.qimg-wrap { flex:1; min-width:280px; border-top:1px solid var(--border); padding-top:14px; margin-top:0; }
 .qimg-wrap h4 {
   font-size:.75rem;
   color:var(--muted);
