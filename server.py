@@ -2446,8 +2446,6 @@ function showXpCard(xpGained, newXp, levelName, levelXpMin, nextLevelXp, nextLev
   void card.offsetWidth;
 
   document.getElementById('xp-card-gain').textContent = '+' + xpGained + ' XP';
-  document.getElementById('xp-card-level').textContent = levelName;
-
   const bar = document.getElementById('xp-card-bar');
   const xpLabel = document.getElementById('xp-card-xp');
 
@@ -2921,7 +2919,6 @@ function renderProgressView() {
 <div id="xp-card">
   <div class="xp-card-gain" id="xp-card-gain"></div>
   <div class="xp-card-label">
-    <span id="xp-card-level"></span>
     <span id="xp-card-xp"></span>
   </div>
   <div class="xp-card-bar-wrap"><div class="xp-card-bar-fill" id="xp-card-bar"></div></div>
