@@ -895,7 +895,7 @@ a { color:#1f1f1f; text-decoration:none; }
   background:#2d2d2d;
   color:#fff;
   border:1px solid #2d2d2d;
-  padding:10px 22px;
+  padding:8px 20px;
   border-radius:8px;
   cursor:pointer;
   font-size:.85rem;
@@ -1044,7 +1044,7 @@ a { color:#1f1f1f; text-decoration:none; }
   color:#2d2d2d;
   background:#f0f0f0;
   border:1px solid #d5d5d5;
-  padding:10px 22px;
+  padding:8px 20px;
   border-radius:8px;
   cursor:pointer;
   transition:all .15s;
@@ -1062,7 +1062,7 @@ a { color:#1f1f1f; text-decoration:none; }
   border:1px solid #d5d5d5;
   font-size:.85rem;
   font-weight:500;
-  padding:10px 22px;
+  padding:8px 20px;
   border-radius:8px;
   cursor:pointer;
   transition:all .15s;
@@ -1080,7 +1080,7 @@ a { color:#1f1f1f; text-decoration:none; }
   border:1px solid #d5d5d5;
   font-size:.85rem;
   font-weight:500;
-  padding:10px 22px;
+  padding:8px 20px;
   border-radius:8px;
   cursor:pointer;
   transition:all .15s;
