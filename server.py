@@ -2445,26 +2445,10 @@ function hideAllPopups() {
   const toast = document.getElementById('celebration-toast');
   // Pin opacity at 1 via inline style before removing animations,
   // otherwise the base opacity:0 snaps in before the transition fires
-  // Pin at opacity 1 so stripping the animation doesn't snap to base opacity:0
-  card.style.opacity = '1';
-  toast.style.opacity = '1';
-  void card.offsetWidth; // force reflow so transition sees the 1→0 change
-  card.style.transition = 'opacity 1s ease-in-out';
-  toast.style.transition = 'opacity 1s ease-in-out';
-  card.style.opacity = '0';
-  toast.style.opacity = '0';
-  setTimeout(() => {
-    // Strip animation classes only after fade is done — removing them early
-    // causes a snap back to the scale(.92) start keyframe
-    card.classList.remove('card-in', 'card-out');
-    card.style.transition = '';
-    card.style.opacity = '';
-    toast.classList.remove('visible', 'toast-levelup', 'toast-badge');
-    toast.style.transition = '';
-    toast.style.opacity = '';
-    const d = document.getElementById('cel-dismiss');
-    if (d) d.remove();
-  }, 1050);
+  card.classList.remove('card-in', 'card-out');
+  toast.classList.remove('visible', 'toast-levelup', 'toast-badge');
+  const d = document.getElementById('cel-dismiss');
+  if (d) d.remove();
 }
 
 function _resetPopupTimer() {
