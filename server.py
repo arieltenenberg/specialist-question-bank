@@ -1268,10 +1268,25 @@ a { color:#1f1f1f; text-decoration:none; }
   margin-top: 8px;
   line-height: 1.4;
 }
-.ach-questions-count {
-  font-size: .78rem;
+.ach-qtype-row { display: flex; gap: 12px; }
+.ach-qtype-stat {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 12px 10px;
+  flex: 1;
+  text-align: center;
+}
+.ach-qtype-val {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1f1f1f;
+  line-height: 1.1;
+}
+.ach-qtype-lbl {
+  font-size: .7rem;
   color: var(--muted);
-  margin-top: 6px;
+  margin-top: 3px;
+  line-height: 1.3;
 }
 
 /* Badge grid (questions + streaks) */
@@ -2604,7 +2619,29 @@ function renderAchievements(data) {
         <div class="ach-level-name">${data.level_name}</div>
         <div class="ach-xp-bar-wrap"><div class="ach-xp-bar-fill" style="width:${barPct}%"></div></div>
         <div class="ach-xp-label">${xpLabel}</div>
-        <div class="ach-questions-count">${data.total_completed.toLocaleString()} questions completed</div>
+      </div>
+    </div>`;
+
+  const mcDone   = allQ.filter(q => q.section === 'multiple_choice'   && completedIds.has(q.id)).length;
+  const saDone   = allQ.filter(q => q.section === 'short_answer'      && completedIds.has(q.id)).length;
+  const erDone   = allQ.filter(q => q.section === 'extended_response' && completedIds.has(q.id)).length;
+
+  const questionsSection = `
+    <div class="ach-section">
+      <div class="ach-section-title">Questions Completed</div>
+      <div class="ach-qtype-row">
+        <div class="ach-qtype-stat">
+          <div class="ach-qtype-val">${mcDone}</div>
+          <div class="ach-qtype-lbl">Multiple Choice</div>
+        </div>
+        <div class="ach-qtype-stat">
+          <div class="ach-qtype-val">${saDone}</div>
+          <div class="ach-qtype-lbl">Short Answer</div>
+        </div>
+        <div class="ach-qtype-stat">
+          <div class="ach-qtype-val">${erDone}</div>
+          <div class="ach-qtype-lbl">Extended Response</div>
+        </div>
       </div>
     </div>`;
 
@@ -2642,7 +2679,7 @@ function renderAchievements(data) {
       <div class="aos-badge-list">${aosBadgesHtml}</div>
     </div>`;
 
-  document.getElementById('achievements-content').innerHTML = levelSection + streakSection + badgesSection;
+  document.getElementById('achievements-content').innerHTML = levelSection + questionsSection + streakSection + badgesSection;
   lucide.createIcons();
 }
 
