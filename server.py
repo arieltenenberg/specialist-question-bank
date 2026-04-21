@@ -3835,10 +3835,8 @@ USERS_HTML = r"""<!DOCTYPE html>
 body { font-family:'DM Sans',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
 .topbar { background:#2d2d2d; padding:0 28px; display:flex; align-items:center; gap:16px; position:sticky; top:0; z-index:100; height:52px; box-shadow:0 2px 8px rgba(60,44,28,.15); }
 .topbar h1 { font-size:1.05rem; font-weight:600; color:#fff; white-space:nowrap; }
-.tabs { display:flex; gap:4px; margin-left:24px; }
-.tab { background:none; border:none; border-bottom:2px solid transparent; color:rgba(255,255,255,.6); font-family:inherit; font-size:.83rem; font-weight:500; padding:0 18px; height:100%; cursor:pointer; text-decoration:none; transition:all .15s; display:inline-flex; align-items:center; }
-.tab:hover { color:#fff; border-bottom-color:rgba(255,255,255,.4); }
-.tab.active { color:#fff; border-bottom-color:#fff; font-weight:600; }
+.back-link { color:rgba(255,255,255,.65); font-size:.82rem; font-weight:500; text-decoration:none; white-space:nowrap; transition:color .15s; flex-shrink:0; }
+.back-link:hover { color:#fff; }
 .spacer { flex:1; }
 .signout { color:rgba(255,255,255,.65); font-size:.78rem; text-decoration:none; padding:5px 12px; border:1px solid rgba(255,255,255,.2); border-radius:6px; white-space:nowrap; transition:all .15s; }
 .signout:hover { color:#fff; background:rgba(255,255,255,.1); }
@@ -3918,10 +3916,8 @@ body { font-family:'DM Sans',system-ui,sans-serif; background:var(--bg); color:v
 </head>
 <body>
 <div class="topbar">
+  <a class="back-link" href="/">← Subjects</a>
   <h1>VCE Mathematics Question Bank</h1>
-  <div class="tabs">
-    <a class="tab" href="/">← Subjects</a>
-  </div>
   <div class="spacer"></div>
   <a class="signout" href="/logout">Sign out</a>
 </div>
