@@ -1367,6 +1367,35 @@ a { color:#1f1f1f; text-decoration:none; }
 .aos-badge-row.locked .aos-badge-row-desc { color: #b5ada5; }
 .aos-badge-row-lock { font-size: .75rem; color: #c5bdb4; flex-shrink: 0; }
 
+/* ----- XP gain pill ----- */
+@keyframes xp-pill-in {
+  0%   { opacity: 0; transform: translateY(-10px) scale(.88); }
+  60%  { opacity: 1; transform: translateY(2px) scale(1.04); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes xp-pill-out {
+  to { opacity: 0; transform: translateY(-8px) scale(.9); }
+}
+#xp-pill {
+  position: fixed;
+  top: 108px;
+  right: 20px;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  background: #8db370;
+  color: #fff;
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: .03em;
+  padding: 6px 14px;
+  border-radius: 99px;
+  box-shadow: 0 3px 10px rgba(60,44,28,.18);
+  white-space: nowrap;
+}
+#xp-pill.pill-in  { animation: xp-pill-in  .32s cubic-bezier(.22,1,.36,1) forwards; }
+#xp-pill.pill-out { animation: xp-pill-out .28s ease-in forwards; }
+
 /* ----- Celebration toasts ----- */
 @keyframes toast-in {
   0%   { opacity: 0; transform: translateX(-50%) translateY(-16px) scale(.92); }
@@ -2299,6 +2328,7 @@ function toggleCompleted(id, btn) {
     if (data.marked && funnyPopup === 'levick' && Math.random() < 0.2) showLevickModal();
     if (data.marked && funnyPopup === 'cordo' && Math.random() < 0.2) showCorodoModal();
     if (data.marked) {
+      showXpPill(data.xp_gained);
       const leveledUp = data.new_level_num > data.prev_level_num;
       const newBadges = data.newly_earned_badges || [];
       if (leveledUp || newBadges.length > 0) {
@@ -2381,6 +2411,22 @@ const BADGE_ICONS = {
 };
 
 let _celebrationTimer = null;
+let _xpPillTimer = null;
+
+function showXpPill(xp) {
+  if (!xp) return;
+  const pill = document.getElementById('xp-pill');
+  clearTimeout(_xpPillTimer);
+  pill.classList.remove('pill-in', 'pill-out');
+  void pill.offsetWidth;
+  pill.textContent = '+' + xp + ' XP';
+  pill.classList.add('pill-in');
+  _xpPillTimer = setTimeout(() => {
+    pill.classList.remove('pill-in');
+    pill.classList.add('pill-out');
+    _xpPillTimer = setTimeout(() => pill.classList.remove('pill-out'), 300);
+  }, 1800);
+}
 
 function launchConfetti() {
   const canvas = document.createElement('canvas');
@@ -2390,26 +2436,40 @@ function launchConfetti() {
   document.body.appendChild(canvas);
   const ctx = canvas.getContext('2d');
 
-  const COLORS = ['#8db370','#6a9852','#b8d4a0','#d4ead0','#ffffff','#557a38','#c6dfc6','#e4f0d8'];
-  const particles = Array.from({length: 90}, () => {
-    const angle = (Math.random() * 160 - 80) * Math.PI / 180; // spread upward
-    const speed = Math.random() * 14 + 4;
+  const COLORS = [
+    '#f94144','#f3722c','#f9c74f','#90be6d','#43aa8b','#4d908e',
+    '#577590','#277da1','#a8dadc','#e9c46a','#f4a261','#e76f51',
+    '#c77dff','#ff6b9d','#ffffff','#8db370','#ffd166','#06d6a0',
+  ];
+
+  function makeParticle(x, y, angleMin, angleMax, speedMin, speedMax) {
+    const angle = (Math.random() * (angleMax - angleMin) + angleMin) * Math.PI / 180;
+    const speed = Math.random() * (speedMax - speedMin) + speedMin;
     return {
-      x: canvas.width / 2 + (Math.random() - 0.5) * 120,
-      y: 115,
+      x, y,
       vx: Math.sin(angle) * speed,
       vy: -Math.cos(angle) * speed,
-      size: Math.random() * 7 + 3,
+      size: Math.random() * 8 + 3,
       color: COLORS[Math.floor(Math.random() * COLORS.length)],
       rot: Math.random() * 360,
-      rotV: (Math.random() - 0.5) * 12,
-      shape: Math.random() > 0.4 ? 'rect' : 'circle',
-      aspect: Math.random() * 0.5 + 0.3,
+      rotV: (Math.random() - 0.5) * 14,
+      shape: Math.random() > 0.35 ? 'rect' : 'circle',
+      aspect: Math.random() * 0.5 + 0.25,
     };
-  });
+  }
+
+  // Three cannons: centre, left, right
+  const cx = canvas.width / 2, cy = 110;
+  const lx = canvas.width * 0.15, ly = canvas.height * 0.55;
+  const rx = canvas.width * 0.85, ry = canvas.height * 0.55;
+  const particles = [
+    ...Array.from({length: 110}, () => makeParticle(cx + (Math.random()-0.5)*100, cy, -75, 75, 6, 20)),
+    ...Array.from({length: 55},  () => makeParticle(lx, ly, -110, -30, 8, 22)),
+    ...Array.from({length: 55},  () => makeParticle(rx, ry,  30,  110, 8, 22)),
+  ];
 
   const start = performance.now();
-  const DURATION = 2800;
+  const DURATION = 5000;
 
   function frame(now) {
     const elapsed = now - start;
@@ -2419,10 +2479,11 @@ function launchConfetti() {
     particles.forEach(p => {
       p.x  += p.vx;
       p.y  += p.vy;
-      p.vy += 0.32;
-      p.vx *= 0.992;
+      p.vy += 0.28;
+      p.vx *= 0.994;
       p.rot += p.rotV;
-      const alpha = Math.max(0, 1 - progress * 1.4);
+      // Hold full opacity until 55% through, then fade
+      const alpha = Math.max(0, 1 - Math.max(0, progress - 0.55) / 0.45);
 
       ctx.save();
       ctx.globalAlpha = alpha;
@@ -2791,6 +2852,7 @@ function renderProgressView() {
     <button onclick="document.getElementById('levick-modal').style.display='none'" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-family:'DM Sans',system-ui,sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;">Got it</button>
   </div>
 </div>
+<div id="xp-pill"></div>
 <div id="celebration-toast" onclick="hideCelebration()">
   <div id="celebration-content"></div>
 </div>
