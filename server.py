@@ -869,18 +869,11 @@ a { color:#1f1f1f; text-decoration:none; }
 
 .qcard-body-outer { display:none; }
 .qcard.open .qcard-body-outer { display:block; }
-.qcard-body { padding:0 20px 24px; }
+.qcard-body { padding:16px 20px 24px; }
 
 .qimages { display:flex; gap:16px; flex-wrap:wrap; }
-.qimg-wrap { flex:1; min-width:280px; border-top:1px solid var(--border); padding-top:14px; margin-top:0; }
-.qimg-wrap h4 {
-  font-size:.75rem;
-  color:var(--muted);
-  margin-bottom:8px;
-  text-transform:uppercase;
-  letter-spacing:.06em;
-  font-weight:600;
-}
+.qimg-wrap { flex:1; min-width:280px; }
+.sol-wrap .qimg-wrap { border-top:1px solid var(--border); padding-top:14px; }
 .qimg-wrap img {
   width:100%;
   border-radius:8px;
@@ -965,7 +958,7 @@ a { color:#1f1f1f; text-decoration:none; }
   }
   .qcard-header { padding:14px 16px; gap:8px; }
   .qcard-header .marks { font-size:.75rem; }
-  .qcard-body { padding:12px 14px 20px; }
+  .qcard-body { padding:14px 14px 20px; }
   .qimages { flex-direction:column; }
   .qimg-wrap { min-width:0; width:100%; }
   .card-actions { flex-wrap:wrap; }
@@ -2006,8 +1999,8 @@ function buildCardHtml(q) {
   const aosText = getAosText(q);
   const sLabel = sectionLabels[q.section] || '';
   const solInner = q.solution_image
-    ? `<div class="qimg-wrap"><h4>Solution</h4><img src="${q.solution_image}" loading="lazy"/></div>`
-    : '<div class="qimg-wrap"><h4>Solution</h4><p style="color:var(--muted);font-size:.85rem">Not available</p></div>';
+    ? `<div class="qimg-wrap"><img src="${q.solution_image}" loading="lazy"/></div>`
+    : '<div class="qimg-wrap"><p style="color:var(--muted);font-size:.85rem">Not available</p></div>';
   const solBtn = q.solution_image
     ? `<button class="show-sol-btn" onclick="toggleSol(this)">Show Solution</button>`
     : '';
@@ -2042,7 +2035,7 @@ function buildCardHtml(q) {
     </div>
     <div class="qcard-body-outer">
       <div class="qcard-body" onclick="event.stopPropagation()">
-        <div class="qimg-wrap"><h4>Question</h4><img src="${q.question_image}" loading="lazy"/></div>
+        <div class="qimg-wrap"><img src="${q.question_image}" loading="lazy"/></div>
         ${cardActions}
         <div class="sol-wrap sol-hidden">${solInner}</div>
         ${adminControls}
