@@ -425,11 +425,11 @@ Both subjects combined for all XP, streaks, and levels.
 | # | Name | XP threshold |
 |---|------|-------------|
 | 1 | Novice | 0 |
-| 2 | Student | 200 |
-| 3 | Practitioner | 600 |
+| 2 | Apprentice | 200 |
+| 3 | Student | 600 |
 | 4 | Scholar | 1,400 |
-| 5 | Analyst | 3,000 |
-| 6 | Expert | 6,000 |
+| 5 | Prodigy | 3,000 |
+| 6 | Veteran | 6,000 |
 | 7 | Master | 11,000 |
 | 8 | Grandmaster | 17,000 |
 

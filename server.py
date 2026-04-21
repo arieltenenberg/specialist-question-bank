@@ -263,14 +263,14 @@ XP_PER_SECTION = {
 }
 
 LEVELS = [
-    (1, "Novice",       0),
-    (2, "Student",      200),
-    (3, "Practitioner", 600),
-    (4, "Scholar",      1400),
-    (5, "Analyst",      3000),
-    (6, "Expert",       6000),
-    (7, "Master",       11000),
-    (8, "Grandmaster",  17000),
+    (1, "Novice",      0),
+    (2, "Apprentice",  200),
+    (3, "Student",     600),
+    (4, "Scholar",     1400),
+    (5, "Prodigy",     3000),
+    (6, "Veteran",     6000),
+    (7, "Master",      11000),
+    (8, "Grandmaster", 17000),
 ]
 
 QUESTION_BADGES = [
