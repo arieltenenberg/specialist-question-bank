@@ -2441,22 +2441,23 @@ let _popupTimer = null;
 
 function hideAllPopups() {
   clearTimeout(_popupTimer);
-  // Fade out XP card
   const card = document.getElementById('xp-card');
-  card.classList.remove('card-in');
-  card.classList.add('card-out');
-  setTimeout(() => card.classList.remove('card-out'), 520);
-  // Fade out celebration toast
   const toast = document.getElementById('celebration-toast');
-  toast.style.transition = 'opacity .5s';
+  // Fade both with identical mechanism so they're perfectly in sync
+  card.style.transition = 'opacity 1s ease-in-out';
+  card.style.opacity = '0';
+  toast.style.transition = 'opacity 1s ease-in-out';
   toast.style.opacity = '0';
   setTimeout(() => {
+    card.classList.remove('card-in', 'card-out');
+    card.style.transition = '';
+    card.style.opacity = '';
     toast.classList.remove('visible', 'toast-levelup', 'toast-badge');
     toast.style.transition = '';
     toast.style.opacity = '';
     const d = document.getElementById('cel-dismiss');
     if (d) d.remove();
-  }, 520);
+  }, 1050);
 }
 
 function _resetPopupTimer() {
