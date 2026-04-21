@@ -138,6 +138,11 @@ def init_db():
             conn.commit()
         except Exception:
             pass
+        try:
+            conn.execute("ALTER TABLE users ADD COLUMN shabbat_proof INTEGER NOT NULL DEFAULT 0")
+            conn.commit()
+        except Exception:
+            pass
 
 init_db()
 
@@ -4033,6 +4038,7 @@ body { font-family:'DM Sans',system-ui,sans-serif; background:var(--bg); color:v
             data-lb="{{ u['leaderboard_id'] if u['leaderboard_id'] is not none else '' }}"
             data-popup="{{ u['funny_popup'] or '' }}"
             data-nickname="{{ u['nickname'] or '' }}"
+            data-shabbat="{{ u['shabbat_proof'] or 0 }}"
             onclick="openSettings(this)"
             title="Student settings"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
           <button class="btn btn-revoke" onclick="act('{{ u['google_id'] }}','reject')">Revoke</button>
@@ -4135,6 +4141,10 @@ body { font-family:'DM Sans',system-ui,sans-serif; background:var(--bg); color:v
         <option value="cordo">Cordo</option>
       </select>
     </div>
+    <div class="modal-field" style="flex-direction:row;align-items:center;gap:10px">
+      <input type="checkbox" id="modal-shabbat" style="width:16px;height:16px;accent-color:#2d2d2d;cursor:pointer;flex-shrink:0">
+      <label for="modal-shabbat" style="cursor:pointer;margin:0">Shabbat Proof <span style="font-weight:400;color:#a09890">(Saturdays don't break or advance streak)</span></label>
+    </div>
     <div class="modal-actions">
       <button class="btn-modal-cancel" onclick="closeSettings()">Cancel</button>
       <button class="btn-modal-save" onclick="saveSettings()">Save</button>
@@ -4163,6 +4173,7 @@ function openSettings(btn) {
   lbSel.value = lbId !== '' ? String(lbId) : '';
   document.getElementById('modal-nickname').value = nickname;
   document.getElementById('modal-popup-select').value = funnyPopup;
+  document.getElementById('modal-shabbat').checked = btn.dataset.shabbat === '1';
   document.getElementById('modal-new-lb').classList.remove('visible');
   document.getElementById('modal-new-lb-name').value = '';
   document.getElementById('settings-modal').classList.add('open');
@@ -4184,6 +4195,7 @@ async function saveSettings() {
   const lbSel = document.getElementById('modal-lb-select');
   const funnyPopup = document.getElementById('modal-popup-select').value;
   const nickname = document.getElementById('modal-nickname').value.trim();
+  const shabbatProof = document.getElementById('modal-shabbat').checked;
   let lbId = lbSel.value === '' ? null : (lbSel.value === '__new__' ? null : parseInt(lbSel.value));
 
   if (lbSel.value === '__new__') {
@@ -4202,7 +4214,7 @@ async function saveSettings() {
   const r = await fetch('/admin/users/' + settingsUserId + '/settings', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({leaderboard_id: lbId, funny_popup: funnyPopup, nickname})
+    body: JSON.stringify({leaderboard_id: lbId, funny_popup: funnyPopup, nickname, shabbat_proof: shabbatProof})
   });
   const d = await r.json();
   if (d.ok) {
@@ -4211,6 +4223,7 @@ async function saveSettings() {
       settingsGearBtn.dataset.lb = lbId !== null ? String(lbId) : '';
       settingsGearBtn.dataset.popup = funnyPopup;
       settingsGearBtn.dataset.nickname = nickname;
+      settingsGearBtn.dataset.shabbat = shabbatProof ? '1' : '0';
     }
     // Update member lists in the leaderboard section without a reload
     const uid = settingsUserId;
@@ -5150,23 +5163,34 @@ def api_toggle_completed():
             conn.execute("UPDATE users SET xp = xp + ? WHERE google_id=?", (xp_gained, user_id))
             # Streak logic
             today = today_aest()
-            yesterday = yesterday_aest()
-            today_count = conn.execute(
-                "SELECT COUNT(*) FROM completed_questions WHERE user_id=? AND date(completed_at, '+10 hours') = ?",
-                (user_id, today)
-            ).fetchone()[0]
-            user_row = conn.execute(
-                "SELECT current_streak, longest_streak, last_streak_date FROM users WHERE google_id=?", (user_id,)
-            ).fetchone()
-            if user_row and today_count >= 5 and user_row["last_streak_date"] != today:
-                last = user_row["last_streak_date"]
-                streak = (user_row["current_streak"] + 1) if last == yesterday else 1
-                longest = max(user_row["longest_streak"] or 0, streak)
-                conn.execute(
-                    "UPDATE users SET current_streak=?, longest_streak=?, last_streak_date=? WHERE google_id=?",
-                    (streak, longest, today, user_id)
-                )
-                new_streak = streak
+            now_aest = datetime.datetime.now(AEST)
+            today_weekday = now_aest.weekday()  # 5=Saturday, 6=Sunday
+            shabbat_row = conn.execute("SELECT shabbat_proof FROM users WHERE google_id=?", (user_id,)).fetchone()
+            shabbat_proof = bool(shabbat_row and shabbat_row["shabbat_proof"])
+            # Shabbat-proof: Saturday is a neutral day — skip streak update entirely
+            skip_streak = shabbat_proof and today_weekday == 5
+            if not skip_streak:
+                # For Shabbat-proof students, Sunday's "yesterday" is Friday (skipping Saturday)
+                if shabbat_proof and today_weekday == 6:
+                    yesterday = (now_aest - datetime.timedelta(days=2)).strftime("%Y-%m-%d")
+                else:
+                    yesterday = yesterday_aest()
+                today_count = conn.execute(
+                    "SELECT COUNT(*) FROM completed_questions WHERE user_id=? AND date(completed_at, '+10 hours') = ?",
+                    (user_id, today)
+                ).fetchone()[0]
+                user_row = conn.execute(
+                    "SELECT current_streak, longest_streak, last_streak_date FROM users WHERE google_id=?", (user_id,)
+                ).fetchone()
+                if user_row and today_count >= 5 and user_row["last_streak_date"] != today:
+                    last = user_row["last_streak_date"]
+                    streak = (user_row["current_streak"] + 1) if last == yesterday else 1
+                    longest = max(user_row["longest_streak"] or 0, streak)
+                    conn.execute(
+                        "UPDATE users SET current_streak=?, longest_streak=?, last_streak_date=? WHERE google_id=?",
+                        (streak, longest, today, user_id)
+                    )
+                    new_streak = streak
 
         conn.commit()
 
@@ -5394,10 +5418,11 @@ def admin_user_settings(google_id):
     leaderboard_id = body.get("leaderboard_id")  # int or None
     funny_popup = body.get("funny_popup", "")
     nickname = body.get("nickname", "").strip()
+    shabbat_proof = 1 if body.get("shabbat_proof") else 0
     with get_db() as conn:
         conn.execute(
-            "UPDATE users SET leaderboard_id=?, funny_popup=?, nickname=? WHERE google_id=?",
-            (leaderboard_id, funny_popup, nickname or None, google_id)
+            "UPDATE users SET leaderboard_id=?, funny_popup=?, nickname=?, shabbat_proof=? WHERE google_id=?",
+            (leaderboard_id, funny_popup, nickname or None, shabbat_proof, google_id)
         )
         conn.commit()
     return jsonify(ok=True)
