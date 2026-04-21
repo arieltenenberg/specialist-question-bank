@@ -873,7 +873,6 @@ a { color:#1f1f1f; text-decoration:none; }
 
 .qimages { display:flex; gap:16px; flex-wrap:wrap; }
 .qimg-wrap { flex:1; min-width:280px; }
-.sol-wrap .qimg-wrap { border-top:1px solid var(--border); padding-top:16px; }
 .qimg-wrap img {
   display:block;
   width:100%;
@@ -883,7 +882,7 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 
 .sol-hidden { display:none; }
-.sol-wrap { padding-top:14px; }
+.sol-wrap { margin-top:20px; }
 .show-sol-btn {
   font-family:inherit;
   background:#2d2d2d;
@@ -1086,10 +1085,8 @@ a { color:#1f1f1f; text-decoration:none; }
   align-items:flex-start;
   justify-content:space-between;
   gap:8px;
-  margin-top:16px;
+  margin-top:20px;
   margin-bottom:0;
-  padding-top:14px;
-  border-top:1px solid var(--border);
 }
 .card-actions-left { display:flex; gap:8px; align-items:flex-start; }
 
