@@ -457,6 +457,22 @@ BROWSE_HTML = r"""<!DOCTYPE html>
   --shadow-md: 0 4px 12px rgba(60,44,28,.09);
   --radius: 12px;
 }
+body.night-mode {
+  --bg: #1a1714;
+  --surface: #231f1c;
+  --border: #3d3530;
+  --text: #ede8e1;
+  --text-secondary: #a89f97;
+  --muted: #7a726b;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.25);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.35);
+}
+body.night-mode .qcard.completed { background:#1e2a1a; border-color:#5a7a48; }
+body.night-mode .badge-item.earned,
+body.night-mode .aos-badge-row.earned { background:#1e2a1a; border-color:#5a7a48; }
+body.night-mode .aos-badge-row.locked { background:#1e1c1a; border-color:#3d3530; }
+body.night-mode .ach-level-card { background:linear-gradient(135deg,#1e2a1a 0%,#1a2616 100%); border-color:#5a7a48; }
+body.night-mode a { color:var(--text); }
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:'DM Sans',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
 a { color:#1f1f1f; text-decoration:none; }
@@ -1596,6 +1612,10 @@ a { color:#1f1f1f; text-decoration:none; }
             <span>Hide Saved</span>
             <div class="toggle-switch"></div>
           </div>
+          <div class="settings-toggle" id="night-mode-btn" onclick="event.stopPropagation(); toggleNightMode()">
+            <span>Night Mode</span>
+            <div class="toggle-switch"></div>
+          </div>
         </div>
       </div>
       <div class="user-avatar-wrap" id="user-avatar-btn" onclick="toggleUserDropdown()">
@@ -1684,6 +1704,8 @@ let completedIds = new Set();
 let completedOnly = false;
 let hideCompleted = localStorage.getItem('hideCompleted') === 'true';
 let hideSaved = localStorage.getItem('hideSaved') === 'true';
+let nightMode = localStorage.getItem('nightMode') === 'true';
+if (nightMode) document.body.classList.add('night-mode');
 const funnyPopup = {{ funny_popup | tojson }};
 {% if show_leaderboard %}
 {% if is_admin %}
@@ -1794,6 +1816,7 @@ fetch('/api/questions?subject={{ subject }}').then(r => r.json()).then(data => {
   initSidebarGamification();
   document.getElementById('hide-completed-btn').classList.toggle('active', hideCompleted);
   document.getElementById('hide-saved-btn').classList.toggle('active', hideSaved);
+  document.getElementById('night-mode-btn').classList.toggle('active', nightMode);
 });
 
 function buildFilters() {
@@ -2344,6 +2367,13 @@ function toggleHideSaved() {
   document.getElementById('hide-saved-btn').classList.toggle('active', hideSaved);
   page = 0;
   applyFilters();
+}
+
+function toggleNightMode() {
+  nightMode = !nightMode;
+  localStorage.setItem('nightMode', nightMode);
+  document.body.classList.toggle('night-mode', nightMode);
+  document.getElementById('night-mode-btn').classList.toggle('active', nightMode);
 }
 
 function openProgressModal() {
