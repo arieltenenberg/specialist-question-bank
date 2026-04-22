@@ -1457,13 +1457,16 @@ a { color:#1f1f1f; text-decoration:none; }
   box-shadow: 0 4px 16px rgba(60,44,28,.12);
   padding: 10px 20px;
   border-radius: 12px;
+  min-width: 0;
+}
+#celebration-toast.toast-streak #celebration-content {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   font-size: .88rem;
   font-weight: 600;
   color: #1c1917;
-  min-width: 0;
 }
 .celebration-levelup-eyebrow {
   font-size: .68rem;
