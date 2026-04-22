@@ -1039,8 +1039,8 @@ a { color:#1f1f1f; text-decoration:none; }
   font-size:.85rem;
   font-weight:500;
   color:#2d2d2d;
-  background:#e8e8e8;
-  border:1px solid #d5d5d5;
+  background:#d8d8d8;
+  border:1px solid #c4c4c4;
   padding:8px 20px;
   border-radius:8px;
   cursor:pointer;
@@ -1053,9 +1053,9 @@ a { color:#1f1f1f; text-decoration:none; }
 /* ----- Save controls ----- */
 .save-btn {
   font-family:inherit;
-  background:#e8e8e8;
+  background:#d8d8d8;
   color:#2d2d2d;
-  border:1px solid #d5d5d5;
+  border:1px solid #c4c4c4;
   font-size:.85rem;
   font-weight:500;
   padding:8px 20px;
@@ -1070,9 +1070,9 @@ a { color:#1f1f1f; text-decoration:none; }
 /* ----- Complete controls ----- */
 .complete-btn {
   font-family:inherit;
-  background:#e8e8e8;
+  background:#d8d8d8;
   color:#2d2d2d;
-  border:1px solid #d5d5d5;
+  border:1px solid #c4c4c4;
   font-size:.85rem;
   font-weight:500;
   padding:8px 20px;
@@ -1839,14 +1839,14 @@ const sectionLabels = { short_answer: 'Short Answer', multiple_choice: 'Multiple
 
 // Methods tag colours: neutral charcoal
 const METHODS_TAG_STYLES = {
-  1: { bg:'#e8e8e8', color:'#1f1f1f' },
-  2: { bg:'#e8e8e8', color:'#1f1f1f' },
-  3: { bg:'#e8e8e8', color:'#1f1f1f' },
-  4: { bg:'#e8e8e8', color:'#1f1f1f' },
-  5: { bg:'#e8e8e8', color:'#1f1f1f' },
-  6: { bg:'#e8e8e8', color:'#1f1f1f' },
-  7: { bg:'#e8e8e8', color:'#1f1f1f' },
-  8: { bg:'#e8e8e8', color:'#1f1f1f' },
+  1: { bg:'#d8d8d8', color:'#1f1f1f' },
+  2: { bg:'#d8d8d8', color:'#1f1f1f' },
+  3: { bg:'#d8d8d8', color:'#1f1f1f' },
+  4: { bg:'#d8d8d8', color:'#1f1f1f' },
+  5: { bg:'#d8d8d8', color:'#1f1f1f' },
+  6: { bg:'#d8d8d8', color:'#1f1f1f' },
+  7: { bg:'#d8d8d8', color:'#1f1f1f' },
+  8: { bg:'#d8d8d8', color:'#1f1f1f' },
   9: { bg:'#ede9e4', color:'#78716c' },
 };
 
@@ -4613,7 +4613,7 @@ a { color:#1f1f1f; text-decoration:none; }
   font-weight:500;
   padding:3px 10px;
   border-radius:99px;
-  background:#e8e8e8;
+  background:#d8d8d8;
   color:#1f1f1f;
 }
 .flag-time { font-size:.75rem; color:var(--muted); margin-left:auto; }
@@ -4633,9 +4633,9 @@ a { color:#1f1f1f; text-decoration:none; }
   font-weight:600;
   padding:7px 16px;
   border-radius:8px;
-  background:#e8e8e8;
+  background:#d8d8d8;
   color:#2d2d2d;
-  border:1px solid #d5d5d5;
+  border:1px solid #c4c4c4;
   text-decoration:none;
   transition:all .15s;
 }
