@@ -833,7 +833,7 @@ a { color:#1f1f1f; text-decoration:none; }
   border:1px solid #2d2d2d;
   transition:background .15s;
 }
-.chip:hover { background:#444; border-color:#444; }
+.chip:hover { background:#2d2d2d; border-color:#2d2d2d; }
 .chip .x { font-size:.6rem; opacity:.6; }
 .clear-btn {
   font-family:inherit;
@@ -901,7 +901,7 @@ a { color:#1f1f1f; text-decoration:none; }
   transition:all .15s;
   align-self:flex-start;
 }
-.show-sol-btn:hover { background:#444; border-color:#444; }
+.show-sol-btn:hover { background:#2d2d2d; border-color:#2d2d2d; }
 
 /* ----- Load More ----- */
 .load-more-wrap { display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:28px; }
@@ -1039,8 +1039,8 @@ a { color:#1f1f1f; text-decoration:none; }
   font-size:.85rem;
   font-weight:500;
   color:#2d2d2d;
-  background:#f0f0f0;
-  border:1px solid #d5d5d5;
+  background:#ede8dc;
+  border:1px solid #cdc7be;
   padding:8px 20px;
   border-radius:8px;
   cursor:pointer;
@@ -1053,9 +1053,9 @@ a { color:#1f1f1f; text-decoration:none; }
 /* ----- Save controls ----- */
 .save-btn {
   font-family:inherit;
-  background:#f0f0f0;
+  background:#ede8dc;
   color:#2d2d2d;
-  border:1px solid #d5d5d5;
+  border:1px solid #cdc7be;
   font-size:.85rem;
   font-weight:500;
   padding:8px 20px;
@@ -1070,9 +1070,9 @@ a { color:#1f1f1f; text-decoration:none; }
 /* ----- Complete controls ----- */
 .complete-btn {
   font-family:inherit;
-  background:#f0f0f0;
+  background:#ede8dc;
   color:#2d2d2d;
-  border:1px solid #d5d5d5;
+  border:1px solid #cdc7be;
   font-size:.85rem;
   font-weight:500;
   padding:8px 20px;
@@ -1690,7 +1690,7 @@ a { color:#1f1f1f; text-decoration:none; }
     <div class="leaderboard-widget">
       <div class="leaderboard-widget-title" id="leaderboard-title">Leaderboard</div>
       {% if is_admin %}
-      <select id="leaderboard-picker" style="font-family:inherit;font-size:.75rem;padding:4px 6px;border:1px solid #444;border-radius:6px;background:#2a2a2a;color:#ccc;width:100%;margin-bottom:8px;" onchange="loadLeaderboard(this.value)">
+      <select id="leaderboard-picker" style="font-family:inherit;font-size:.75rem;padding:4px 6px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);width:100%;margin-bottom:8px;" onchange="loadLeaderboard(this.value)">
         <option value="">— pick a leaderboard —</option>
       </select>
       {% endif %}
@@ -4633,9 +4633,9 @@ a { color:#1f1f1f; text-decoration:none; }
   font-weight:600;
   padding:7px 16px;
   border-radius:8px;
-  background:#f0f0f0;
+  background:#ede8dc;
   color:#2d2d2d;
-  border:1px solid #d5d5d5;
+  border:1px solid #cdc7be;
   text-decoration:none;
   transition:all .15s;
 }
