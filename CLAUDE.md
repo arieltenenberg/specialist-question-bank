@@ -293,11 +293,16 @@ All pages use a unified warm neutral palette. Never introduce cool blue-greys (T
 | `#2d2d2d` | Topbar background, primary buttons, active states |
 | `#1f1f1f` | Tabs row background |
 | `#1c1917` | Dark text (same as `--text`) |
-| `#8db370` | Sage green — XP bars, completed state, earned badges |
-| `#f0f7eb` | Sage green tint — completed card bg, earned badge bg |
-| `#b8d4a0` | Sage green border — earned badge border |
+| `#3a5c4a` | Eucalyptus green — XP bars, progress fills |
+| `#eaeeeb` | Eucalyptus tint — completed card bg, earned badge bg |
+| `#4d7a64` | Eucalyptus border — completed card border, earned badge border |
+| `#243d33` | Dark eucalyptus — earned badge icon strokes |
+| `#f2ede6` | Warm locked bg — locked badge background |
+| `#e5dfd7` | Warm locked border — locked badge border |
+| `#d8d8d8` | Faded charcoal — action button default background |
+| `#c4c4c4` | Faded charcoal border — action button default border |
 | `#c53030` | Red — admin bar, flag button, error states |
-| `#c5bdb4` | Warm mid-grey — toggle switch inactive, card hover border |
+| `#c5bdb4` | Warm mid-grey — toggle switch inactive |
 | `#a09890` | Warm light-grey — locked/disabled element names |
 | `#b5ada5` | Warm lighter-grey — locked/disabled descriptions |
 
@@ -323,10 +328,10 @@ All pages use a unified warm neutral palette. Never introduce cool blue-greys (T
 ### Action Buttons (inside expanded card)
 All four buttons (Show Solution, Save, Mark as Done, Flag as misclassified) share identical proportions:
 - `padding:8px 20px; font-size:.85rem; border-radius:8px; margin-top:4px`
-- Default: `#f0f0f0` background, `#2d2d2d` text, `#d5d5d5` border
+- Default: `#d8d8d8` background, `#2d2d2d` text, `#c4c4c4` border
 - Hover: fills to `#2d2d2d` with white text
 - Saved state: filled `#2d2d2d`; shows "Saved"
-- Completed state: button stays neutral grey; shows "Unmark as Done" (card background indicates completion)
+- Completed state: filled `#2d2d2d`; shows "Unmark as Done" (card green tint also indicates completion)
 - Flag button: same proportions, fills red on hover
 
 ### Card List

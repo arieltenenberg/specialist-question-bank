@@ -1082,6 +1082,7 @@ a { color:#1f1f1f; text-decoration:none; }
   align-self:flex-start;
 }
 .complete-btn:hover { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
+.complete-btn.completed { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
 .qcard.completed { background:#eaeeeb; border-color:#3a5c4a; }
 .bookmark-icon { display:none; color:#1f1f1f; font-size:.85rem; flex-shrink:0; margin-left:6px; line-height:1; }
 .qcard.saved .bookmark-icon { display:inline; }
