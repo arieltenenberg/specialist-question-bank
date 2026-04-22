@@ -697,15 +697,15 @@ a { color:#1f1f1f; text-decoration:none; }
 .leaderboard-name { font-weight:600; color:#1f1f1f; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; }
 .leaderboard-entry.you .leaderboard-name { color:#1f1f1f; }
 .leaderboard-right { text-align:right; flex-shrink:0; }
-.leaderboard-level {
-  font-size:.68rem;
+.leaderboard-xp {
+  font-size:.82rem;
   font-weight:700;
-  color:#3a5c4a;
+  color:#1f1f1f;
   display:block;
   white-space:nowrap;
 }
-.leaderboard-xp {
-  font-size:.7rem;
+.leaderboard-level {
+  font-size:.68rem;
   color:var(--muted);
   display:block;
   margin-top:1px;
@@ -1807,7 +1807,7 @@ function loadLeaderboard(lbId, silent) {
         return `<div class="leaderboard-entry${entry.is_you ? ' you' : ''}">` +
           `<span class="leaderboard-rank">${i + 1}.</span>` +
           `<div class="leaderboard-name-col"><span class="leaderboard-name">${firstName}</span></div>` +
-          `<div class="leaderboard-right"><span class="leaderboard-level">${entry.level_name}</span><span class="leaderboard-xp">${xpStr}</span></div>` +
+          `<div class="leaderboard-right"><span class="leaderboard-xp">${xpStr}</span><span class="leaderboard-level">${entry.level_name}</span></div>` +
           `</div>`;
       }).join('');
     })
