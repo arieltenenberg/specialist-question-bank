@@ -368,21 +368,16 @@ def compute_earned_badge_ids(total_completed, longest_streak, completed_ids_subj
     return earned
 
 def migrate_xp_for_existing_users():
-    """One-time: compute XP for users who have completed questions but xp=0."""
+    """Recompute XP for all users from their completed questions using current XP rates."""
     with get_db() as conn:
-        users_needing_migration = conn.execute(
-            "SELECT google_id FROM users WHERE xp = 0"
-        ).fetchall()
-        for row in users_needing_migration:
+        users = conn.execute("SELECT google_id FROM users").fetchall()
+        for row in users:
             uid = row["google_id"]
             completed = conn.execute(
                 "SELECT question_id FROM completed_questions WHERE user_id=?", (uid,)
             ).fetchall()
-            if not completed:
-                continue
             total_xp = sum(get_xp_for_question(r["question_id"]) for r in completed)
-            if total_xp > 0:
-                conn.execute("UPDATE users SET xp=? WHERE google_id=?", (total_xp, uid))
+            conn.execute("UPDATE users SET xp=? WHERE google_id=?", (total_xp, uid))
         conn.commit()
 
 migrate_xp_for_existing_users()
