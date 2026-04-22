@@ -1452,6 +1452,19 @@ a { color:#1f1f1f; text-decoration:none; }
   background: var(--surface);
   box-shadow: 0 8px 36px rgba(60,44,28,.14);
 }
+#celebration-toast.toast-streak {
+  background: var(--surface);
+  box-shadow: 0 4px 16px rgba(60,44,28,.12);
+  padding: 10px 20px;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: .88rem;
+  font-weight: 600;
+  color: #1c1917;
+  min-width: 0;
+}
 .celebration-levelup-eyebrow {
   font-size: .68rem;
   font-weight: 700;
@@ -2355,6 +2368,8 @@ function toggleCompleted(id, btn) {
       const newBadges = data.newly_earned_badges || [];
       if (leveledUp || newBadges.length > 0) {
         showCelebration(leveledUp, data.new_level_name, data.new_level_num, newBadges);
+      } else if (data.new_streak) {
+        showStreakToast(data.new_streak);
       }
       if (document.getElementById('achievements-modal').classList.contains('open')) {
         loadGamification();
@@ -2441,7 +2456,7 @@ function hideAllPopups() {
   // Pin opacity at 1 via inline style before removing animations,
   // otherwise the base opacity:0 snaps in before the transition fires
   card.classList.remove('card-in', 'card-out');
-  toast.classList.remove('visible', 'toast-levelup', 'toast-badge');
+  toast.classList.remove('visible', 'toast-levelup', 'toast-badge', 'toast-streak');
   const d = document.getElementById('cel-dismiss');
   if (d) d.remove();
 }
@@ -2536,9 +2551,21 @@ function launchConfetti() {
   }, 1150);
 }
 
+function showStreakToast(streak) {
+  const toast = document.getElementById('celebration-toast');
+  toast.classList.remove('visible', 'toast-levelup', 'toast-badge', 'toast-streak');
+  void toast.offsetWidth;
+  document.getElementById('celebration-content').innerHTML =
+    `<i data-lucide="flame" style="width:18px;height:18px;stroke:#c05621;flex-shrink:0"></i><span>${streak}-day streak!</span>`;
+  lucide.createIcons();
+  toast.classList.add('toast-streak', 'visible');
+  clearTimeout(_popupTimer);
+  _popupTimer = setTimeout(hideAllPopups, 2500);
+}
+
 function showCelebration(levelUp, newLevelName, newLevelNum, newBadges) {
   const toast = document.getElementById('celebration-toast');
-  toast.classList.remove('visible', 'toast-levelup', 'toast-badge');
+  toast.classList.remove('visible', 'toast-levelup', 'toast-badge', 'toast-streak');
   void toast.offsetWidth;
 
   if (levelUp) {
