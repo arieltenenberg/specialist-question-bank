@@ -183,33 +183,38 @@ def find_question_markers(doc):
     """
     markers = []
     question_pattern = re.compile(
-        r"Question\s+(\d+)\s*(?:\((\d+)\s*marks?\))?", re.IGNORECASE
+        r"Question\s+(\d+)\s*(?:\(\s*(\d+)\s*marks?\s*\))?", re.IGNORECASE
     )
 
     for page_idx in range(doc.page_count):
         page = doc[page_idx]
         blocks = page.get_text("dict")["blocks"]
 
+        # Group all lines by their rounded y-position so that text fragments
+        # on the same visual row (e.g. "Question 1" and "(4 marks)" spread
+        # across separate PDF spans) are joined before pattern matching.
+        lines_by_y = {}
         for block in blocks:
-            if block.get("type") != 0:  # text blocks only
+            if block.get("type") != 0:
                 continue
             for line in block.get("lines", []):
-                line_text = ""
-                line_y0 = line["bbox"][1]
-                for span in line.get("spans", []):
-                    line_text += span["text"]
+                y = round(line["bbox"][1])
+                text = "".join(s["text"] for s in line.get("spans", []))
+                lines_by_y.setdefault(y, []).append(text)
 
-                m = question_pattern.search(line_text)
-                if m:
-                    q_num = int(m.group(1))
-                    marks = int(m.group(2)) if m.group(2) else None
-                    markers.append({
-                        "num": q_num,
-                        "page": page_idx,
-                        "y": line_y0,
-                        "marks": marks,
-                        "has_marks": marks is not None,
-                    })
+        for y, texts in lines_by_y.items():
+            line_text = " ".join(t for t in texts if t.strip())
+            m = question_pattern.search(line_text)
+            if m:
+                q_num = int(m.group(1))
+                marks = int(m.group(2)) if m.group(2) else None
+                markers.append({
+                    "num": q_num,
+                    "page": page_idx,
+                    "y": y,
+                    "marks": marks,
+                    "has_marks": marks is not None,
+                })
 
     # Sort by (page, y) so true reading order is preserved regardless of PDF block order
     markers.sort(key=lambda m: (m["page"], m["y"]))

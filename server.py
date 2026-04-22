@@ -261,21 +261,15 @@ def today_aest():
 def yesterday_aest():
     return (datetime.datetime.now(AEST) - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
 
-XP_PER_SECTION = {
-    "multiple_choice": 5,
-    "short_answer": 10,
-    "extended_response": 25,
-}
-
 LEVELS = [
     (1, "Novice",      0),
-    (2, "Apprentice",  200),
-    (3, "Student",     600),
-    (4, "Scholar",     1400),
-    (5, "Prodigy",     3000),
-    (6, "Veteran",     6000),
-    (7, "Master",      11000),
-    (8, "Grandmaster", 17000),
+    (2, "Apprentice",  250),
+    (3, "Student",     750),
+    (4, "Scholar",     1750),
+    (5, "Prodigy",     3750),
+    (6, "Veteran",     7500),
+    (7, "Master",      14000),
+    (8, "Grandmaster", 23500),
 ]
 
 QUESTION_BADGES = [
@@ -295,10 +289,13 @@ STREAK_BADGES = [
     {"id": "s_100", "name": "Centurion",    "desc": "Reach a 100-day streak", "threshold": 100},
 ]
 
-# Build question_id → section lookup and AOS question counts at startup
+# Build question_id → section/marks lookups at startup
 _question_lookup = {}  # question_id → section
+_marks_lookup = {}     # question_id → effective marks (MC 0→1)
 for _q in questions_data + methods_data:
     _question_lookup[_q["id"]] = _q.get("section", "")
+    _m = _q.get("marks") or 0
+    _marks_lookup[_q["id"]] = _m if _m > 0 else 1
 
 SPECIALIST_HIDDEN_AOS = {0, 8, 9}
 METHODS_HIDDEN_AOS = {0, 9}
@@ -331,8 +328,7 @@ def get_next_level(xp):
     return None
 
 def get_xp_for_question(question_id):
-    section = _question_lookup.get(question_id, "")
-    return XP_PER_SECTION.get(section, 0)
+    return _marks_lookup.get(question_id, 1) * 5
 
 def get_aos_badges_for_subject(subject):
     aos_map = SPECIALIST_AOS if subject == "specialist" else METHODS_AOS
@@ -3365,7 +3361,43 @@ function updateProgress() {
     document.getElementById('done-banner').style.display = 'block';
   }
 }
+
+// Fix Marks
+async function saveMarks() {
+  const rows = document.querySelectorAll('.fix-marks-row');
+  const updates = [];
+  rows.forEach(row => {
+    const val = parseInt(row.querySelector('input').value);
+    if (val > 0) updates.push({id: row.dataset.id, marks: val, subject: row.dataset.subject});
+  });
+  if (!updates.length) return;
+  const res = await fetch('/api/fix_marks', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(updates)});
+  const data = await res.json();
+  if (data.ok) { alert('Saved ' + data.updated + ' marks.'); location.reload(); }
+  else alert('Error: ' + data.error);
+}
 </script>
+
+{% if missing_marks %}
+<div style="max-width:700px;margin:40px auto;padding:24px;background:var(--surface,#fdfaf6);border:1px solid var(--border,#e3ddd4);border-radius:12px;">
+  <h3 style="margin:0 0 16px;font-size:1rem;font-weight:600;color:#1c1917;">Fix Missing Marks</h3>
+  <p style="margin:0 0 16px;font-size:.85rem;color:#57534e;">These non-MC questions have no marks stored. Enter the correct value from the exam paper.</p>
+  {% for q in missing_marks %}
+  <div class="fix-marks-row" data-id="{{ q.id }}" data-subject="{{ q.subject }}" style="margin-bottom:20px;border:1px solid var(--border,#e3ddd4);border-radius:8px;overflow:hidden;">
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:#f6f3ee;">
+      <span style="flex:1;font-size:.82rem;color:#1c1917;font-family:monospace;">{{ q.id }}</span>
+      <span style="font-size:.8rem;color:#78716c;white-space:nowrap;">{{ q.section.replace('_',' ') }}</span>
+      <input type="number" min="1" max="30" placeholder="marks" style="width:70px;padding:5px 8px;border:1px solid #e3ddd4;border-radius:6px;font-size:.85rem;text-align:center;">
+    </div>
+    {% if q.question_image %}
+    <img src="{{ q.question_image }}" style="width:100%;display:block;background:#fff;">
+    {% endif %}
+  </div>
+  {% endfor %}
+  <button onclick="saveMarks()" style="margin-top:8px;padding:8px 20px;background:#2d2d2d;color:#fff;border:none;border-radius:8px;font-size:.85rem;cursor:pointer;">Save marks</button>
+</div>
+{% endif %}
+
 </body>
 </html>"""
 
@@ -3584,6 +3616,31 @@ def api_classify_batch():
     return jsonify(ok=True, saved=saved)
 
 
+@app.route("/api/fix_marks", methods=["POST"])
+def api_fix_marks():
+    if not admin_required():
+        return jsonify(error="forbidden"), 403
+    updates = request.get_json()  # [{id, marks, subject}, ...]
+    if not updates:
+        return jsonify(ok=True, updated=0)
+    by_subject = {}
+    for u in updates:
+        by_subject.setdefault(u["subject"], []).append(u)
+    updated = 0
+    for subj, items in by_subject.items():
+        cfg = get_subject_config(subj)
+        with open(cfg["file"]) as f:
+            data = json.load(f)
+        id_map = {u["id"]: u["marks"] for u in items}
+        for q in data:
+            if q["id"] in id_map:
+                q["marks"] = id_map[q["id"]]
+                updated += 1
+        with open(cfg["file"], "w") as f:
+            json.dump(data, f, indent=2)
+    return jsonify(ok=True, updated=updated)
+
+
 @app.route("/classify")
 def classify_page():
     if not admin_required():
@@ -3631,12 +3688,22 @@ def classify_page():
     methods_aos_exam2 = {k: v for k, v in aos_map.items() if k in (6, 7)} if is_methods else {}
     highlight_qid = request.args.get("qid", "")
 
+    # Collect questions with missing marks across both subjects (for the fix-marks widget)
+    missing_marks = []
+    for subj, fname in [("specialist", "specialist_questions.json"), ("methods", "methods_questions.json")]:
+        with open(fname) as f:
+            all_qs = json.load(f)
+        for q in all_qs:
+            if q.get("section") != "multiple_choice" and (q.get("marks") or 0) == 0:
+                missing_marks.append({"id": q["id"], "section": q["section"], "subject": subj, "question_image": q.get("question_image", "")})
+    missing_marks.sort(key=lambda x: x["id"])
+
     return render_template_string(CLASSIFY_HTML, questions=questions, publisher=publisher, year=year,
                                   exam_sets=exam_sets, unsorted_mode=unsorted_mode, unsorted_count=unsorted_count,
                                   flagged_mode=flagged_mode, flagged_count=flagged_count, flags_by_qid=flags_by_qid,
                                   subject=subject, aos_map=aos_map, is_methods=is_methods,
                                   methods_aos_exam1=methods_aos_exam1, methods_aos_exam2=methods_aos_exam2,
-                                  highlight_qid=highlight_qid)
+                                  highlight_qid=highlight_qid, missing_marks=missing_marks)
 
 @app.route("/qimg/<path:filename>")
 def serve_qimg(filename):
