@@ -1082,7 +1082,7 @@ a { color:#1f1f1f; text-decoration:none; }
   align-self:flex-start;
 }
 .complete-btn:hover { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
-.qcard.completed { background: var(--surface); }
+.qcard.completed { background:#e8efec; border-color:#3a5c4a; }
 .bookmark-icon { display:none; color:#1f1f1f; font-size:.85rem; flex-shrink:0; margin-left:6px; line-height:1; }
 .qcard.saved .bookmark-icon { display:inline; }
 .card-actions {
@@ -1189,8 +1189,8 @@ a { color:#1f1f1f; text-decoration:none; }
 
 /* Level hero card */
 .ach-level-card {
-  background: var(--surface);
-  border: 1.5px solid var(--border);
+  background: linear-gradient(135deg, #e8efec 0%, #dce8e3 100%);
+  border: 1.5px solid #7aab8f;
   border-radius: 14px;
   padding: 20px 20px 16px;
   text-align: center;
@@ -1302,8 +1302,8 @@ a { color:#1f1f1f; text-decoration:none; }
   text-align: center;
 }
 .badge-item.earned {
-  background: var(--surface);
-  border: 1.5px solid var(--border);
+  background: #e8efec;
+  border: 1.5px solid #7aab8f;
 }
 .badge-item.locked {
   background: #f8f8f8;
@@ -1318,7 +1318,7 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 .badge-icon { display: flex; align-items: center; justify-content: center; line-height: 1; }
 .badge-icon svg { width: 28px; height: 28px; stroke: #2d2d2d; stroke-width: 2; fill: none; }
-.badge-item.earned .badge-icon svg { stroke: #2d2d2d; }
+.badge-item.earned .badge-icon svg { stroke: #243d33; }
 .badge-item.locked .badge-icon svg { opacity: .35; }
 .badge-lock-pip {
   position: absolute;
@@ -1350,10 +1350,10 @@ a { color:#1f1f1f; text-decoration:none; }
   padding: 10px 14px;
   border-radius: 10px;
 }
-.aos-badge-row.earned { background: var(--surface); border: 1.5px solid var(--border); }
+.aos-badge-row.earned { background: #e8efec; border: 1.5px solid #7aab8f; }
 .aos-badge-row.locked { background: #f8f8f8; border: 1.5px solid #e8e8e8; }
 .aos-badge-row-icon { flex-shrink: 0; display: flex; align-items: center; }
-.aos-badge-row-icon svg { width: 18px; height: 18px; stroke: #2d2d2d; stroke-width: 2; fill: none; }
+.aos-badge-row-icon svg { width: 18px; height: 18px; stroke: #243d33; stroke-width: 2; fill: none; }
 .aos-badge-row.locked .aos-badge-row-icon svg { opacity: .35; stroke: #2d2d2d; }
 .aos-badge-row-text { flex: 1; }
 .aos-badge-row-name { font-size: .82rem; font-weight: 600; color: #2d2d2d; }
