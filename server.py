@@ -448,9 +448,9 @@ BROWSE_HTML = r"""<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f6f3ee;
-  --surface: #fdfaf6;
-  --border: #e3ddd4;
+  --bg: #ede8dc;
+  --surface: #f5f0e6;
+  --border: #ddd6c8;
   --text: #1c1917;
   --text-secondary: #57534e;
   --muted: #78716c;
@@ -695,7 +695,7 @@ a { color:#1f1f1f; text-decoration:none; }
 .leaderboard-rank { min-width:18px; font-size:.75rem; color:var(--muted); }
 .leaderboard-name { flex:1; }
 .leaderboard-count { font-weight:600; color:#1f1f1f; }
-.leaderboard-tick { color:#8db370; font-size:.75rem; margin-left:1px; }
+.leaderboard-tick { color:#3a5c4a; font-size:.75rem; margin-left:1px; }
 .leaderboard-level {
   font-size: .65rem;
   font-weight: 700;
@@ -751,7 +751,7 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 .sidebar-xp-bar-fill {
   height: 100%;
-  background: #8db370;
+  background: #3a5c4a;
   border-radius: 99px;
   transition: width .4s ease;
 }
@@ -810,7 +810,7 @@ a { color:#1f1f1f; text-decoration:none; }
   align-items:center;
   transition:all .15s;
 }
-.filter-btn:hover { background:#e5e5e5; color:#1f1f1f; }
+.filter-btn:hover { background:#ddd8ce; color:#1f1f1f; }
 .filter-btn.active { background:#2d2d2d; color:#fff; }
 .filter-btn.active .badge { color:rgba(255,255,255,.75); }
 .filter-btn .badge { font-size:.75rem; color:var(--muted); min-width:24px; text-align:right; }
@@ -1082,7 +1082,7 @@ a { color:#1f1f1f; text-decoration:none; }
   align-self:flex-start;
 }
 .complete-btn:hover { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
-.qcard.completed { background:#f0f7eb; border-color:#8db370; }
+.qcard.completed { background:#e8efec; border-color:#3a5c4a; }
 .bookmark-icon { display:none; color:#1f1f1f; font-size:.85rem; flex-shrink:0; margin-left:6px; line-height:1; }
 .qcard.saved .bookmark-icon { display:inline; }
 .card-actions {
@@ -1189,8 +1189,8 @@ a { color:#1f1f1f; text-decoration:none; }
 
 /* Level hero card */
 .ach-level-card {
-  background: linear-gradient(135deg, #f0f7eb 0%, #e4f0d8 100%);
-  border: 1.5px solid #b8d4a0;
+  background: linear-gradient(135deg, #e8efec 0%, #dce8e3 100%);
+  border: 1.5px solid #7aab8f;
   border-radius: 14px;
   padding: 20px 20px 16px;
   text-align: center;
@@ -1219,7 +1219,7 @@ a { color:#1f1f1f; text-decoration:none; }
 .ach-xp-bar-fill {
   height: 100%;
   border-radius: 99px;
-  background: #8db370;
+  background: #3a5c4a;
 }
 .ach-xp-label {
   font-size: .78rem;
@@ -1302,8 +1302,8 @@ a { color:#1f1f1f; text-decoration:none; }
   text-align: center;
 }
 .badge-item.earned {
-  background: #f0f7eb;
-  border: 1.5px solid #b8d4a0;
+  background: #e8efec;
+  border: 1.5px solid #7aab8f;
 }
 .badge-item.locked {
   background: #f8f8f8;
@@ -1318,7 +1318,7 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 .badge-icon { display: flex; align-items: center; justify-content: center; line-height: 1; }
 .badge-icon svg { width: 28px; height: 28px; stroke: #2d2d2d; stroke-width: 2; fill: none; }
-.badge-item.earned .badge-icon svg { stroke: #4a6f32; }
+.badge-item.earned .badge-icon svg { stroke: #243d33; }
 .badge-item.locked .badge-icon svg { opacity: .35; }
 .badge-lock-pip {
   position: absolute;
@@ -1350,10 +1350,10 @@ a { color:#1f1f1f; text-decoration:none; }
   padding: 10px 14px;
   border-radius: 10px;
 }
-.aos-badge-row.earned { background: #f0f7eb; border: 1.5px solid #b8d4a0; }
+.aos-badge-row.earned { background: #e8efec; border: 1.5px solid #7aab8f; }
 .aos-badge-row.locked { background: #f8f8f8; border: 1.5px solid #e8e8e8; }
 .aos-badge-row-icon { flex-shrink: 0; display: flex; align-items: center; }
-.aos-badge-row-icon svg { width: 18px; height: 18px; stroke: #4a6f32; stroke-width: 2; fill: none; }
+.aos-badge-row-icon svg { width: 18px; height: 18px; stroke: #243d33; stroke-width: 2; fill: none; }
 .aos-badge-row.locked .aos-badge-row-icon svg { opacity: .35; stroke: #2d2d2d; }
 .aos-badge-row-text { flex: 1; }
 .aos-badge-row-name { font-size: .82rem; font-weight: 600; color: #2d2d2d; }
@@ -1391,7 +1391,7 @@ a { color:#1f1f1f; text-decoration:none; }
 .xp-card-gain {
   font-size: .82rem;
   font-weight: 700;
-  color: #8db370;
+  color: #3a5c4a;
   letter-spacing: .03em;
   margin-bottom: 7px;
 }
@@ -1410,7 +1410,7 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 .xp-card-bar-fill {
   height: 100%;
-  background: #8db370;
+  background: #3a5c4a;
   border-radius: 99px;
   width: 0%;
   transition: width .6s cubic-bezier(.22,1,.36,1);
@@ -1611,7 +1611,7 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 .progress-bar-fill {
   height: 100%;
-  background: #8db370;
+  background: #3a5c4a;
   border-radius: 99px;
   transition: width .4s ease;
 }
@@ -2506,7 +2506,7 @@ const CELEBRATION_COLORS = [
   '#e63946','#ff6b6b','#e76f51',
   '#f4a261','#ff9f1c','#ffb703',
   '#ffd166','#f9c74f','#ffd700',
-  '#8db370','#6a994e','#a7c957',
+  '#3a5c4a','#2d5040','#5a8f78',
   '#ff6b9d','#e5989b','#ffb3c6',
   '#b5838d','#c9b1bd',
   '#ffffff','#fff8f0','#ffecd2',
@@ -2841,7 +2841,7 @@ function renderProgressView() {
 
 <!-- Jacaranda motivational modal -->
 <div id="mark-complete-prompt" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);align-items:center;justify-content:center;">
-  <div style="background:#fdfaf6;border-radius:14px;padding:24px;max-width:340px;width:90%;text-align:center;box-shadow:0 16px 48px rgba(60,44,28,.25);">
+  <div style="background:#f5f0e6;border-radius:14px;padding:24px;max-width:340px;width:90%;text-align:center;box-shadow:0 16px 48px rgba(60,44,28,.25);">
     <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.95rem;font-weight:600;color:#1c1917;margin:0 0 6px;">Mark as done?</p>
     <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.83rem;color:#78716c;margin:0 0 20px;">Would you like to mark this question as completed?</p>
     <div style="display:flex;gap:10px;justify-content:center;">
@@ -2851,7 +2851,7 @@ function renderProgressView() {
   </div>
 </div>
 <div id="unsave-prompt" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);align-items:center;justify-content:center;">
-  <div style="background:#fdfaf6;border-radius:14px;padding:24px;max-width:340px;width:90%;text-align:center;box-shadow:0 16px 48px rgba(60,44,28,.25);">
+  <div style="background:#f5f0e6;border-radius:14px;padding:24px;max-width:340px;width:90%;text-align:center;box-shadow:0 16px 48px rgba(60,44,28,.25);">
     <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.95rem;font-weight:600;color:#1c1917;margin:0 0 6px;">Unsave this question?</p>
     <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.83rem;color:#78716c;margin:0 0 20px;">You've marked this as done — would you like to remove it from your saved questions?</p>
     <div style="display:flex;gap:10px;justify-content:center;">
@@ -2861,7 +2861,7 @@ function renderProgressView() {
   </div>
 </div>
 <div id="jacaranda-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);align-items:center;justify-content:center;">
-  <div style="background:#fdfaf6;border-radius:16px;padding:28px 24px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(60,44,28,.3);">
+  <div style="background:#f5f0e6;border-radius:16px;padding:28px 24px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(60,44,28,.3);">
     <img src="/static/jacaranda_moses.jpeg" alt="Motivation" style="width:100%;border-radius:10px;margin-bottom:18px;">
     <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.9rem;font-weight:500;color:#1c1917;line-height:1.6;margin-bottom:20px;">
       Be like a Jacaranda in exam season — bloom unexpectedly and confuse everyone, including yourself
@@ -2871,7 +2871,7 @@ function renderProgressView() {
 </div>
 <!-- Cordo modal -->
 <div id="cordo-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);align-items:center;justify-content:center;">
-  <div style="background:#fdfaf6;border-radius:16px;padding:28px 24px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(60,44,28,.3);">
+  <div style="background:#f5f0e6;border-radius:16px;padding:28px 24px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(60,44,28,.3);">
     <img src="/static/cordo.jpeg" alt="Cordo" style="width:100%;border-radius:10px;margin-bottom:18px;">
     <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.9rem;font-weight:500;color:#1c1917;line-height:1.6;margin-bottom:20px;">
       Not Bad
@@ -2881,7 +2881,7 @@ function renderProgressView() {
 </div>
 <!-- Mr Levick modal -->
 <div id="levick-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);align-items:center;justify-content:center;">
-  <div style="background:#fdfaf6;border-radius:16px;padding:28px 24px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(60,44,28,.3);">
+  <div style="background:#f5f0e6;border-radius:16px;padding:28px 24px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(60,44,28,.3);">
     <img src="/static/levick.jpeg" alt="Mr Levick" style="width:100%;border-radius:10px;margin-bottom:18px;">
     <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.9rem;font-weight:500;color:#1c1917;line-height:1.6;margin-bottom:20px;">
       He is watching...
@@ -3736,7 +3736,7 @@ HOME_HTML = r"""<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'DM Sans',system-ui,sans-serif; background:#f6f3ee; color:#1c1917; min-height:100vh; }
+body { font-family:'DM Sans',system-ui,sans-serif; background:#ede8dc; color:#1c1917; min-height:100vh; }
 .topbar {
   background:#2d2d2d;
   position:sticky; top:0; z-index:100;
@@ -3761,13 +3761,13 @@ body { font-family:'DM Sans',system-ui,sans-serif; background:#f6f3ee; color:#1c
 .user-avatar:hover { background:rgba(255,255,255,.28); }
 .user-dropdown {
   display:none; position:absolute; top:calc(100% + 10px); right:0;
-  background:#fdfaf6; border:1px solid #e3ddd4; border-radius:10px;
+  background:#f5f0e6; border:1px solid #ddd6c8; border-radius:10px;
   box-shadow:0 4px 12px rgba(60,44,28,.09); min-width:190px; z-index:200; overflow:hidden;
 }
 .user-dropdown.open { display:block; }
-.user-dropdown-header { padding:11px 16px; font-size:.78rem; color:#78716c; border-bottom:1px solid #e3ddd4; }
+.user-dropdown-header { padding:11px 16px; font-size:.78rem; color:#78716c; border-bottom:1px solid #ddd6c8; }
 .user-dropdown a { display:block; padding:10px 16px; font-size:.84rem; color:#1c1917; text-decoration:none; transition:background .15s; }
-.user-dropdown a:hover { background:#f6f3ee; }
+.user-dropdown a:hover { background:#ede8dc; }
 .main {
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   min-height:calc(100vh - 56px); padding:40px 24px;
@@ -3775,7 +3775,7 @@ body { font-family:'DM Sans',system-ui,sans-serif; background:#f6f3ee; color:#1c
 .label { font-size:.72rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:#57534e; margin-bottom:28px; }
 .subject-grid { display:flex; gap:20px; flex-wrap:wrap; justify-content:center; }
 .subject-card {
-  background:#fdfaf6; border:1px solid #e3ddd4; border-radius:16px;
+  background:#f5f0e6; border:1px solid #ddd6c8; border-radius:16px;
   padding:44px 36px 40px; width:280px; text-align:center; cursor:pointer;
   text-decoration:none; color:#1c1917;
   box-shadow:0 1px 3px rgba(60,44,28,.07);
@@ -3849,14 +3849,14 @@ LOGIN_HTML = """<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'DM Sans',system-ui,sans-serif; background:#f6f3ee; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+body { font-family:'DM Sans',system-ui,sans-serif; background:#ede8dc; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; }
 .topbar-strip { background:#2d2d2d; width:100%; height:4px; position:fixed; top:0; left:0; }
-.card { background:#fdfaf6; border:1px solid #e3ddd4; border-radius:12px; padding:40px 36px; width:100%; max-width:380px; text-align:center; box-shadow:0 1px 3px rgba(60,44,28,.07); }
+.card { background:#f5f0e6; border:1px solid #ddd6c8; border-radius:12px; padding:40px 36px; width:100%; max-width:380px; text-align:center; box-shadow:0 1px 3px rgba(60,44,28,.07); }
 h1 { color:#1c1917; font-size:1.1rem; font-weight:700; margin-bottom:8px; }
 p { color:#78716c; font-size:.85rem; margin-bottom:28px; line-height:1.6; }
 .google-btn {
   display:flex; align-items:center; justify-content:center; gap:12px;
-  background:#fdfaf6; color:#1c1917; border:1px solid #e3ddd4; border-radius:8px;
+  background:#f5f0e6; color:#1c1917; border:1px solid #ddd6c8; border-radius:8px;
   padding:12px 24px; width:100%; font-family:inherit; font-size:.9rem; font-weight:500;
   cursor:pointer; text-decoration:none; transition:border-color .15s, box-shadow .15s;
   box-shadow:0 1px 3px rgba(60,44,28,.07);
@@ -3865,7 +3865,7 @@ p { color:#78716c; font-size:.85rem; margin-bottom:28px; line-height:1.6; }
 .google-btn svg { width:20px; height:20px; flex-shrink:0; }
 .msg { font-size:.82rem; margin-bottom:20px; padding:10px 14px; border-radius:8px; }
 .msg.error { color:#c53030; background:#fff0f0; border:1px solid #e8c4c4; }
-.msg.info { color:#78716c; background:#f0ede8; border:1px solid #e3ddd4; }
+.msg.info { color:#78716c; background:#f0ede8; border:1px solid #ddd6c8; }
 </style>
 </head>
 <body>
@@ -3899,9 +3899,9 @@ PENDING_HTML = """<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'DM Sans',system-ui,sans-serif; background:#f6f3ee; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+body { font-family:'DM Sans',system-ui,sans-serif; background:#ede8dc; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; }
 .topbar-strip { background:#2d2d2d; width:100%; height:4px; position:fixed; top:0; left:0; }
-.card { background:#fdfaf6; border:1px solid #e3ddd4; border-radius:12px; padding:48px 36px; width:100%; max-width:420px; text-align:center; box-shadow:0 1px 3px rgba(60,44,28,.07); }
+.card { background:#f5f0e6; border:1px solid #ddd6c8; border-radius:12px; padding:48px 36px; width:100%; max-width:420px; text-align:center; box-shadow:0 1px 3px rgba(60,44,28,.07); }
 .icon { font-size:2.4rem; margin-bottom:16px; }
 h1 { color:#1c1917; font-size:1.1rem; font-weight:700; margin-bottom:10px; }
 p { color:#78716c; font-size:.875rem; line-height:1.7; margin-bottom:28px; }
@@ -3933,8 +3933,8 @@ USERS_HTML = r"""<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:#f6f3ee; --surface:#fdfaf6; --border:#e3ddd4; --text:#1c1917;
-  --text-secondary:#57534e; --muted:#78716c; --accent-green:#8db370; --red:#c53030;
+  --bg:#ede8dc; --surface:#f5f0e6; --border:#ddd6c8; --text:#1c1917;
+  --text-secondary:#57534e; --muted:#78716c; --accent-green:#3a5c4a; --red:#c53030;
   --shadow-sm:0 1px 3px rgba(60,44,28,.07); --shadow-md:0 4px 12px rgba(60,44,28,.09); --radius:12px;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -3978,7 +3978,7 @@ body { font-family:'DM Sans',system-ui,sans-serif; background:var(--bg); color:v
 .progress-bar-row { display:flex; align-items:center; gap:12px; margin-bottom:4px; }
 .progress-bar-label { font-size:.76rem; color:var(--text-secondary); white-space:nowrap; min-width:130px; }
 .progress-bar-track { flex:1; height:9px; background:var(--border); border-radius:99px; overflow:hidden; }
-.progress-bar-fill { height:100%; background:#8db370; border-radius:99px; }
+.progress-bar-fill { height:100%; background:#3a5c4a; border-radius:99px; }
 .progress-bar-count { font-size:.76rem; color:var(--muted); white-space:nowrap; min-width:48px; text-align:right; }
 .progress-sub-bars { margin-top:10px; padding-left:14px; display:flex; flex-direction:column; gap:6px; border-left:2px solid var(--border); }
 .progress-bar-track.sub { height:5px; }
@@ -4442,16 +4442,16 @@ ADMIN_HTML = r"""<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f6f3ee;
-  --surface: #fdfaf6;
-  --border: #e3ddd4;
+  --bg: #ede8dc;
+  --surface: #f5f0e6;
+  --border: #ddd6c8;
   --text: #1c1917;
   --text-secondary: #57534e;
   --muted: #78716c;
   --primary: {{ css_primary }};
   --primary-dark: {{ css_primary_dark }};
   --primary-light: {{ css_primary_light }};
-  --accent-green: #8db370;
+  --accent-green: #3a5c4a;
   --red: #c53030;
   --shadow-sm: 0 1px 3px rgba(60,44,28,.07);
   --shadow-md: 0 4px 12px rgba(60,44,28,.09);
