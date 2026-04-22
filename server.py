@@ -684,26 +684,44 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 .leaderboard-entry {
   display:flex;
-  align-items:center;
+  align-items:baseline;
   gap:8px;
   padding:5px 0;
   font-size:.84rem;
   color:var(--text-secondary);
 }
-.leaderboard-entry.you { font-weight:700; color:var(--text); }
+.leaderboard-entry.you { color:var(--text); }
 .leaderboard-entry:last-child { padding-bottom:0; }
-.leaderboard-rank { min-width:18px; font-size:.75rem; color:var(--muted); }
-.leaderboard-name { flex:1; }
-.leaderboard-count { font-weight:600; color:#1f1f1f; }
-.leaderboard-tick { color:#3a5c4a; font-size:.75rem; margin-left:1px; }
+.leaderboard-rank { min-width:18px; font-size:.75rem; color:var(--muted); flex-shrink:0; }
+.leaderboard-name-col { flex:1; min-width:0; }
+.leaderboard-name { font-weight:600; color:#1f1f1f; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; }
+.leaderboard-entry.you .leaderboard-name { color:#1f1f1f; }
+.leaderboard-xp-bar-wrap {
+  margin-top:3px;
+  height:3px;
+  border-radius:2px;
+  background:var(--border);
+  overflow:hidden;
+}
+.leaderboard-xp-bar-fill {
+  height:100%;
+  border-radius:2px;
+  background:#3a5c4a;
+}
+.leaderboard-right { text-align:right; flex-shrink:0; }
 .leaderboard-level {
-  font-size: .65rem;
-  font-weight: 700;
-  color: #fff;
-  background: #2d2d2d;
-  border-radius: 20px;
-  padding: 1px 6px;
-  white-space: nowrap;
+  font-size:.68rem;
+  font-weight:700;
+  color:#3a5c4a;
+  display:block;
+  white-space:nowrap;
+}
+.leaderboard-xp {
+  font-size:.7rem;
+  color:var(--muted);
+  display:block;
+  margin-top:1px;
+  white-space:nowrap;
 }
 
 /* ----- Sidebar progress widget ----- */
@@ -1797,10 +1815,14 @@ function loadLeaderboard(lbId, silent) {
       }
       el.innerHTML = entries.map((entry, i) => {
         const firstName = entry.nickname || (entry.name ? entry.name.split(' ')[0] : entry.name);
+        const xpStr = (entry.xp || 0).toLocaleString() + ' XP';
+        const bar = entry.is_you
+          ? `<div class="leaderboard-xp-bar-wrap"><div class="leaderboard-xp-bar-fill" style="width:${entry.level_pct}%"></div></div>`
+          : '';
         return `<div class="leaderboard-entry${entry.is_you ? ' you' : ''}">` +
           `<span class="leaderboard-rank">${i + 1}.</span>` +
-          `<span class="leaderboard-name">${firstName}</span>` +
-          `<span class="leaderboard-count">${entry.count}</span>` +
+          `<div class="leaderboard-name-col"><span class="leaderboard-name">${firstName}</span>${bar}</div>` +
+          `<div class="leaderboard-right"><span class="leaderboard-level">${entry.level_name}</span><span class="leaderboard-xp">${xpStr}</span></div>` +
           `</div>`;
       }).join('');
     })
@@ -5355,17 +5377,26 @@ def api_leaderboard():
         lb = conn.execute("SELECT name FROM leaderboards WHERE id=?", (lb_id,)).fetchone()
         lb_name = lb["name"] if lb else None
         rows = conn.execute("""
-            SELECT u.name, u.nickname, u.google_id, u.xp,
-                   COUNT(DISTINCT cq.question_id) AS count
+            SELECT u.name, u.nickname, u.google_id, u.xp
             FROM users u
-            LEFT JOIN completed_questions cq
-              ON u.google_id = cq.user_id AND cq.subject = ?
             WHERE u.leaderboard_id = ?
-            GROUP BY u.google_id
-            ORDER BY count DESC
-        """, (subject, lb_id)).fetchall()
-    entries = [{"name": r["name"], "nickname": r["nickname"], "count": r["count"],
-                "level_num": get_level(r["xp"] or 0)[0], "is_you": r["google_id"] == user_id} for r in rows]
+            ORDER BY u.xp DESC
+        """, (lb_id,)).fetchall()
+    def entry_data(r):
+        xp = r["xp"] or 0
+        lv_num, lv_name, lv_min = get_level(xp)
+        next_lv = get_next_level(xp)
+        if next_lv:
+            pct = int((xp - lv_min) / (next_lv[2] - lv_min) * 100)
+            next_name = next_lv[1]
+        else:
+            pct = 100
+            next_name = None
+        return {"name": r["name"], "nickname": r["nickname"], "xp": xp,
+                "level_num": lv_num, "level_name": lv_name,
+                "level_pct": pct, "next_level_name": next_name,
+                "is_you": r["google_id"] == user_id}
+    entries = [entry_data(r) for r in rows]
     return jsonify({"leaderboard_name": lb_name, "entries": entries})
 
 @app.route("/api/admin/publishers/toggle", methods=["POST"])
