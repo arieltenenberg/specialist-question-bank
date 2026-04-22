@@ -1323,7 +1323,7 @@ a { color:#1f1f1f; text-decoration:none; }
 .badge-item.locked .badge-icon svg { opacity: .35; }
 .badge-lock-pip {
   position: absolute;
-  bottom: -3px;
+  top: -3px;
   right: -5px;
   line-height: 1;
   color: #b5ada5;
