@@ -1456,7 +1456,7 @@ a { color:#1f1f1f; text-decoration:none; }
   background: var(--surface);
   box-shadow: 0 4px 16px rgba(60,44,28,.12);
   padding: 10px 20px;
-  border-radius: 24px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -2556,7 +2556,7 @@ function showStreakToast(streak) {
   toast.classList.remove('visible', 'toast-levelup', 'toast-badge', 'toast-streak');
   void toast.offsetWidth;
   document.getElementById('celebration-content').innerHTML =
-    `<i data-lucide="flame" style="width:18px;height:18px;stroke:#c05621;flex-shrink:0"></i><span>${streak}-day streak!</span>`;
+    `<i data-lucide="zap" style="width:18px;height:18px;stroke:#1c1917;flex-shrink:0"></i><span>${streak} day streak!</span>`;
   lucide.createIcons();
   toast.classList.add('toast-streak', 'visible');
   clearTimeout(_popupTimer);
