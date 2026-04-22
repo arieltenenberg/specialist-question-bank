@@ -1039,8 +1039,8 @@ a { color:#1f1f1f; text-decoration:none; }
   font-size:.85rem;
   font-weight:500;
   color:#2d2d2d;
-  background:#ede8dc;
-  border:1px solid #cdc7be;
+  background:#e8e8e8;
+  border:1px solid #d5d5d5;
   padding:8px 20px;
   border-radius:8px;
   cursor:pointer;
@@ -1053,9 +1053,9 @@ a { color:#1f1f1f; text-decoration:none; }
 /* ----- Save controls ----- */
 .save-btn {
   font-family:inherit;
-  background:#ede8dc;
+  background:#e8e8e8;
   color:#2d2d2d;
-  border:1px solid #cdc7be;
+  border:1px solid #d5d5d5;
   font-size:.85rem;
   font-weight:500;
   padding:8px 20px;
@@ -1070,9 +1070,9 @@ a { color:#1f1f1f; text-decoration:none; }
 /* ----- Complete controls ----- */
 .complete-btn {
   font-family:inherit;
-  background:#ede8dc;
+  background:#e8e8e8;
   color:#2d2d2d;
-  border:1px solid #cdc7be;
+  border:1px solid #d5d5d5;
   font-size:.85rem;
   font-weight:500;
   padding:8px 20px;
@@ -4633,9 +4633,9 @@ a { color:#1f1f1f; text-decoration:none; }
   font-weight:600;
   padding:7px 16px;
   border-radius:8px;
-  background:#ede8dc;
+  background:#e8e8e8;
   color:#2d2d2d;
-  border:1px solid #cdc7be;
+  border:1px solid #d5d5d5;
   text-decoration:none;
   transition:all .15s;
 }
