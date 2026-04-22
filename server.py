@@ -696,18 +696,6 @@ a { color:#1f1f1f; text-decoration:none; }
 .leaderboard-name-col { flex:1; min-width:0; }
 .leaderboard-name { font-weight:600; color:#1f1f1f; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; }
 .leaderboard-entry.you .leaderboard-name { color:#1f1f1f; }
-.leaderboard-xp-bar-wrap {
-  margin-top:3px;
-  height:3px;
-  border-radius:2px;
-  background:var(--border);
-  overflow:hidden;
-}
-.leaderboard-xp-bar-fill {
-  height:100%;
-  border-radius:2px;
-  background:#3a5c4a;
-}
 .leaderboard-right { text-align:right; flex-shrink:0; }
 .leaderboard-level {
   font-size:.68rem;
@@ -1816,12 +1804,9 @@ function loadLeaderboard(lbId, silent) {
       el.innerHTML = entries.map((entry, i) => {
         const firstName = entry.nickname || (entry.name ? entry.name.split(' ')[0] : entry.name);
         const xpStr = (entry.xp || 0).toLocaleString() + ' XP';
-        const bar = entry.is_you
-          ? `<div class="leaderboard-xp-bar-wrap"><div class="leaderboard-xp-bar-fill" style="width:${entry.level_pct}%"></div></div>`
-          : '';
         return `<div class="leaderboard-entry${entry.is_you ? ' you' : ''}">` +
           `<span class="leaderboard-rank">${i + 1}.</span>` +
-          `<div class="leaderboard-name-col"><span class="leaderboard-name">${firstName}</span>${bar}</div>` +
+          `<div class="leaderboard-name-col"><span class="leaderboard-name">${firstName}</span></div>` +
           `<div class="leaderboard-right"><span class="leaderboard-level">${entry.level_name}</span><span class="leaderboard-xp">${xpStr}</span></div>` +
           `</div>`;
       }).join('');
