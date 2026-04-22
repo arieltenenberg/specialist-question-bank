@@ -171,6 +171,7 @@ The admin upload UI triggers all three automatically.
 - Do one publisher/year at a time; analyse classifier corrections after each batch
 - **Classifier improvement workflow**: after manually sorting unsorted questions, ask Claude to analyse the corrections (via `git diff`) and update keyword rules in `03_classify.py`. Do NOT rerun the classifier — it's slow and unnecessary since questions are already manually fixed. Improvements apply to the next batch.
 - **Reclassification commit workflow**: reclassify questions locally via the classify UI, then tell Claude "I have reclassified some questions locally". Claude will run `git diff` to review, commit, and push. Then pull and restart on the server.
+- **Marks extraction**: the pipeline extracts marks from `"Question N (X marks)"` patterns, including when the mark count appears on a separate line or is spaced apart (e.g. Kilbaha format). MC questions always store `marks=0` — this is expected and correct. If marks are missing after import, use the **Fix Missing Marks** widget at the bottom of `/classify` (visible on any subject page).
 
 ### One-time local setup
 ```bash
