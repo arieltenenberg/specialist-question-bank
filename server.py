@@ -1301,6 +1301,7 @@ a { color:#1f1f1f; text-decoration:none; }
   padding: 12px 8px 10px;
   border-radius: 12px;
   text-align: center;
+  position: relative;
 }
 .badge-item.earned {
   background: #eaeeeb;
@@ -1323,8 +1324,8 @@ a { color:#1f1f1f; text-decoration:none; }
 .badge-item.locked .badge-icon svg { opacity: .35; }
 .badge-lock-pip {
   position: absolute;
-  top: -3px;
-  right: -5px;
+  top: 7px;
+  right: 7px;
   line-height: 1;
   color: #b5ada5;
 }
@@ -2678,9 +2679,9 @@ function renderAchievements(data) {
   function badgeHtml(badge, icon) {
     const isEarned = earned.has(badge.id);
     return `<div class="badge-item ${isEarned ? 'earned' : 'locked'}" title="${badge.desc}">
+      ${!isEarned ? '<span class="badge-lock-pip"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>' : ''}
       <div class="badge-icon-wrap">
         <span class="badge-icon">${icon}</span>
-        ${!isEarned ? '<span class="badge-lock-pip"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>' : ''}
       </div>
       <div class="badge-name">${badge.name}</div>
       <div class="badge-desc">${badge.desc}</div>
