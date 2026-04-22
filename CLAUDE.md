@@ -299,8 +299,8 @@ All pages use a unified warm neutral palette. Never introduce cool blue-greys (T
 | `#243d33` | Dark eucalyptus — earned badge icon strokes |
 | `#f2ede6` | Warm locked bg — locked badge background |
 | `#e5dfd7` | Warm locked border — locked badge border |
-| `#d8d8d8` | Faded charcoal — action button default background |
-| `#c4c4c4` | Faded charcoal border — action button default border |
+| `#e8e4dd` | Warm off-white — action button default background |
+| `#d0ccc4` | Warm border — action button default border |
 | `#c53030` | Red — admin bar, flag button, error states |
 | `#c5bdb4` | Warm mid-grey — toggle switch inactive |
 | `#a09890` | Warm light-grey — locked/disabled element names |
