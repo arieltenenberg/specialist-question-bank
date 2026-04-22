@@ -473,7 +473,7 @@ Returns `prev_level_num`, `new_level_num`, `new_level_name`, `newly_earned_badge
 - Opened via trophy Lucide button in the topbar brand row (same row as progress and settings icons)
 - `openAchievementsModal()` / `loadGamification()` / `renderAchievements(data)`
 - Canvas confetti fires on level-up celebration
-- Celebration toast has two variants: level-up (with level name) and badge unlock
+- Celebration toast has three variants: level-up (with level name), badge unlock, and streak increment (`toast-streak` — small, zap icon, auto-dismisses after 2.5s; only shows when no level-up or badge fires)
 - Modal sections (top to bottom): Level card (XP bar) → Questions Completed (MC / SA / ER breakdown, computed client-side from `allQ` + `completedIds`) → Streak (current + best, "N days" format) → Question Milestones badges → Streak badges → AOS badges
 
 ### Sidebar progress widget
