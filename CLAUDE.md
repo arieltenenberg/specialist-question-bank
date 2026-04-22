@@ -418,11 +418,13 @@ Named leaderboard groups — students see their own group's completion rankings 
 Students earn XP for completing questions, level up through named tiers, maintain daily streaks, and unlock badges.
 
 ### XP Rates
-| Section type | XP |
-|---|---|
-| Multiple Choice | 5 |
-| Short Answer | 10 |
-| Extended Response | 25 |
+XP is calculated as **marks × 5**. MC questions are stored with `marks=0` and treated as 1 mark (5 XP). All other questions use their stored `marks` value. `_marks_lookup` at startup maps every question_id to its effective marks (0→1 for MC).
+
+| Example | Marks | XP |
+|---|---|---|
+| Multiple Choice | 1 | 5 |
+| Short Answer (typical) | 3–5 | 15–25 |
+| Extended Response (typical) | 8–12 | 40–60 |
 
 Both subjects combined for all XP, streaks, and levels.
 
@@ -430,13 +432,13 @@ Both subjects combined for all XP, streaks, and levels.
 | # | Name | XP threshold |
 |---|------|-------------|
 | 1 | Novice | 0 |
-| 2 | Apprentice | 200 |
-| 3 | Student | 600 |
-| 4 | Scholar | 1,400 |
-| 5 | Prodigy | 3,000 |
-| 6 | Veteran | 6,000 |
-| 7 | Master | 11,000 |
-| 8 | Grandmaster | 17,000 |
+| 2 | Apprentice | 250 |
+| 3 | Student | 750 |
+| 4 | Scholar | 1,750 |
+| 5 | Prodigy | 3,750 |
+| 6 | Veteran | 7,500 |
+| 7 | Master | 14,000 |
+| 8 | Grandmaster | 23,500 |
 
 ### Streaks
 - 5+ questions/day (AEST, UTC+10) keeps the streak alive — counted via `date(completed_at, '+10 hours')` in SQLite
