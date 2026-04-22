@@ -1190,7 +1190,7 @@ a { color:#1f1f1f; text-decoration:none; }
 /* Level hero card */
 .ach-level-card {
   background: linear-gradient(135deg, #e8efec 0%, #dce8e3 100%);
-  border: 1.5px solid #7aab8f;
+  border: 1.5px solid #4d7a64;
   border-radius: 14px;
   padding: 20px 20px 16px;
   text-align: center;
@@ -1303,7 +1303,7 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 .badge-item.earned {
   background: #e8efec;
-  border: 1.5px solid #7aab8f;
+  border: 1.5px solid #4d7a64;
 }
 .badge-item.locked {
   background: #f8f8f8;
@@ -1350,7 +1350,7 @@ a { color:#1f1f1f; text-decoration:none; }
   padding: 10px 14px;
   border-radius: 10px;
 }
-.aos-badge-row.earned { background: #e8efec; border: 1.5px solid #7aab8f; }
+.aos-badge-row.earned { background: #e8efec; border: 1.5px solid #4d7a64; }
 .aos-badge-row.locked { background: #f8f8f8; border: 1.5px solid #e8e8e8; }
 .aos-badge-row-icon { flex-shrink: 0; display: flex; align-items: center; }
 .aos-badge-row-icon svg { width: 18px; height: 18px; stroke: #243d33; stroke-width: 2; fill: none; }
