@@ -1086,7 +1086,7 @@ a { color:#1f1f1f; text-decoration:none; }
 .complete-btn:hover { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
 .complete-btn.completed { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
 .qcard.completed { background:#eaeeeb; border-color:#3a5c4a; }
-.bookmark-icon { display:none; color:#1f1f1f; font-size:.85rem; flex-shrink:0; margin-left:6px; line-height:1; }
+.bookmark-icon { display:none; color:#1f1f1f; font-size:.85rem; line-height:1; }
 .qcard.saved .bookmark-icon { display:inline; }
 .note-btn {
   display:none;
@@ -1104,7 +1104,8 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 .note-btn:hover { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
 .qcard.saved .note-btn { display:inline-block; }
-.note-icon { display:none; color:#1f1f1f; font-size:1rem; flex-shrink:0; margin-right:2px; line-height:1; }
+.card-icons { display:flex; align-items:center; gap:3px; flex-shrink:0; }
+.note-icon { display:none; color:#1f1f1f; font-size:1.1rem; line-height:1; transform:translateY(-1px); }
 .qcard.has-note .note-icon { display:inline; cursor:help; }
 .card-actions {
   display:flex;
@@ -2073,8 +2074,9 @@ function buildCardHtml(q) {
         <span class="qaos">${aosText}</span>
         <span class="qmeta">&nbsp;·&nbsp;${sLabel}</span>
       </div>
-      <span class="note-icon">&#9670;</span>
-      <span class="bookmark-icon">&#9733;</span>
+      <span class="card-icons">
+        <span class="note-icon">&#9670;</span><span class="bookmark-icon">&#9733;</span>
+      </span>
       <span class="qsection">${q.publisher} ${q.year} · Q${q.question_number}</span>
       <span class="toggle-icon">&#9656;</span>
     </div>
