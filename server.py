@@ -1104,7 +1104,7 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 .note-btn:hover { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
 .qcard.saved .note-btn { display:inline-block; }
-.card-icons { display:flex; align-items:center; gap:3px; flex-shrink:0; }
+.card-icons { display:flex; align-items:center; gap:12px; flex-shrink:0; }
 .note-icon { display:none; color:#1f1f1f; font-size:1.1rem; line-height:1; transform:translateY(-1px); }
 .qcard.has-note .note-icon { display:inline; cursor:help; }
 .card-actions {
