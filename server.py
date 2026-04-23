@@ -1106,7 +1106,7 @@ a { color:#1f1f1f; text-decoration:none; }
 .qcard.saved .note-btn { display:inline-block; }
 .card-icons { display:flex; align-items:center; gap:12px; flex-shrink:0; }
 .note-icon { display:none; color:#1f1f1f; font-size:1.1rem; line-height:1; transform:translateY(-1px); }
-.qcard.has-note .note-icon { display:inline; cursor:help; }
+.qcard.has-note .note-icon { display:inline; }
 .card-actions {
   display:flex;
   align-items:flex-start;
