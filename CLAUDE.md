@@ -247,10 +247,19 @@ Students can save questions from the browse page for easy access later.
 - **UI:** "Save" button toggles to filled dark "Saved" state; "Saved" tab in the topbar toggles a saved-only filter
 - **Popup:** unsaving any saved question (regardless of active tab) prompts "Mark as done?" — `showMarkCompletePrompt(id)` — skipped if the question is already completed
 - **Storage:** `difficult_questions` table in `users.db` (column name is historical; feature is called "Saved Questions" in the UI)
-- **Schema:** `user_id TEXT, question_id TEXT, subject TEXT, created_at TEXT, PRIMARY KEY (user_id, question_id, subject)`
+- **Schema:** `user_id TEXT, question_id TEXT, subject TEXT, created_at TEXT, note TEXT, PRIMARY KEY (user_id, question_id, subject)`
 - **Saved indicator:** ★ star icon in card header (see Completed Questions section for details) — no left border
 - **Isolation:** Specialist and Methods saved collections are completely separate (scoped by `subject` column)
 - **DEV_MODE:** Uses `"dev_user"` as the user ID when no session exists
+
+### Saved Question Notes
+Students can attach a private note to any saved question (e.g. what to ask their tutor).
+- **UI:** "Add Note" / "Edit Note" button appears in card actions when a question is saved; opens a modal with a textarea. A red trash icon button (right-aligned) appears in the modal when editing an existing note.
+- **Indicator:** ◆ icon (`.note-icon`) in the card header, left of the ★; hidden by default, shown via `.qcard.has-note .note-icon { display:inline }`. Both icons are wrapped in `.card-icons` (flex, `gap:12px`) so the header flex gap doesn't split them apart.
+- **Tooltip:** hovering ◆ shows the note text in a floating tooltip (`#_noteTip`) appended to `document.body` and positioned via `getBoundingClientRect` — immune to parent `overflow:hidden`. Centered on the icon.
+- **Storage:** `note TEXT` column on `difficult_questions` (added via `ALTER TABLE` migration at startup)
+- **API:** `GET /api/saved` returns `{ids, notes}` (notes keyed by question_id). `POST /api/saved/note` with `{question_id, subject, note}` upserts the note. Saving empty string clears the note.
+- **JS:** `savedNotes = {}` map; `applyNoteState(id, note)` updates icon, button label, and `data-note` attribute; `openNoteModal(id)`, `saveNote()`, `deleteNote()`, `closeNoteModal()`
 
 ## Completed Questions Feature
 Students can mark questions as done. Completed questions are highlighted in emerald green for both subjects.
