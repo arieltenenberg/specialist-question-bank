@@ -2389,7 +2389,9 @@ document.addEventListener('mouseover', e => {
   _noteTip.textContent = icon.dataset.note;
   _noteTip.style.display = 'block';
   const r = icon.getBoundingClientRect();
-  _noteTip.style.left = Math.min(r.left, window.innerWidth - 280) + 'px';
+  const tipW = _noteTip.offsetWidth;
+  const centred = r.left + r.width / 2 - tipW / 2;
+  _noteTip.style.left = Math.max(8, Math.min(centred, window.innerWidth - tipW - 8)) + 'px';
   _noteTip.style.top = (r.bottom + 6) + 'px';
 });
 
