@@ -1104,7 +1104,7 @@ a { color:#1f1f1f; text-decoration:none; }
 }
 .note-btn:hover { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
 .qcard.saved .note-btn { display:inline-block; }
-.note-icon { display:none; color:#78716c; font-size:.8rem; flex-shrink:0; margin-left:3px; line-height:1; }
+.note-icon { display:none; color:#1f1f1f; font-size:.85rem; flex-shrink:0; margin-right:6px; line-height:1; }
 .qcard.has-note .note-icon { display:inline; }
 .note-display {
   margin-top:12px;
@@ -2086,8 +2086,8 @@ function buildCardHtml(q) {
         <span class="qaos">${aosText}</span>
         <span class="qmeta">&nbsp;·&nbsp;${sLabel}</span>
       </div>
-      <span class="bookmark-icon">&#9733;</span>
       <span class="note-icon">&#9998;</span>
+      <span class="bookmark-icon">&#9733;</span>
       <span class="qsection">${q.publisher} ${q.year} · Q${q.question_number}</span>
       <span class="toggle-icon">&#9656;</span>
     </div>
@@ -2958,7 +2958,7 @@ function renderProgressView() {
   <div style="background:#fdfaf6;border-radius:14px;padding:24px;max-width:480px;width:90%;box-shadow:0 16px 48px rgba(60,44,28,.25);" onclick="event.stopPropagation()">
     <p id="note-modal-title" style="font-family:'DM Sans',system-ui,sans-serif;font-size:.95rem;font-weight:600;color:#1c1917;margin:0 0 4px;">Add a note</p>
     <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.83rem;color:#78716c;margin:0 0 14px;">Only you can see this note.</p>
-    <textarea id="note-textarea" rows="4" style="width:100%;box-sizing:border-box;font-family:'DM Sans',system-ui,sans-serif;font-size:.875rem;color:#1c1917;background:#fff;border:1px solid #e3ddd4;border-radius:8px;padding:10px 12px;resize:vertical;outline:none;" placeholder="e.g. Ask about the substitution in part b"></textarea>
+    <textarea id="note-textarea" rows="4" style="width:100%;box-sizing:border-box;font-family:'DM Sans',system-ui,sans-serif;font-size:.875rem;color:#1c1917;background:#fff;border:1px solid #e3ddd4;border-radius:8px;padding:10px 12px;resize:vertical;outline:none;" placeholder="Write a note about this question..."></textarea>
     <div style="display:flex;gap:10px;margin-top:14px;">
       <button onclick="saveNote()" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-family:'DM Sans',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Save</button>
       <button onclick="closeNoteModal()" style="background:#e8e4dd;color:#57534e;border:none;border-radius:8px;padding:9px 22px;font-family:'DM Sans',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Cancel</button>
