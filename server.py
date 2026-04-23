@@ -143,6 +143,11 @@ def init_db():
             conn.commit()
         except Exception:
             pass
+        try:
+            conn.execute("ALTER TABLE difficult_questions ADD COLUMN note TEXT NOT NULL DEFAULT ''")
+            conn.commit()
+        except Exception:
+            pass
 
 init_db()
 
@@ -1083,6 +1088,36 @@ a { color:#1f1f1f; text-decoration:none; }
 .qcard.completed { background:#eaeeeb; border-color:#3a5c4a; }
 .bookmark-icon { display:none; color:#1f1f1f; font-size:.85rem; flex-shrink:0; margin-left:6px; line-height:1; }
 .qcard.saved .bookmark-icon { display:inline; }
+.note-btn {
+  display:none;
+  font-family:inherit;
+  background:#e8e4dd;
+  color:#2d2d2d;
+  border:1px solid #d0ccc4;
+  font-size:.85rem;
+  font-weight:500;
+  padding:8px 20px;
+  border-radius:8px;
+  cursor:pointer;
+  transition:all .15s;
+  align-self:flex-start;
+}
+.note-btn:hover { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
+.qcard.saved .note-btn { display:inline-block; }
+.note-icon { display:none; color:#78716c; font-size:.8rem; flex-shrink:0; margin-left:3px; line-height:1; }
+.qcard.has-note .note-icon { display:inline; }
+.note-display {
+  margin-top:12px;
+  padding:10px 14px;
+  background:#f2ede6;
+  border:1px solid #e3ddd4;
+  border-radius:8px;
+  font-size:.85rem;
+  color:#57534e;
+  white-space:pre-wrap;
+  display:none;
+}
+.note-display.visible { display:block; }
 .card-actions {
   display:flex;
   align-items:flex-start;
@@ -1747,6 +1782,7 @@ let filtered = [];
 let page = 0;
 let filters = { aos: new Set(), tag: new Set(), extended: new Set(), year: new Set(), publisher: new Set(), exam_type: new Set(), section: new Set() };
 let savedIds = new Set();
+let savedNotes = {};
 let savedOnly = false;
 let completedIds = new Set();
 let completedOnly = false;
@@ -2039,9 +2075,11 @@ function buildCardHtml(q) {
         ${solBtn}
         <button class="save-btn" id="save-btn-${q.id}" onclick="toggleSaved('${q.id}', this)">Save</button>
         <button class="complete-btn" id="complete-btn-${q.id}" onclick="toggleCompleted('${q.id}', this)">Mark as Done</button>
+        <button class="note-btn" id="note-btn-${q.id}" onclick="openNoteModal('${q.id}')">Add Note</button>
       </div>
       <button class="flag-btn" id="flag-btn-${q.id}" onclick="submitFlag('${q.id}', this)">⚑ Flag as misclassified</button>
-    </div>` : solBtn;
+    </div>
+    <div class="note-display" id="note-display-${q.id}"></div>` : solBtn;
   return `<div class="qcard" id="qcard-${q.id}" onclick="this.classList.toggle('open')">
     <div class="qcard-header">
       <div class="qcard-left">
@@ -2049,6 +2087,7 @@ function buildCardHtml(q) {
         <span class="qmeta">&nbsp;·&nbsp;${sLabel}</span>
       </div>
       <span class="bookmark-icon">&#9733;</span>
+      <span class="note-icon">&#9998;</span>
       <span class="qsection">${q.publisher} ${q.year} · Q${q.question_number}</span>
       <span class="toggle-icon">&#9656;</span>
     </div>
@@ -2068,6 +2107,7 @@ function applyCardStates(questions) {
     if (savedIds.has(q.id)) {
       const btn = document.getElementById('save-btn-' + q.id);
       if (btn) markSaveBtn(btn, true);
+      applyNoteState(q.id, savedNotes[q.id] || '');
     }
     if (completedIds.has(q.id)) {
       const btn = document.getElementById('complete-btn-' + q.id);
@@ -2208,10 +2248,12 @@ function submitFlag(id, btn) {
 function loadSavedIds() {
   fetch('/api/saved?subject={{ subject }}').then(r => r.json()).then(data => {
     savedIds = new Set(data.ids);
+    savedNotes = data.notes || {};
     if (hideSaved) { applyFilters(); return; }
     savedIds.forEach(id => {
       const btn = document.getElementById('save-btn-' + id);
       if (btn) markSaveBtn(btn, true);
+      applyNoteState(id, savedNotes[id] || '');
     });
   });
 }
@@ -2324,7 +2366,62 @@ function markSaveBtn(btn, saved) {
   btn.textContent = saved ? 'Saved' : 'Save';
   btn.classList.toggle('saved', saved);
   const card = btn.closest('.qcard');
-  if (card) card.classList.toggle('saved', saved);
+  if (card) {
+    card.classList.toggle('saved', saved);
+    if (!saved) {
+      const id = btn.id.replace('save-btn-', '');
+      delete savedNotes[id];
+      applyNoteState(id, '');
+    }
+  }
+}
+
+function applyNoteState(id, note) {
+  const card = document.getElementById('qcard-' + id);
+  if (!card) return;
+  card.classList.toggle('has-note', !!note);
+  const noteBtn = document.getElementById('note-btn-' + id);
+  if (noteBtn) noteBtn.textContent = note ? 'Edit Note' : 'Add Note';
+  const noteDisplay = document.getElementById('note-display-' + id);
+  if (noteDisplay) {
+    noteDisplay.textContent = note;
+    noteDisplay.classList.toggle('visible', !!note);
+  }
+}
+
+function openNoteModal(id) {
+  const modal = document.getElementById('note-modal');
+  modal.dataset.questionId = id;
+  const note = savedNotes[id] || '';
+  document.getElementById('note-modal-title').textContent = note ? 'Edit note' : 'Add a note';
+  document.getElementById('note-textarea').value = note;
+  modal.style.display = 'flex';
+  setTimeout(() => document.getElementById('note-textarea').focus(), 50);
+  document.addEventListener('keydown', noteModalKeyHandler);
+}
+
+function closeNoteModal() {
+  document.getElementById('note-modal').style.display = 'none';
+  document.removeEventListener('keydown', noteModalKeyHandler);
+}
+
+function noteModalKeyHandler(e) {
+  if (e.key === 'Escape') closeNoteModal();
+}
+
+function saveNote() {
+  const modal = document.getElementById('note-modal');
+  const id = modal.dataset.questionId;
+  const note = document.getElementById('note-textarea').value.trim();
+  fetch('/api/saved/note', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question_id: id, subject: '{{ subject }}', note })
+  }).then(r => r.json()).then(() => {
+    savedNotes[id] = note;
+    applyNoteState(id, note);
+    closeNoteModal();
+  });
 }
 
 function showAllQuestions() {
@@ -2857,6 +2954,17 @@ function renderProgressView() {
 </script>
 
 <!-- Jacaranda motivational modal -->
+<div id="note-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);align-items:center;justify-content:center;" onclick="if(event.target===this)closeNoteModal()">
+  <div style="background:#fdfaf6;border-radius:14px;padding:24px;max-width:480px;width:90%;box-shadow:0 16px 48px rgba(60,44,28,.25);" onclick="event.stopPropagation()">
+    <p id="note-modal-title" style="font-family:'DM Sans',system-ui,sans-serif;font-size:.95rem;font-weight:600;color:#1c1917;margin:0 0 4px;">Add a note</p>
+    <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.83rem;color:#78716c;margin:0 0 14px;">Only you can see this note.</p>
+    <textarea id="note-textarea" rows="4" style="width:100%;box-sizing:border-box;font-family:'DM Sans',system-ui,sans-serif;font-size:.875rem;color:#1c1917;background:#fff;border:1px solid #e3ddd4;border-radius:8px;padding:10px 12px;resize:vertical;outline:none;" placeholder="e.g. Ask about the substitution in part b"></textarea>
+    <div style="display:flex;gap:10px;margin-top:14px;">
+      <button onclick="saveNote()" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-family:'DM Sans',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Save</button>
+      <button onclick="closeNoteModal()" style="background:#e8e4dd;color:#57534e;border:none;border-radius:8px;padding:9px 22px;font-family:'DM Sans',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+</div>
 <div id="mark-complete-prompt" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);align-items:center;justify-content:center;">
   <div style="background:#fdfaf6;border-radius:14px;padding:24px;max-width:340px;width:90%;text-align:center;box-shadow:0 16px 48px rgba(60,44,28,.25);">
     <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.95rem;font-weight:600;color:#1c1917;margin:0 0 6px;">Mark as done?</p>
@@ -5201,10 +5309,13 @@ def api_get_saved():
     subject = request.args.get("subject", "specialist")
     with get_db() as conn:
         rows = conn.execute(
-            "SELECT question_id FROM difficult_questions WHERE user_id=? AND subject=?",
+            "SELECT question_id, note FROM difficult_questions WHERE user_id=? AND subject=?",
             (user_id, subject)
         ).fetchall()
-    return jsonify({"ids": [r["question_id"] for r in rows]})
+    return jsonify({
+        "ids": [r["question_id"] for r in rows],
+        "notes": {r["question_id"]: r["note"] for r in rows}
+    })
 
 @app.route("/api/saved", methods=["POST"])
 def api_toggle_saved():
@@ -5231,6 +5342,21 @@ def api_toggle_saved():
             marked = True
         conn.commit()
     return jsonify({"ok": True, "marked": marked})
+
+@app.route("/api/saved/note", methods=["POST"])
+def api_save_note():
+    user_id = get_current_user_id()
+    data = request.get_json()
+    question_id = data["question_id"]
+    subject = data.get("subject", "specialist")
+    note = data.get("note", "")
+    with get_db() as conn:
+        conn.execute(
+            "UPDATE difficult_questions SET note=? WHERE user_id=? AND question_id=? AND subject=?",
+            (note, user_id, question_id, subject)
+        )
+        conn.commit()
+    return jsonify({"ok": True})
 
 @app.route("/api/completed")
 def api_get_completed():
