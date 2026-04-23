@@ -1105,19 +1105,7 @@ a { color:#1f1f1f; text-decoration:none; }
 .note-btn:hover { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
 .qcard.saved .note-btn { display:inline-block; }
 .note-icon { display:none; color:#1f1f1f; font-size:.85rem; flex-shrink:0; margin-right:6px; line-height:1; }
-.qcard.has-note .note-icon { display:inline; }
-.note-display {
-  margin-top:12px;
-  padding:10px 14px;
-  background:#f2ede6;
-  border:1px solid #e3ddd4;
-  border-radius:8px;
-  font-size:.85rem;
-  color:#57534e;
-  white-space:pre-wrap;
-  display:none;
-}
-.note-display.visible { display:block; }
+.qcard.has-note .note-icon { display:inline; cursor:help; }
 .card-actions {
   display:flex;
   align-items:flex-start;
@@ -2078,15 +2066,14 @@ function buildCardHtml(q) {
         <button class="note-btn" id="note-btn-${q.id}" onclick="openNoteModal('${q.id}')">Add Note</button>
       </div>
       <button class="flag-btn" id="flag-btn-${q.id}" onclick="submitFlag('${q.id}', this)">⚑ Flag as misclassified</button>
-    </div>
-    <div class="note-display" id="note-display-${q.id}"></div>` : solBtn;
+    </div>` : solBtn;
   return `<div class="qcard" id="qcard-${q.id}" onclick="this.classList.toggle('open')">
     <div class="qcard-header">
       <div class="qcard-left">
         <span class="qaos">${aosText}</span>
         <span class="qmeta">&nbsp;·&nbsp;${sLabel}</span>
       </div>
-      <span class="note-icon">&#9998;</span>
+      <span class="note-icon">&#9670;</span>
       <span class="bookmark-icon">&#9733;</span>
       <span class="qsection">${q.publisher} ${q.year} · Q${q.question_number}</span>
       <span class="toggle-icon">&#9656;</span>
@@ -2382,12 +2369,32 @@ function applyNoteState(id, note) {
   card.classList.toggle('has-note', !!note);
   const noteBtn = document.getElementById('note-btn-' + id);
   if (noteBtn) noteBtn.textContent = note ? 'Edit Note' : 'Add Note';
-  const noteDisplay = document.getElementById('note-display-' + id);
-  if (noteDisplay) {
-    noteDisplay.textContent = note;
-    noteDisplay.classList.toggle('visible', !!note);
+  const noteIcon = card.querySelector('.note-icon');
+  if (noteIcon) {
+    if (note) noteIcon.dataset.note = note;
+    else delete noteIcon.dataset.note;
   }
 }
+
+// Shared tooltip for note icons
+const _noteTip = document.createElement('div');
+_noteTip.style.cssText = 'display:none;position:fixed;z-index:9000;background:#fdfaf6;border:1px solid #e3ddd4;border-radius:8px;padding:8px 12px;font-family:\'DM Sans\',system-ui,sans-serif;font-size:.8rem;color:#57534e;max-width:260px;white-space:pre-wrap;box-shadow:0 4px 12px rgba(60,44,28,.12);pointer-events:none;line-height:1.5;';
+document.body.appendChild(_noteTip);
+
+document.addEventListener('mouseover', e => {
+  const icon = e.target.closest('.note-icon[data-note]');
+  if (!icon) return;
+  _noteTip.textContent = icon.dataset.note;
+  _noteTip.style.display = 'block';
+  const r = icon.getBoundingClientRect();
+  _noteTip.style.left = Math.min(r.left, window.innerWidth - 280) + 'px';
+  _noteTip.style.top = (r.bottom + 6) + 'px';
+});
+
+document.addEventListener('mouseout', e => {
+  if (!e.target.closest('.note-icon[data-note]')) return;
+  _noteTip.style.display = 'none';
+});
 
 function openNoteModal(id) {
   const modal = document.getElementById('note-modal');
