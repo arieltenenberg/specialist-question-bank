@@ -2262,6 +2262,23 @@ function markCompletePromptYes() {
         if (funnyPopup === 'jacaranda_moses' && Math.random() < 0.2) showJacarandaModal();
         if (funnyPopup === 'levick' && Math.random() < 0.2) showLevickModal();
         if (funnyPopup === 'cordo' && Math.random() < 0.2) showCorodoModal();
+        showXpCard(data.xp_gained, data.new_xp, data.new_level_name, data.level_xp_min, data.next_level_xp, data.next_level_name);
+        const leveledUp = data.new_level_num > data.prev_level_num;
+        const newBadges = data.newly_earned_badges || [];
+        if (leveledUp || newBadges.length > 0) {
+          showCelebration(leveledUp, data.new_level_name, data.new_level_num, newBadges);
+        } else if (data.new_streak) {
+          showStreakToast(data.new_streak);
+        }
+        if (document.getElementById('achievements-modal').classList.contains('open')) {
+          loadGamification();
+        }
+        if (data.new_xp !== undefined) {
+          fetch('/api/gamification?subject={{ subject }}').then(r => r.json()).then(g => {
+            updateSidebarGamification(g.xp, g.level_num, g.level_name, g.level_xp_min, g.next_level_xp, g.next_level_name, g.today_count, g.current_streak);
+          });
+        }
+        if (typeof refreshLeaderboard === 'function') refreshLeaderboard();
         if (hideCompleted && !completedOnly && !savedOnly) applyFilters();
         else if (savedOnly || hideSaved) applyFilters();
       }
