@@ -2406,7 +2406,10 @@ function openNoteModal(id) {
   const note = savedNotes[id] || '';
   document.getElementById('note-modal-title').textContent = note ? 'Edit note' : 'Add a note';
   document.getElementById('note-textarea').value = note;
+  const deleteBtn = document.getElementById('note-delete-btn');
+  deleteBtn.style.display = note ? 'flex' : 'none';
   modal.style.display = 'flex';
+  lucide.createIcons();
   setTimeout(() => document.getElementById('note-textarea').focus(), 50);
   document.addEventListener('keydown', noteModalKeyHandler);
 }
@@ -2418,6 +2421,19 @@ function closeNoteModal() {
 
 function noteModalKeyHandler(e) {
   if (e.key === 'Escape') closeNoteModal();
+}
+
+function deleteNote() {
+  const id = document.getElementById('note-modal').dataset.questionId;
+  fetch('/api/saved/note', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question_id: id, subject: '{{ subject }}', note: '' })
+  }).then(r => r.json()).then(() => {
+    savedNotes[id] = '';
+    applyNoteState(id, '');
+    closeNoteModal();
+  });
 }
 
 function saveNote() {
@@ -2970,9 +2986,10 @@ function renderProgressView() {
     <p id="note-modal-title" style="font-family:'DM Sans',system-ui,sans-serif;font-size:.95rem;font-weight:600;color:#1c1917;margin:0 0 4px;">Add a note</p>
     <p style="font-family:'DM Sans',system-ui,sans-serif;font-size:.83rem;color:#78716c;margin:0 0 14px;">Only you can see this note.</p>
     <textarea id="note-textarea" rows="4" style="width:100%;box-sizing:border-box;font-family:'DM Sans',system-ui,sans-serif;font-size:.875rem;color:#1c1917;background:#fff;border:1px solid #e3ddd4;border-radius:8px;padding:10px 12px;resize:vertical;outline:none;" placeholder="Write a note about this question..."></textarea>
-    <div style="display:flex;gap:10px;margin-top:14px;">
+    <div style="display:flex;gap:10px;margin-top:14px;align-items:center;">
       <button onclick="saveNote()" style="background:#2d2d2d;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-family:'DM Sans',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Save</button>
       <button onclick="closeNoteModal()" style="background:#e8e4dd;color:#57534e;border:none;border-radius:8px;padding:9px 22px;font-family:'DM Sans',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;">Cancel</button>
+      <button id="note-delete-btn" onclick="deleteNote()" style="display:none;margin-left:auto;background:none;color:#c53030;border:1px solid #c53030;border-radius:8px;padding:9px 14px;font-family:'DM Sans',system-ui,sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .15s;display:none;align-items:center;gap:6px;" onmouseover="this.style.background='#c53030';this.style.color='#fff'" onmouseout="this.style.background='none';this.style.color='#c53030'"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
     </div>
   </div>
 </div>
