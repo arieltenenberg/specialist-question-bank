@@ -2313,7 +2313,7 @@ function markCompletePromptYes() {
         if (hideCompleted && !completedOnly && !savedOnly) applyFilters();
         else if (savedOnly || hideSaved) applyFilters();
       }
-    });
+    }).catch(() => alert('Something went wrong — please try again.'));
   }
   if (savedOnly || hideSaved) applyFilters();
 }
@@ -2525,7 +2525,7 @@ function toggleCompleted(id, btn) {
       });
     }
     if (typeof refreshLeaderboard === 'function') refreshLeaderboard();
-  });
+  }).catch(() => alert('Something went wrong — please try again.'));
 }
 
 function markCompleteBtn(btn, completed) {
