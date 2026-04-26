@@ -1122,7 +1122,7 @@ a { color:#1f1f1f; text-decoration:none; }
 .note-btn:hover { background:#2d2d2d; color:#fff; border-color:#2d2d2d; }
 .qcard.saved .note-btn { display:inline-block; }
 .card-icons { display:flex; align-items:center; gap:12px; flex-shrink:0; }
-.note-icon { display:none; color:#1f1f1f; font-size:1.1rem; line-height:1; transform:translateY(-1px); }
+.note-icon { display:none; color:#1f1f1f; line-height:1; }
 .qcard.has-note .note-icon { display:inline; }
 .card-actions {
   display:flex;
@@ -2108,7 +2108,7 @@ function buildCardHtml(q) {
         <span class="qmeta">&nbsp;·&nbsp;${sLabel}</span>
       </div>
       <span class="card-icons">
-        <span class="note-icon">&#9670;</span><span class="bookmark-icon">&#9733;</span>
+        <span class="note-icon"><svg width="9" height="9" viewBox="0 0 10 10" fill="currentColor"><polygon points="5,0 10,5 5,10 0,5"/></svg></span><span class="bookmark-icon">&#9733;</span>
       </span>
       <span class="qsection">${q.publisher} ${q.year} · Q${q.question_number}</span>
       <span class="toggle-icon">&#9656;</span>
