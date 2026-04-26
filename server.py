@@ -5327,8 +5327,10 @@ def api_flag():
         "timestamp": datetime.datetime.utcnow().isoformat()
     }
     flags = _read_flags()
-    flags.append(flag)
-    _write_flags(flags)
+    already_flagged = any(f.get("question_id") == qid and f.get("subject") == subject for f in flags)
+    if not already_flagged:
+        flags.append(flag)
+        _write_flags(flags)
     return jsonify(ok=True)
 
 @app.route("/api/saved")
