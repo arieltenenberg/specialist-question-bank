@@ -1123,7 +1123,8 @@ a { color:#1f1f1f; text-decoration:none; }
 .qcard.saved .note-btn { display:inline-block; }
 .card-icons { display:flex; align-items:center; gap:12px; flex-shrink:0; }
 .note-icon { display:none; color:#1f1f1f; line-height:1; }
-.qcard.has-note .note-icon { display:inline; }
+.note-icon svg { display:block; }
+.qcard.has-note .note-icon { display:flex; align-items:center; }
 .card-actions {
   display:flex;
   align-items:flex-start;
