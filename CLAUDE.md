@@ -86,12 +86,15 @@ Questions are classified into Areas of Study (AOS) per subject.
 
 ## Specialist Publishers in the Dataset
 Heffernan, Insight, Kilbaha, MAV, NEAP
-Years: 2013–2022 (old study design), 2023, 2024, 2025
-Note: Heffernan 2013 is Exam 2 only (no Exam 1 published). Kilbaha 2013 not imported (incomplete files).
+Years: 2012–2022 (old study design), 2023, 2024, 2025
+Notes:
+- Heffernan 2013 is Exam 2 only (no Exam 1 published). Kilbaha 2013 not imported (incomplete files).
+- 2012 marks were entered manually (older PDF format puts marks bottom-right, pipeline cannot extract them). Kilbaha 2012 not imported yet.
 
 ## Methods Publishers in the Dataset
 Imported batch by batch. All pipeline work is done locally.
 Years imported so far: 2016–2025 (all years complete)
+Note: If 2012 Methods exams are imported, marks will need to be entered manually (same bottom-right format as Specialist 2012).
 
 ## Classification Approach
 - Text is extracted from PDFs using PyMuPDF (text layer, not OCR)
