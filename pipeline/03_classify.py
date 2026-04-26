@@ -346,6 +346,14 @@ def classify_question(text):
     if has_match(t, MECHANICS_KW):
         return 8, AOS[8]
 
+    # 1.75 Kinematics — velocity/acceleration/displacement are unambiguous Calculus
+    #       signals that must be caught before the complex number weak check, which
+    #       can false-positive on standalone 'z' or 'i' in kinematics text.
+    if re.search(r"\bvelocity\b|\baccele[ra]t", t) and not has_vector_ijk(t):
+        return 4, AOS[4]
+    if re.search(r"\bdisplacement\b", t) and not has_vector_ijk(t):
+        return 4, AOS[4]
+
     # 2. Complex Numbers
     #    Strong signals always win; weak signals (numeric i, standalone z) only win
     #    if there is no vector i/j/k context.
