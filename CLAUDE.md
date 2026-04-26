@@ -502,6 +502,31 @@ Returns `prev_level_num`, `new_level_num`, `new_level_name`, `newly_earned_badge
 ### Colour scheme
 All gamification UI uses the existing sage green palette (`#8db370`, `#4a6f32`) — no amber/gold anywhere.
 
+## Marks Sanity Check
+
+After importing a new batch, verify every exam sums to the correct total:
+- Exam 1: 40 marks
+- Exam 2: 80 marks
+- Count MC questions as 1 mark each (they store `None` in the JSON)
+- **Include all questions** -- hidden (AOS 9) and Mechanics (AOS 8) must be counted too, otherwise the totals will be wrong
+
+```python
+import json
+from collections import defaultdict
+with open('specialist_questions.json') as f:
+    qs = json.load(f)
+by_pub_exam = defaultdict(list)
+for q in qs:
+    by_pub_exam[(q['year'], q['publisher'], q['exam_type'])].append(q)
+for (year, pub, exam), questions in sorted(by_pub_exam.items()):
+    total = sum((q['marks'] or 0) if (q['marks'] or 0) > 0 else 1 for q in questions)
+    expected = 40 if exam == 1 else 80
+    if total != expected:
+        print(f'ISSUE: {year} {pub} Exam {exam}: {total} (expected {expected})')
+```
+
+Known pre-existing issue: **2018 MAV Exam 1 = 36** (4 marks missing, not fixable from PDF).
+
 ## Known Issues
 _(none)_
 

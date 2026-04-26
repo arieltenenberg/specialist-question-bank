@@ -688,6 +688,11 @@ def main():
 
         out = {k: v for k, v in q.items() if k not in ("extracted_text", "source_pdf")}
 
+        # Preserve manually-fixed marks from existing JSON (pipeline re-extracts all PDFs
+        # on each run, which would otherwise overwrite marks fixed via the classify UI)
+        if preserve_enabled and qid in manual and manual[qid].get("marks"):
+            out["marks"] = manual[qid]["marks"]
+
         if preserve_enabled and qid in manual and manual[qid]["aos"] != 0:
             # Preserve any existing non-zero classification (auto or manual)
             out["aos"] = manual[qid]["aos"]
