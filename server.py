@@ -795,7 +795,16 @@ a { color:#1f1f1f; text-decoration:none; }
   color:var(--muted);
   margin:20px 0 8px;
   font-weight:600;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  user-select:none;
 }
+.sidebar h3:hover { color:var(--text-secondary); }
+.sidebar-chevron { font-size:.7rem; transition:transform .2s; display:inline-block; }
+.sidebar h3.collapsed .sidebar-chevron { transform:rotate(-90deg); }
+.sidebar h3.collapsed + .filter-group { display:none; }
 .filter-group { display:flex; flex-direction:column; gap:3px; }
 .filter-btn {
   background:none;
@@ -1724,21 +1733,21 @@ a { color:#1f1f1f; text-decoration:none; }
     <a class="sort-unsorted-btn" id="sort-unsorted-btn" href="/classify?subject={{ subject }}&unsorted=1">Sort Unsorted (<span id="unsorted-count">…</span>)</a>
     {% endif %}
     {% if is_methods %}
-    <h3>Short Answer and Multiple Choice</h3>
+    <h3 data-section="fg-tag" onclick="toggleSidebarSection(this)">Short Answer and Multiple Choice <span class="sidebar-chevron">▾</span></h3>
     <div class="filter-group" id="fg-tag"></div>
-    <h3>Extended Response</h3>
+    <h3 data-section="fg-extended" onclick="toggleSidebarSection(this)">Extended Response <span class="sidebar-chevron">▾</span></h3>
     <div class="filter-group" id="fg-extended"></div>
     {% else %}
-    <h3>Area of Study</h3>
+    <h3 data-section="fg-aos" onclick="toggleSidebarSection(this)">Area of Study <span class="sidebar-chevron">▾</span></h3>
     <div class="filter-group" id="fg-aos"></div>
     {% endif %}
-    <h3>Year</h3>
+    <h3 data-section="fg-year" onclick="toggleSidebarSection(this)">Year <span class="sidebar-chevron">▾</span></h3>
     <div class="filter-group" id="fg-year"></div>
-    <h3>Publisher</h3>
+    <h3 data-section="fg-pub" onclick="toggleSidebarSection(this)">Publisher <span class="sidebar-chevron">▾</span></h3>
     <div class="filter-group" id="fg-pub"></div>
-    <h3>Exam Type</h3>
+    <h3 data-section="fg-exam" onclick="toggleSidebarSection(this)">Exam Type <span class="sidebar-chevron">▾</span></h3>
     <div class="filter-group" id="fg-exam"></div>
-    <h3>Section</h3>
+    <h3 data-section="fg-section" onclick="toggleSidebarSection(this)">Section <span class="sidebar-chevron">▾</span></h3>
     <div class="filter-group" id="fg-section"></div>
   </div>
 
@@ -1765,6 +1774,21 @@ function toggleSidebar() {
   const backdrop = document.getElementById('sidebar-backdrop');
   const open = sidebar.classList.toggle('mobile-open');
   backdrop.classList.toggle('visible', open);
+}
+
+function toggleSidebarSection(h3) {
+  const key = h3.dataset.section;
+  h3.classList.toggle('collapsed');
+  const prefs = JSON.parse(localStorage.getItem('sidebarCollapse') || '{}');
+  prefs[key] = h3.classList.contains('collapsed');
+  localStorage.setItem('sidebarCollapse', JSON.stringify(prefs));
+}
+
+function initSidebarCollapse() {
+  const prefs = JSON.parse(localStorage.getItem('sidebarCollapse') || '{}');
+  document.querySelectorAll('.sidebar h3[data-section]').forEach(h3 => {
+    if (prefs[h3.dataset.section]) h3.classList.add('collapsed');
+  });
 }
 let allQ = [];
 let filtered = [];
@@ -1883,6 +1907,7 @@ fetch('/api/questions?subject={{ subject }}').then(r => r.json()).then(data => {
   }
   buildFilters();
   applyFilters();
+  initSidebarCollapse();
   loadSavedIds();
   loadCompletedIds();
   initSidebarGamification();
