@@ -3545,41 +3545,9 @@ function updateProgress() {
   }
 }
 
-// Fix Marks
-async function saveMarks() {
-  const rows = document.querySelectorAll('.fix-marks-row');
-  const updates = [];
-  rows.forEach(row => {
-    const val = parseInt(row.querySelector('input').value);
-    if (val > 0) updates.push({id: row.dataset.id, marks: val, subject: row.dataset.subject});
-  });
-  if (!updates.length) return;
-  const res = await fetch('/api/fix_marks', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(updates)});
-  const data = await res.json();
-  if (data.ok) { alert('Saved ' + data.updated + ' marks.'); location.reload(); }
-  else alert('Error: ' + data.error);
-}
+
 </script>
 
-{% if missing_marks %}
-<div style="max-width:700px;margin:40px auto;padding:24px;background:var(--surface,#fdfaf6);border:1px solid var(--border,#e3ddd4);border-radius:12px;">
-  <h3 style="margin:0 0 16px;font-size:1rem;font-weight:600;color:#1c1917;">Fix Missing Marks</h3>
-  <p style="margin:0 0 16px;font-size:.85rem;color:#57534e;">These non-MC questions have no marks stored. Enter the correct value from the exam paper.</p>
-  {% for q in missing_marks %}
-  <div class="fix-marks-row" data-id="{{ q.id }}" data-subject="{{ q.subject }}" style="margin-bottom:20px;border:1px solid var(--border,#e3ddd4);border-radius:8px;overflow:hidden;">
-    <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:#f6f3ee;">
-      <span style="flex:1;font-size:.82rem;color:#1c1917;font-family:monospace;">{{ q.id }}</span>
-      <span style="font-size:.8rem;color:#78716c;white-space:nowrap;">{{ q.section.replace('_',' ') }}</span>
-      <input type="number" min="1" max="30" placeholder="marks" style="width:70px;padding:5px 8px;border:1px solid #e3ddd4;border-radius:6px;font-size:.85rem;text-align:center;">
-    </div>
-    {% if q.question_image %}
-    <img src="{{ q.question_image }}" style="width:100%;display:block;background:#fff;">
-    {% endif %}
-  </div>
-  {% endfor %}
-  <button onclick="saveMarks()" style="margin-top:8px;padding:8px 20px;background:#2d2d2d;color:#fff;border:none;border-radius:8px;font-size:.85rem;cursor:pointer;">Save marks</button>
-</div>
-{% endif %}
 
 </body>
 </html>"""
@@ -3871,22 +3839,12 @@ def classify_page():
     methods_aos_exam2 = {k: v for k, v in aos_map.items() if k in (6, 7)} if is_methods else {}
     highlight_qid = request.args.get("qid", "")
 
-    # Collect questions with missing marks across both subjects (for the fix-marks widget)
-    missing_marks = []
-    for subj, fname in [("specialist", "specialist_questions.json"), ("methods", "methods_questions.json")]:
-        with open(fname) as f:
-            all_qs = json.load(f)
-        for q in all_qs:
-            if q.get("section") != "multiple_choice" and (q.get("marks") or 0) == 0:
-                missing_marks.append({"id": q["id"], "section": q["section"], "subject": subj, "question_image": q.get("question_image", "")})
-    missing_marks.sort(key=lambda x: x["id"])
-
     return render_template_string(CLASSIFY_HTML, questions=questions, publisher=publisher, year=year,
                                   exam_sets=exam_sets, unsorted_mode=unsorted_mode, unsorted_count=unsorted_count,
                                   flagged_mode=flagged_mode, flagged_count=flagged_count, flags_by_qid=flags_by_qid,
                                   subject=subject, aos_map=aos_map, is_methods=is_methods,
                                   methods_aos_exam1=methods_aos_exam1, methods_aos_exam2=methods_aos_exam2,
-                                  highlight_qid=highlight_qid, missing_marks=missing_marks)
+                                  highlight_qid=highlight_qid)
 
 @app.route("/qimg/<path:filename>")
 def serve_qimg(filename):
