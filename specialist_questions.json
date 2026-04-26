@@ -7120,8 +7120,8 @@
     "marks": 3,
     "question_image": "/qimg/insight_2014_exam1_s_q8_question.png",
     "solution_image": "/qimg/insight_2014_exam1_s_q8_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 2,
+    "aos_name": "Functions, Relations and Graphs"
   },
   {
     "id": "insight_2014_exam1_s_q9",
@@ -7328,8 +7328,8 @@
     "marks": null,
     "question_image": "/qimg/insight_2014_exam2_m_q14_question.png",
     "solution_image": "/qimg/insight_2014_exam2_m_q14_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 5,
+    "aos_name": "Vectors, Lines and Planes"
   },
   {
     "id": "insight_2014_exam2_m_q15",
@@ -7718,8 +7718,8 @@
     "marks": null,
     "question_image": "/qimg/kilbaha_2014_exam2_m_q6_question.png",
     "solution_image": "/qimg/kilbaha_2014_exam2_m_q6_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 3,
+    "aos_name": "Complex Numbers"
   },
   {
     "id": "kilbaha_2014_exam2_m_q7",
@@ -7952,8 +7952,8 @@
     "marks": 12,
     "question_image": "/qimg/kilbaha_2014_exam2_e_q2_question.png",
     "solution_image": "/qimg/kilbaha_2014_exam2_e_q2_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 4,
+    "aos_name": "Calculus"
   },
   {
     "id": "kilbaha_2014_exam2_e_q3",
@@ -8043,8 +8043,8 @@
     "marks": 4,
     "question_image": "/qimg/mav_2014_exam1_s_q5_question.png",
     "solution_image": "/qimg/mav_2014_exam1_s_q5_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 4,
+    "aos_name": "Calculus"
   },
   {
     "id": "mav_2014_exam1_s_q6",
@@ -8134,8 +8134,8 @@
     "marks": null,
     "question_image": "/qimg/mav_2014_exam2_m_q3_question.png",
     "solution_image": "/qimg/mav_2014_exam2_m_q3_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 2,
+    "aos_name": "Functions, Relations and Graphs"
   },
   {
     "id": "mav_2014_exam2_m_q4",
@@ -8290,8 +8290,8 @@
     "marks": null,
     "question_image": "/qimg/mav_2014_exam2_m_q15_question.png",
     "solution_image": null,
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 5,
+    "aos_name": "Vectors, Lines and Planes"
   },
   {
     "id": "mav_2014_exam2_m_q16",
@@ -8511,8 +8511,8 @@
     "marks": 4,
     "question_image": "/qimg/neap_2014_exam1_s_q5_question.png",
     "solution_image": "/qimg/neap_2014_exam1_s_q5_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 2,
+    "aos_name": "Functions, Relations and Graphs"
   },
   {
     "id": "neap_2014_exam1_s_q6",
@@ -8537,8 +8537,8 @@
     "marks": 4,
     "question_image": "/qimg/neap_2014_exam1_s_q7_question.png",
     "solution_image": "/qimg/neap_2014_exam1_s_q7_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 4,
+    "aos_name": "Calculus"
   },
   {
     "id": "neap_2014_exam1_s_q8",
@@ -8628,8 +8628,8 @@
     "marks": null,
     "question_image": "/qimg/neap_2014_exam2_m_q5_question.png",
     "solution_image": "/qimg/neap_2014_exam2_m_q5_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 4,
+    "aos_name": "Calculus"
   },
   {
     "id": "neap_2014_exam2_m_q6",
@@ -8693,8 +8693,8 @@
     "marks": null,
     "question_image": "/qimg/neap_2014_exam2_m_q10_question.png",
     "solution_image": "/qimg/neap_2014_exam2_m_q10_solution.png",
-    "aos": 0,
-    "aos_name": "Unsorted"
+    "aos": 2,
+    "aos_name": "Functions, Relations and Graphs"
   },
   {
     "id": "neap_2014_exam2_m_q11",
