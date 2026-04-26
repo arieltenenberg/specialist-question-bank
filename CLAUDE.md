@@ -85,8 +85,9 @@ Questions are classified into Areas of Study (AOS) per subject.
 | 0 | Unsorted (flagged for manual review) |
 
 ## Specialist Publishers in the Dataset
-Heffernan, Insight, Kilbaha, MAV, NEAP, QATs-Janison, Sequoia, TSSM
-Years: 2016–2022 (old study design), 2023, 2024, 2025
+Heffernan, Insight, Kilbaha, MAV, NEAP
+Years: 2013–2022 (old study design), 2023, 2024, 2025
+Note: Heffernan 2013 is Exam 2 only (no Exam 1 published). Kilbaha 2013 not imported (incomplete files).
 
 ## Methods Publishers in the Dataset
 Imported batch by batch. All pipeline work is done locally.
