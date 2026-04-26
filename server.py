@@ -273,8 +273,8 @@ LEVELS = [
     (4, "Scholar",     1750),
     (5, "Prodigy",     3750),
     (6, "Veteran",     7500),
-    (7, "Master",      14000),
-    (8, "Grandmaster", 23500),
+    (7, "Master",      15000),
+    (8, "Grandmaster", 25000),
 ]
 
 QUESTION_BADGES = [
