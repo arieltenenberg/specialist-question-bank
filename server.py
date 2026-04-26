@@ -798,21 +798,20 @@ a { color:#1f1f1f; text-decoration:none; }
   cursor:pointer;
   display:flex;
   align-items:center;
-  justify-content:space-between;
+  gap:7px;
   user-select:none;
 }
 .sidebar h3:hover { color:var(--text-secondary); }
 .sidebar-chevron {
   display:inline-block;
-  width:8px; height:8px;
+  width:6px; height:6px;
   border-right:1.5px solid currentColor;
   border-bottom:1.5px solid currentColor;
-  transform:rotate(45deg);
+  transform:rotate(45deg) translateY(-2px);
   transition:transform .2s;
-  margin-bottom:2px;
   flex-shrink:0;
 }
-.sidebar h3.collapsed .sidebar-chevron { transform:rotate(-45deg); margin-bottom:-2px; }
+.sidebar h3.collapsed .sidebar-chevron { transform:rotate(-45deg) translateY(1px); }
 .sidebar h3.collapsed + .filter-group { display:none; }
 .filter-group { display:flex; flex-direction:column; gap:3px; }
 .filter-btn {
