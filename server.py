@@ -5448,6 +5448,7 @@ def api_toggle_completed():
             xp_gained = get_xp_for_question(question_id)
             conn.execute("UPDATE users SET xp = xp + ? WHERE google_id=?", (xp_gained, user_id))
             # Streak logic
+            maybe_reset_streak(conn, user_id)
             today = today_aest()
             now_aest = datetime.datetime.now(AEST)
             today_weekday = now_aest.weekday()  # 5=Saturday, 6=Sunday
@@ -5523,6 +5524,32 @@ def api_toggle_completed():
         "newly_earned_badges": newly_earned_badges,
     })
 
+def maybe_reset_streak(conn, user_id):
+    """Reset current_streak to 0 if the streak is broken (called on page load and on completion)."""
+    row = conn.execute(
+        "SELECT current_streak, last_streak_date, shabbat_proof FROM users WHERE google_id=?", (user_id,)
+    ).fetchone()
+    if not row or not row["current_streak"] or not row["last_streak_date"]:
+        return
+    now_aest = datetime.datetime.now(AEST)
+    today_weekday = now_aest.weekday()  # 5=Saturday, 6=Sunday
+    last = row["last_streak_date"]
+    today = today_aest()
+    if last == today:
+        return  # already active today
+    shabbat_proof = bool(row["shabbat_proof"])
+    if shabbat_proof and today_weekday == 6:
+        friday = (now_aest - datetime.timedelta(days=2)).strftime("%Y-%m-%d")
+        saturday = (now_aest - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+        still_alive = last in (friday, saturday)
+    elif shabbat_proof and today_weekday == 5:
+        still_alive = True  # Saturday never breaks the streak for shabbat-proof users
+    else:
+        still_alive = last == yesterday_aest()
+    if not still_alive:
+        conn.execute("UPDATE users SET current_streak=0 WHERE google_id=?", (user_id,))
+
+
 @app.route("/api/gamification")
 def api_gamification():
     r = check_approved()
@@ -5531,6 +5558,7 @@ def api_gamification():
     subject = request.args.get("subject", "specialist")
 
     with get_db() as conn:
+        maybe_reset_streak(conn, user_id)
         user_row = conn.execute(
             "SELECT xp, current_streak, longest_streak FROM users WHERE google_id=?", (user_id,)
         ).fetchone()
