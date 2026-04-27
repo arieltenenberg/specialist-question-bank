@@ -303,7 +303,7 @@ for _q in questions_data + methods_data:
     _marks_lookup[_q["id"]] = _m if _m > 0 else 1
 
 SPECIALIST_HIDDEN_AOS = {0, 8, 9}
-METHODS_HIDDEN_AOS = {0, 9}
+METHODS_HIDDEN_AOS = {0, 9, 10}
 
 _specialist_aos_counts = {}
 for _q in questions_data:
@@ -408,6 +408,7 @@ METHODS_AOS = {
     7: "Probability and Statistics",  # Exam 2 only
     8: "Pseudocode",                  # Exam 1 only
     9: "Hidden",
+    10: "Old Study Design",           # old study design only — hidden from students
 }
 
 SUBJECT_CONFIG = {
@@ -2960,7 +2961,7 @@ function renderAchievements(data) {
 }
 
 function renderProgressView() {
-  const hiddenAos = IS_METHODS ? new Set([0, 9]) : new Set([0, 8, 9]);
+  const hiddenAos = IS_METHODS ? new Set([0, 9, 10]) : new Set([0, 8, 9]);
   const SECTION_KEYS = ['short_answer', 'multiple_choice', 'extended_response'];
   const SECTION_LABELS = { short_answer: 'Short Answer', multiple_choice: 'Multiple Choice', extended_response: 'Extended Response' };
 
@@ -3624,6 +3625,8 @@ def api_questions():
     filtered = [q for q in data if q["publisher"] not in hidden]
     if subject == "specialist":
         filtered = [q for q in filtered if q.get("aos") != 8]
+    if subject == "methods":
+        filtered = [q for q in filtered if q.get("aos") != 10]
     filtered = [q for q in filtered if q.get("aos") != 9]
     return jsonify(filtered)
 
@@ -3835,8 +3838,8 @@ def classify_page():
 
     is_methods = subject == "methods"
     # For Methods classify page: split AOS map into exam-1 (1–5) and exam-2 (6–7) groups
-    methods_aos_exam1 = {k: v for k, v in aos_map.items() if 1 <= k <= 5 or k == 8} if is_methods else {}
-    methods_aos_exam2 = {k: v for k, v in aos_map.items() if k in (6, 7)} if is_methods else {}
+    methods_aos_exam1 = {k: v for k, v in aos_map.items() if 1 <= k <= 5 or k == 8 or k == 10} if is_methods else {}
+    methods_aos_exam2 = {k: v for k, v in aos_map.items() if k in (6, 7, 10)} if is_methods else {}
     highlight_qid = request.args.get("qid", "")
 
     return render_template_string(CLASSIFY_HTML, questions=questions, publisher=publisher, year=year,
@@ -5773,7 +5776,7 @@ def api_delete_leaderboard(lb_id):
 def api_admin_user_progress(google_id):
     if not admin_required():
         return jsonify(error="forbidden"), 403
-    HIDDEN_AOS = {"specialist": {0, 8, 9}, "methods": {0, 9}}
+    HIDDEN_AOS = {"specialist": {0, 8, 9}, "methods": {0, 9, 10}}
     SECTION_KEYS = ["short_answer", "multiple_choice", "extended_response"]
     with get_db() as conn:
         completed = {}

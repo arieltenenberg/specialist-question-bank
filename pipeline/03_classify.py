@@ -68,6 +68,7 @@ METHODS_AOS = {
     6: "Core Content",                # Exam 2 only
     7: "Probability and Statistics",  # Exam 2 only
     8: "Pseudocode",                  # Exam 1 only
+    10: "Old Study Design",           # old study design only — hidden from students
 }
 
 AOS = SPECIALIST_AOS if args.subject == "specialist" else METHODS_AOS
@@ -586,6 +587,18 @@ METHODS_FUNCTIONS_KW = [
 ]
 
 
+METHODS_OLD_STUDY_KW = [
+    r"\|",                          # pipe character = absolute value bars in PDF extraction
+    r"absolute\s+value",
+    r"linear\s+approximation",
+    r"\bapproximat",                # approximate / approximation
+    r"≈",                           # approximation symbol
+    r"long[\-\s]+run",              # Markov chains: "in the long run"
+    r"\bmarkov\b",
+    r"transition\s+matrix",
+]
+
+
 def classify_for_methods(text, section):
     """
     Classify a Methods question. Returns (primary_aos, primary_name, tags_list, tag_names_list).
@@ -596,6 +609,15 @@ def classify_for_methods(text, section):
 
     text = strip_header(text)
     t = text.lower()
+
+    # Old Study Design — checked first, applies to any section/exam type.
+    # 'rate' is an old-study signal except when it refers to rate of change (differentiation).
+    _rate_is_old_study = (
+        re.search(r"\brate\b", t) and
+        not re.search(r"(?:average|instantaneous)\s+rate\s+of\s+change", t)
+    )
+    if has_match(t, METHODS_OLD_STUDY_KW) or _rate_is_old_study:
+        return 10, METHODS_AOS[10], [10], [METHODS_AOS[10]]
 
     # Extended response only: binary classification — Core Content vs Probability and Statistics
     if section == 'extended_response':
