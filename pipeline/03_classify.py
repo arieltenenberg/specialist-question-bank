@@ -600,6 +600,7 @@ METHODS_OLD_STUDY_KW = [
     r"\bvelocity\b",
     r"\bacceleration\b",
     r"\bdisplacement\b",
+    r"\bmode\b",                    # old study design statistics topic
 ]
 
 
@@ -615,12 +616,14 @@ def classify_for_methods(text, section):
     t = text.lower()
 
     # Old Study Design — checked first, applies to any section/exam type.
+    # Exclusions: normal distribution → Continuous Probability, not old study design.
     # 'rate' is an old-study signal except when it refers to rate of change (differentiation).
+    _is_normal_dist = bool(re.search(r"normal\s+distribution|normally\s+distributed", t))
     _rate_is_old_study = (
         re.search(r"\brate\b", t) and
         not re.search(r"(?:average|instantaneous)\s+rate\s+of\s+change", t)
     )
-    if has_match(t, METHODS_OLD_STUDY_KW) or _rate_is_old_study:
+    if not _is_normal_dist and (has_match(t, METHODS_OLD_STUDY_KW) or _rate_is_old_study):
         return 10, METHODS_AOS[10], [10], [METHODS_AOS[10]]
 
     # Extended response only: binary classification — Core Content vs Probability and Statistics

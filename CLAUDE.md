@@ -92,6 +92,8 @@ AOS 10 is detected before all other classification steps (applies to any section
 - Related rates / rates: `\brate\b` — EXCEPT when the phrase is `average rate of change` or `instantaneous rate of change` (those remain Differentiation)
 - Markov chains: `long run`, `markov`, `transition matrix`
 - Kinematics: `particle`, `velocity`, `acceleration`, `displacement`
+- Statistics: `mode`
+- Exclusion: if text contains `normal distribution` or `normally distributed`, skip old study design check entirely (strong Continuous Probability signal)
 
 ## Specialist Publishers in the Dataset
 Heffernan, Insight, Kilbaha, MAV, NEAP
