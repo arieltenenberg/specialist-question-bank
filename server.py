@@ -5542,8 +5542,6 @@ def maybe_reset_streak(conn, user_id):
         friday = (now_aest - datetime.timedelta(days=2)).strftime("%Y-%m-%d")
         saturday = (now_aest - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
         still_alive = last in (friday, saturday)
-    elif shabbat_proof and today_weekday == 5:
-        still_alive = last == yesterday_aest()  # Saturday free pass only if active on Friday
     else:
         still_alive = last == yesterday_aest()
     if not still_alive:
