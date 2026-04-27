@@ -596,6 +596,10 @@ METHODS_OLD_STUDY_KW = [
     r"long[\-\s]+run",              # Markov chains: "in the long run"
     r"\bmarkov\b",
     r"transition\s+matrix",
+    r"\bparticle\b",                # kinematics
+    r"\bvelocity\b",
+    r"\bacceleration\b",
+    r"\bdisplacement\b",
 ]
 
 
