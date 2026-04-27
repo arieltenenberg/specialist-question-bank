@@ -82,7 +82,15 @@ Questions are classified into Areas of Study (AOS) per subject.
 | 7 | Probability and Statistics (Exam 2 only) |
 | 8 | Pseudocode (Exam 1 only) |
 | 9 | Hidden (admin-only — invisible to students) |
+| 10 | Old Study Design (hidden from students — questions from 2012–2015 old study design exams) |
 | 0 | Unsorted (flagged for manual review) |
+
+## Mathematical Methods — Old Study Design Classifier Rules
+AOS 10 is detected before all other classification steps (applies to any section/exam type):
+- Absolute value: `\|` (pipe character in PDF text) or `absolute value`
+- Linear approximation: `≈`, `approximat` (approximate/approximation), `linear approximation`
+- Related rates / rates: `\brate\b` — EXCEPT when the phrase is `average rate of change` or `instantaneous rate of change` (those remain Differentiation)
+- Markov chains: `long run`, `markov`, `transition matrix`
 
 ## Specialist Publishers in the Dataset
 Heffernan, Insight, Kilbaha, MAV, NEAP
